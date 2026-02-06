@@ -145,7 +145,7 @@ function formatarNumero(valor, casas = 0) {
  * @example
  * // No HTML:
  * <?!= includeSistemaCSS(); ?>
- */
+
 function includeSistemaCSS() {
   const cssArray = [
     'CSS/global-css.html'  // Wrapper com todos os estilos
@@ -156,6 +156,24 @@ function includeSistemaCSS() {
     .map(file => `<link rel="stylesheet" href="${file}">`)
     .join('\n  ');
 }
+ */
+function includeCSS() {
+  return `
+    ${include('CSS/variables-css')}
+    ${include('CSS/layout-css')}
+    ${include('CSS/buttons-css')}
+    ${include('CSS/forms-css')}
+    ${include('CSS/tables-css')}
+    ${include('CSS/modals-css')}
+    ${include('CSS/components-css')}
+    ${include('CSS/tickets-css')}
+    ${include('CSS/animations-css')}
+    ${include('CSS/responsive-css')}
+    ${include('CSS/themes-css')}
+  `;
+}
+
+
 
 // ==================== SISTEMA DE JAVASCRIPT ====================
 
@@ -183,7 +201,7 @@ function includeSistemaCSS() {
  * @example
  * // No HTML:
  * <?!= includeSistemaJS(); ?>
- */
+ 
 function includeSistemaJS() {
   // ORDEM CRÍTICA - NÃO ALTERAR
   // Dependências: state → storage → utils → ... → init → bugs
@@ -222,6 +240,39 @@ function includeSistemaJS() {
     .map(file => `<script src="${file}"></script>`)
     .join('\n  ');
 }
+*/
+function includeJS() {
+  return `
+    <!-- NÚCLEO (Fundação) -->
+    <script>${include('JS/state-js')}</script>
+    <script>${include('JS/storage-js')}</script>
+
+    <!-- UTILIDADES -->
+    <script>${include('JS/utils-js')}</script>
+    <script>${include('JS/ui-js')}</script>
+
+    <!-- AUTENTICAÇÃO & NAVEGAÇÃO -->
+    <script>${include('JS/auth-js')}</script>
+    <script>${include('JS/navigation-js')}</script>
+    
+    <!-- FEATURES (Dados) -->
+    <script>${include('JS/search-js')}</script>
+    <script>${include('JS/table-js')}</script>
+    <script>${include('JS/dashboard-js')}</script>
+    
+    <!-- GESTÃO DE ENTIDADES -->
+    <script>${include('JS/users-js')}</script>
+    <script>${include('JS/profile-js')}</script>
+    <script>${include('JS/tickets-js')}</script>
+    
+    <!-- SISTEMA -->
+    <script>${include('JS/settings-js')}</script>
+    <script>${include('JS/help-js')}</script>
+    <script>${include('JS/init-js')}</script>
+    <script>${include('JS/bugs-js')}</script>
+  `;
+}
+
 
 // ==================== GERADOR DE IDS ÚNICOS ====================
 

@@ -1,54 +1,56 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Gestão - Portal</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons">
+  <!DOCTYPE html>
+  <html lang="pt-br">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>CTRC Analyzer - Sistema de Gestão de Entregas</title>
+        
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <!-- CSS Controlado pelo Backend -->
-  <?!= includeSistemaCSS(); ?>
+  <?!= includeCSS(); ?>
 </head>
 <body>
   <div class="app-wrapper">
     
     <!-- TELA DE LOGIN/AUTENTICAÇÃO -->
-    <?!= include('login'); ?>
+    <?!= include('Templates/login'); ?>
 
     <!-- HEADER/NAVEGAÇÃO PRINCIPAL -->
-    <?!= include('header'); ?>
+    <?!= include('Templates/header'); ?>
 
     <!-- SIDEBAR/MENU LATERAL -->
-    <?!= include('sidebar'); ?>
+    <?!= include('Templates/sidebar'); ?>
    
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="main-content" id="appMain">
 
-      <?!= include('perfil'); ?>
-
-      <?!= include('dashboard'); ?>
-
-      <?!= include('pesquisa'); ?>
-
-      <?!= include('tickets'); ?>
-
-      <?!= include('config-sistema'); ?>
-
-      <?!= include('cadastro'); ?>
-
-      <?!= include('usuarios'); ?>
-
-      <?!= include('ajuda'); ?>
+      <?!= include('Templates/perfil'); ?>
+      <?!= include('Templates/dashboard'); ?>
+      <?!= include('Templates/pesquisa'); ?>
+      <?!= include('Templates/tickets'); ?>
+      <?!= include('Templates/config-sistema'); ?>
+      <?!= include('Templates/cadastro'); ?>
+      <?!= include('Templates/usuarios'); ?>
+      <?!= include('Templates/ajuda'); ?>
 
     </main>
     
   </div>
 
   <!-- MODAIS DO SISTEMA -->
-  <?!= include('modals'); ?>
+  <?!= include('Templates/modals'); ?>
 
   <!-- JavaScript Controlado pelo Backend -->
-  <?!= includeSistemaJS(); ?>
+  <?!= includeJS(); ?>
 
 </body>
 </html>

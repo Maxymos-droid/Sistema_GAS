@@ -27,7 +27,7 @@
  * // Retorna página HTML da aplicação renderizada
  */
 function doGet() {
-  return HtmlService.createTemplateFromFile('global')
+  return HtmlService.createTemplateFromFile('index')
     .evaluate()
     .setTitle('CTRC Analyzer - Sistema de Gestão de Entregas')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

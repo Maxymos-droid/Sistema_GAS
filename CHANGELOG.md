@@ -1,0 +1,160 @@
+# 📝 CHANGELOG - Sistema CTRC Analyzer
+
+## [2.1.0] - Fevereiro 6, 2026
+
+### 🔄 Alterações Principais
+
+#### 1. **Refatoração de Render da Interface**
+- ✅ Alterado em `interface.js` / `doGet()`:
+  - Antes: `createTemplateFromFile('global')`
+  - Depois: `createTemplateFromFile('index')`
+  - Motivo: Consolidação de nomenclatura (global.html → index.html)
+
+#### 2. **Atualização de Includes em index.html**
+- ✅ Templates agora usam nomenclatura padronizada:
+  ```html
+  <?!= include('Templates/login'); ?>
+  <?!= include('Templates/header'); ?>
+  <?!= include('Templates/sidebar'); ?>
+  <!-- ... e outros */
+  ```
+- Estrutura: `Templates/{nome}`
+- Modais consolidados em: `Templates/modals`
+
+#### 3. **Refatoração do Sistema de CSS** 🎨
+- ✅ Função `includeSistemaCSS()` → comentada
+- ✅ Nova função `includeCSS()` em [Sever/config.js](Sever/config.js#L160)
+- **Estrutura Modular:**
+  ```javascript
+  function includeCSS() {
+    return `
+      ${include('CSS/variables-css')}
+      ${include('CSS/layout-css')}
+      ${include('CSS/buttons-css')}
+      ${include('CSS/forms-css')}
+      ${include('CSS/tables-css')}
+      ${include('CSS/modals-css')}
+      ${include('CSS/components-css')}
+      ${include('CSS/tickets-css')}
+      ${include('CSS/animations-css')}
+      ${include('CSS/responsive-css')}
+      ${include('CSS/themes-css')}
+    `;
+  }
+  ```
+- Benefícios:
+  - ✅ Seleção dinâmica de estilos
+  - ✅ CSS carregado inline (múltiplos includes → template strings)
+  - ✅ Facilita adição de novos módulos CSS
+
+#### 4. **Refatoração do Sistema de JavaScript** ⚙️
+- ✅ Função `includeSistemaJS()` → comentada
+- ✅ Nova função `includeJS()` em [Sever/config.js](Sever/config.js#L244)
+- **Estrutura com Ordem Crítica de Carregamento:**
+  ```javascript
+  function includeJS() {
+    return `
+      <!-- NÚCLEO (Fundação) -->
+      <script>${include('JS/state-js')}</script>
+      <script>${include('JS/storage-js')}</script>
+
+      <!-- UTILIDADES -->
+      <script>${include('JS/utils-js')}</script>
+      <script>${include('JS/ui-js')}</script>
+
+      <!-- AUTENTICAÇÃO & NAVEGAÇÃO -->
+      <script>${include('JS/auth-js')}</script>
+      <script>${include('JS/navigation-js')}</script>
+      
+      <!-- FEATURES (Dados) -->
+      <script>${include('JS/search-js')}</script>
+      <script>${include('JS/table-js')}</script>
+      <script>${include('JS/dashboard-js')}</script>
+      
+      <!-- GESTÃO DE ENTIDADES -->
+      <script>${include('JS/users-js')}</script>
+      <script>${include('JS/profile-js')}</script>
+      <script>${include('JS/tickets-js')}</script>
+      
+      <!-- SISTEMA -->
+      <script>${include('JS/settings-js')}</script>
+      <script>${include('JS/help-js')}</script>
+      <script>${include('JS/init-js')}</script>
+      <script>${include('JS/bugs-js')}</script>
+    `;
+  }
+  ```
+- **Ordem de Dependências (NÃO ALTERAR):**
+  1. state-js (Estado global - SEMPRE PRIMEIRO)
+  2. storage-js (Persistência de dados)
+  3. utils-js, ui-js (Utilidades gerais)
+  4. auth-js, navigation-js (Autenticação)
+  5. search-js, table-js, dashboard-js (Features)
+  6. users-js, profile-js, tickets-js (Gestão)
+  7. settings-js, help-js, init-js (Sistema)
+  8. bugs-js (Tratamento de erros - SEMPRE ÚLTIMO)
+
+### 🔧 Correções de Bugs
+
+#### Bug: Erros de Aspas em includeJS()
+- **Problema**: Linhas com `'<script>` causavam erro de syntax
+- **Solução**: Removidas aspas incorretas, mantidas em template string
+- **Arquivos afetados**: [Sever/config.js](Sever/config.js#L244)
+
+#### Bug: Espaço Incorreto em CSS
+- **Problema**: `'CSS/buttons-css '` (com espaço extra)
+- **Solução**: Normalizado para `'CSS/buttons-css'`
+- **Impacto**: Preventia carregamento correto do CSS
+
+### 📊 Comparação de Versões
+
+| Aspecto | v2.0 | v2.1.0 |
+|---------|------|--------|
+| Render Template | global.html | index.html ✅ |
+| Sistema CSS | @import em arquivo | Template modular ✅ |
+| Sistema JS | array com src | Template modular ✅ |
+| Formatação | Inconsistente | Padronizada ✅ |
+| Manutenibilidade | Média | Alta ✅ |
+
+## 📋 Próximas Tarefas
+
+- [ ] Testes de carregamento de CSS (verificar orden)
+- [ ] Testes de carregamento de JS (verificar dependências)
+- [ ] Validação de tokens de autenticação
+- [ ] Documentar possíveis erros de console
+
+## 🚀 Como Utilizar
+
+### Adicionar novo CSS
+```javascript
+// Em includeCSS():
+${include('CSS/novo-modulo-css')}
+```
+
+### Adicionar novo JS
+```javascript
+// Em includeJS():
+// ATENÇÃO: Respeitar ordem de dependências!
+<script>${include('JS/novo-modulo-js')}</script>
+```
+
+## ⚠️ Notas Importantes
+
+1. **A ORDEM DO JAVASCRIPT IMPORTA** - Não alterar sem validar dependências
+2. **Template Strings** - Usar backticks (`) para includes
+3. **Compatibilidade** - Manter backward compatibility com versão anterior
+4. **Testes** - Sempre testar no console após mudanças
+
+## 🔍 Erros Conhecidos
+
+### Token Errors no Console
+- **Status**: 🔴 A investigar
+- **Descrição**: Possíveis erros de token durante carregamento
+- **Próximo Passo**: Executar `clasp push` após habilitar Apps Script API
+
+---
+
+**Versão**: 2.1.0  
+**Data**: Fevereiro 6, 2026  
+**Autor**: Sistema CTRC Analyzer  
+**Status**: ⏳ Testes em andamento

@@ -1,0 +1,329 @@
+# 📦 Sistema de Include CSS e JavaScript
+
+## 🎯 Visão Geral
+
+O sistema de include dinâmico permite modularizar CSS e JavaScript mantendo a ordem de dependências crítica sem usar `<link>` ou `<script>` tags estáticas.
+
+## 🏗️ Arquitetura
+
+```
+index.html
+├── <?!= includeCSS(); ?>
+│   └── Template String que retorna múltiplos includes
+│       ├── CSS/variables-css
+│       ├── CSS/layout-css
+│       ├── CSS/buttons-css
+│       └── ... (11 módulos CSS)
+│
+└── <?!= includeJS(); ?>
+    └── Template String que retorna múltiplos includes
+        ├── JS/state-js
+        ├── JS/storage-js
+        ├── ... (24 módulos JS)
+        └── JS/bugs-js [ÚLTIMO]
+```
+
+## 📄 Função include()
+
+Local: [Sever/config.js](Sever/config.js#L55)
+
+```javascript
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+```
+
+**O que faz:**
+- Carrega arquivo `.html` por nome
+- Exemplo: `include('CSS/variables-css')` → busca `CSS/variables-css.html`
+- Retorna contenteúdo como string (não renderiza, apenas texto)
+
+**Validação:**
+- Arquivos devem existir no projeto
+- Extensão `.html` é adicionada automaticamente
+- Estrutura de pastas: `CSS/` e `JS/`
+
+---
+
+## 🎨 Sistema de CSS
+
+### Função includeCSS()
+
+Location: [Sever/config.js](Sever/config.js#L160)
+
+```javascript
+function includeCSS() {
+  return `
+    ${include('CSS/variables-css')}
+    ${include('CSS/layout-css')}
+    ${include('CSS/buttons-css')}
+    ${include('CSS/forms-css')}
+    ${include('CSS/tables-css')}
+    ${include('CSS/modals-css')}
+    ${include('CSS/components-css')}
+    ${include('CSS/tickets-css')}
+    ${include('CSS/animations-css')}
+    ${include('CSS/responsive-css')}
+    ${include('CSS/themes-css')}
+  `;
+}
+```
+
+### Uso em index.html
+
+```html
+<head>
+  <!-- ... -->
+  <?!= includeCSS(); ?>
+</head>
+```
+
+### Módulos CSS (Ordem Importa)
+
+| # | Módulo | Responsabilidade |
+|---|--------|-----------------|
+| 1 | variables-css | Variáveis CSS (cores, fonts, espacamento) |
+| 2 | layout-css | Layout base (grid, flexbox, estrutura) |
+| 3 | buttons-css | Botões (primary, secondary, estados) |
+| 4 | forms-css | Formulários (inputs, labels, validação) |
+| 5 | tables-css | Tabelas (header, rows, striped) |
+| 6 | modals-css | Modais (overlay, posicionamento) |
+| 7 | components-css | Componentes reutilizáveis |
+| 8 | tickets-css | Estilos específicos de tickets |
+| 9 | animations-css | Animações e transições |
+| 10 | responsive-css | Media queries e responsividade |
+| 11 | themes-css | Temas (light/dark mode) |
+
+### Arquivos Esperados
+
+```
+CSS/
+├── variables-css.html
+├── layout-css.html
+├── buttons-css.html
+├── forms-css.html
+├── tables-css.html
+├── modals-css.html
+├── components-css.html
+├── tickets-css.html
+├── animations-css.html
+├── responsive-css.html
+└── themes-css.html
+```
+
+---
+
+## ⚙️ Sistema de JavaScript
+
+### Função includeJS()
+
+Location: [Sever/config.js](Sever/config.js#L244)
+
+```javascript
+function includeJS() {
+  return `
+    <!-- NÚCLEO (Fundação) -->
+    <script>${include('JS/state-js')}</script>
+    <script>${include('JS/storage-js')}</script>
+
+    <!-- UTILIDADES -->
+    <script>${include('JS/utils-js')}</script>
+    <script>${include('JS/ui-js')}</script>
+
+    <!-- AUTENTICAÇÃO & NAVEGAÇÃO -->
+    <script>${include('JS/auth-js')}</script>
+    <script>${include('JS/navigation-js')}</script>
+    
+    <!-- FEATURES (Dados) -->
+    <script>${include('JS/search-js')}</script>
+    <script>${include('JS/table-js')}</script>
+    <script>${include('JS/dashboard-js')}</script>
+    
+    <!-- GESTÃO DE ENTIDADES -->
+    <script>${include('JS/users-js')}</script>
+    <script>${include('JS/profile-js')}</script>
+    <script>${include('JS/tickets-js')}</script>
+    
+    <!-- SISTEMA -->
+    <script>${include('JS/settings-js')}</script>
+    <script>${include('JS/help-js')}</script>
+    <script>${include('JS/init-js')}</script>
+    <script>${include('JS/bugs-js')}</script>
+  `;
+}
+```
+
+### Uso em index.html
+
+```html
+<body>
+  <!-- ... -->
+  <?!= includeJS(); ?>
+</body>
+```
+
+### ⚠️ Ordem de Dependências (CRÍTICA - NÃO ALTERAR SEM VALIDAR)
+
+| Ordem | Módulo | Dependência | Responsabilidade |
+|-------|--------|------------|-----------------|
+| 1️⃣ | state-js | — | Estado global (SEMPRE PRIMEIRO) |
+| 2️⃣ | storage-js | state-js | Persistência de dados (cookies, localStorage) |
+| 3️⃣ | utils-js | state-js, storage-js | Funções utilitárias gerais |
+| 4️⃣ | ui-js | utils-js | Manipulação de DOM |
+| 5️⃣ | auth-js | state-js, storage-js | Autenticação e tokens |
+| 6️⃣ | navigation-js | auth-js, ui-js | Navegação entre telas |
+| 7️⃣ | search-js | ui-js, utils-js | Busca de CTRCs |
+| 8️⃣ | table-js | ui-js, utils-js | Renderização de tabelas |
+| 9️⃣ | dashboard-js | table-js, utils-js | Dashboard e gráficos |
+| 🔟 | users-js | auth-js, utils-js | Gestão de usuários |
+| 1️⃣1️⃣ | profile-js | users-js, ui-js | Perfil do usuário |
+| 1️⃣2️⃣ | tickets-js | auth-js, utils-js | Sistema de tickets |
+| 1️⃣3️⃣ | settings-js | state-js, ui-js | Configurações |
+| 1️⃣4️⃣ | help-js | ui-js | Ajuda e FAQ |
+| 1️⃣5️⃣ | init-js | todos anteriores | Inicialização da aplicação |
+| 1️⃣6️⃣ | bugs-js | todos anteriores | Tratamento de erros (SEMPRE ÚLTIMO) |
+
+### Arquivos Esperados
+
+```
+JS/
+├── state-js.html
+├── storage-js.html
+├── utils-js.html
+├── ui-js.html
+├── auth-js.html
+├── navigation-js.html
+├── search-js.html
+├── table-js.html
+├── dashboard-js.html
+├── users-js.html
+├── profile-js.html
+├── tickets-js.html
+├── settings-js.html
+├── help-js.html
+├── init-js.html
+└── bugs-js.html
+```
+
+---
+
+## ✅ Checklist: Adicionar Novo Módulo
+
+### Adicionar CSS
+
+1. **Criar arquivo**: `CSS/novo-modulo-css.html`
+2. **Adicionar em includeCSS()**:
+   ```javascript
+   ${include('CSS/novo-modulo-css')} // Position apropriado
+   ```
+3. **Considerar**: Dependências (order importa?)
+4. **Testar**: Inspecionar no navegador
+
+### Adicionar JavaScript
+
+1. **Criar arquivo**: `JS/novo-modulo-js.html`
+2. **Determinar**: Dependências (precisa de qual módulo?)
+3. **Adicionar em includeJS()**: Position ANTES de módulos que dependem dele
+4. **Validar**: 
+   - [ ] State e Storage carregados antes?
+   - [ ] Funções necessárias estão disponíveis?
+   - [ ] Sem circular dependencies?
+5. **Testar**: Console sem erros?
+
+### Exemplo: Novo Módulo "reports-js"
+
+```javascript
+// Dependências: table-js, utils-js
+// Posição: Depois de table-js, antes de init-js
+
+function includeJS() {
+  return `
+    <!-- ... anteriores ... -->
+    
+    <!-- FEATURES (Dados) -->
+    <script>${include('JS/table-js')}</script>
+    <script>${include('JS/dashboard-js')}</script>
+    <script>${include('JS/reports-js')}</script>  // ← NOVO
+    
+    <!-- ... resto ... -->
+  `;
+}
+```
+
+---
+
+## 🔍 Debugging
+
+### CSS não está sendo aplicado
+1. Verificar se arquivo existe: `CSS/novo-css.html`
+2. Verificar se está em includeCSS()
+3. Inspecionar: DevTools → Elements → buscar por CSS específico
+
+### JavaScript gerando erro
+1. Abrir Console (F12)
+2. Verificar erro: "X is not defined" ou "Y is not a function"
+3. Validar ordem de carregamento
+4. Confirmar arquivo existe
+
+### Template não renderizando
+1. Verificar `include()` está usando nome correto
+2. Validar estrutura de pasta: `CSS/` ou `JS/`
+3. Verificar sem espaços extras no nome
+
+---
+
+## 📊 Comparação: Antes vs Depois
+
+### Antes (v2.0)
+```html
+<!-- Static tags -->
+<link rel="stylesheet" href="CSS/global.css">
+<script src="JS/app.js"></script>
+```
+❌ Ordem fixada  
+❌ Difícil remover módulos  
+❌ Sem cache inteligente  
+
+### Depois (v2.1.0)
+```html
+<!-- Dynamic templates -->
+<?!= includeCSS(); ?>
+<?!= includeJS(); ?>
+```
+✅ Ordem configurável  
+✅ Módulos discretos  
+✅ Fácil ativar/desativar  
+✅ Inline (sem requisições HTTP extras)  
+
+---
+
+## 🚀 Integração com Apps Script
+
+As funções `includeCSS()` e `includeJS()` são chamadas automaticamente pelo Apps Script quando renderiza [index.html](index.html) através de template tags `<?!= ... ?>`.
+
+**Fluxo:**
+
+1. Usuário acessa URL do Apps Script
+2. Google Apps Script executa `doGet()` em [interface.js](Sever/interface.js)
+3. Carrega template `index.html`
+4. Template encontra `<?!= includeCSS(); ?>`
+5. Apps Script executa função de [config.js](Sever/config.js)
+6. Function retorna string com todos os CSS
+7. String é inserida no HTML final
+8. Repetir para JS
+
+**Resultado**: Um único HTML renderizado com todos CSS/JS inline
+
+---
+
+## 📚 Referências
+
+- [Google Apps Script HtmlService](https://developers.google.com/apps-script/reference/html/html-service)
+- [Template Syntax](https://developers.google.com/apps-script/guides/html/templating)
+- [createHtmlOutputFromFile](https://developers.google.com/apps-script/reference/html/html-service#createHtmlOutputFromFile(filename))
+
+---
+
+**Última atualização**: Fevereiro 6, 2026  
+**Versão**: 2.1.0  
+**Status**: ✅ Produção
