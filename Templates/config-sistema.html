@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== CONFIGURA​ÇÕES - SISTEMA ====================== -->
+<section id="telaConfigSistema" class="tela-interna">
+  <div class="page-header">
+    <h2><i class="material-icons">palette</i> Configurações do Sistema</h2>
+  </div>
+
+  <div class="config-container">
+    <div class="config-card">
+      <h3><i class="material-icons">palette</i> Aparência</h3>
+      <div class="config-option">
+        <label>Tema</label>
+        <select class="form-select" id="configTema" onchange="alterarTema(this.value)">
+          <option value="claro">Claro</option>
+          <option value="escuro">Escuro</option>
+          <option value="auto">Automático</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="config-card">
+      <h3><i class="material-icons">notifications</i> Notificações</h3>
+      <div class="config-option">
+        <label>
+          <input type="checkbox" id="configNotifNovasEntregas" checked /> Ativar notificações de novas entregas
+        </label>
+      </div>
+      <div class="config-option">
+        <label>
+          <input type="checkbox" id="configNotifAtrasos" checked /> Alertas de atraso na entrega
+        </label>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>state Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== ESTADO GLOBAL ========================== */
+/**
+ * Estado Global - Gerenciador de Estado da Aplicação
+ * 
+ * Mantém o estado centralizado de toda a aplicação, incluindo:
+ * - Dados de tabelas (originais e filtrados)
+ * - Paginação
+ * - Usuário autenticado
+ * - Cache do dashboard
+ * - Objetos Chart para gráficos
+ * 
+ * IMPORTANTE: Este é o módulo fundamental - importar SEMPRE primeiro!
+ */
+
+const Estado = {
+  // ========== DADOS DE TABELAS ==========
+  dadosOriginais: [],      // Dados completos como recebidos do servidor
+  dadosFiltrados: [],      // Dados após aplicar filtros
+  
+  // ========== PAGINAÇÃO ==========
+  paginaAtual: 1,          // Página atual sendo exibida
+  linhasPorPagina: 10,     // Quantas linhas mostrar por página
+  
+  // ========== GRÁFICOS ==========
+  chart: null,             // Instância do Chart.js para gráfico de status
+  chartParceiro: null,     // Instância do Chart.js para gráfico de parceiros
+  
+  // ========== USUÁRIO ==========
+  usuarioAtual: null,      // Login do usuário autenticado
+  isAdmin: false,          // Indica se é administrador
+  senhaTemporaria: false,  // Indica se a senha ainda é temporária
+  
+  // ========== CACHE ==========
+  dashboardCache: null,    // Cache dos dados do dashboard
+  cacheExpiracao: 5 * 60 * 1000,  // 5 minutos em ms
+  
+  // ========== EDIÇÃO ==========
+  registroEditando: null   // Registro sendo editado no modal
+};
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== DASHBOARD ====================== -->
+<section id="telaDashboard" class="tela-interna ativa">
+  <div class="page-header">
+    <h2><i class="material-icons">dashboard</i> Dashboard</h2>
+    <button class="btn-refresh" onclick="forcarAtualizacaoDashboard()" title="Atualizar dados">
+      <i class="material-icons">refresh</i>
+    </button>
+  </div>
+
+  <!-- Cards de Status -->
+  <div class="dashboard-cards">
+    <div class="card-status status-transito">
+      <div class="card-icon">
+        <i class="material-icons">local_shipping</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Em Trânsito</span>
+        <span class="card-value" id="cardTransito">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-parceiro">
+      <div class="card-icon">
+        <i class="material-icons">store</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Parceiro</span>
+        <span class="card-value" id="cardParceiro">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-rota">
+      <div class="card-icon">
+        <i class="material-icons">directions</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Rota de Entrega</span>
+        <span class="card-value" id="cardRota">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-aguardando">
+      <div class="card-icon">
+        <i class="material-icons">schedule</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Aguardando Cliente</span>
+        <span class="card-value" id="cardAguardando">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-entregue">
+      <div class="card-icon">
+        <i class="material-icons">check_circle</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Entregue</span>
+        <span class="card-value" id="cardEntregue">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-devolucao">
+      <div class="card-icon">
+        <i class="material-icons">assignment_return</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Devolução</span>
+        <span class="card-value" id="cardDevolucao">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-conferencia">
+      <div class="card-icon">
+        <i class="material-icons">fact_check</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Conferência</span>
+        <span class="card-value" id="cardConferencia">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-nao-atende">
+      <div class="card-icon">
+        <i class="material-icons">block</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Não Atende Rota</span>
+        <span class="card-value" id="cardNaoAtende">0</span>
+      </div>
+    </div>
+
+    <div class="card-status status-decisao">
+      <div class="card-icon">
+        <i class="material-icons">help_outline</i>
+      </div>
+      <div class="card-info">
+        <span class="card-label">Aguardando Decisão</span>
+        <span class="card-value" id="cardDecisao">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="dashboard-charts">
+    <div class="chart-card">
+      <h3>Distribuição por Status</h3>
+      <canvas id="chartStatus" height="100"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>Top 15 Parceiros (Pendentes)</h3>
+      <canvas id="chartParceiro" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Métricas de Tempo -->
+  <div class="dashboard-metrics">
+    <div class="metric-card">
+      <h3><i class="material-icons">timer</i> Tempo Médio de Entrega</h3>
+      <div class="metric-content">
+        <div class="metric-item">
+          <span class="metric-label">Emissão → Chegada Parceiro:</span>
+          <span class="metric-value" id="tempoEmissaoParceiro">-</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Parceiro → Hoje (Pendentes):</span>
+          <span class="metric-value" id="tempoParceiroHoje">-</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-label">Parceiro → Entrega:</span>
+          <span class="metric-value" id="tempoParceiroEntrega">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <h3><i class="material-icons">place</i> Top 15 Parceiros (Pendentes)</h3>
+      <div id="entregasPorLocal" class="location-list">
+        <!-- Será preenchido dinamicamente -->
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

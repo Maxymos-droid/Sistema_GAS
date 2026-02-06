@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>utils Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== UTILIDADES (LOADING, TOAST) ========================== */
+/**
+ * Módulo de Utilidades - Componentes UI Comuns
+ * 
+ * Responsabilidades:
+ * - Loading overlay (mostrar/ocultar)
+ * - Toast notifications (sucesso, erro, aviso, info)
+ * 
+ * Objetos:
+ * - Loading - Controla o overlay de carregamento
+ * 
+ * Funções:
+ * - mostrarToast(mensagem, tipo) - Mostra notificação temporária
+ */
+
+// ========== LOADING OVERLAY ==========
+const Loading = {
+  /**
+   * Mostra o overlay de carregamento
+   * @param {string} texto - Mensagem a exibir (padrão: "Carregando...")
+   */
+  show(texto = "Carregando...") {
+    const el = document.getElementById("loading-overlay");
+    const textEl = el?.querySelector('.loading-text');
+    if (el) {
+      el.setAttribute('aria-hidden', 'false');
+      if (textEl) textEl.textContent = texto;
+    }
+  },
+  
+  /**
+   * Oculta o overlay de carregamento
+   */
+  hide() {
+    const el = document.getElementById("loading-overlay");
+    if (el) el.setAttribute('aria-hidden', 'true');
+  }
+};
+
+// ========== TOAST NOTIFICATIONS ==========
+/**
+ * Mostra uma notificação temporária (toast)
+ * @param {string} mensagem - Texto da mensagem
+ * @param {string} tipo - Tipo: 'success', 'error', 'warning', 'info' (padrão: 'info')
+ */
+function mostrarToast(mensagem, tipo = "info") {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const icons = {
+    success: "check_circle",
+    error: "error",
+    warning: "warning",
+    info: "info"
+  };
+
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${tipo}`;
+  toast.innerHTML = `<i class="material-icons">${icons[tipo] || "info"}</i> <span>${mensagem}</span>`;
+  container.appendChild(toast);
+
+  // Remove após 4 segundos
+  setTimeout(() => toast.remove(), 4000);
+}
+
+
+</script>
+</body>
+</html>

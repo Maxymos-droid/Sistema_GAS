@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>search Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== PESQUISA E FILTROS ========================== */
+/**
+ * Módulo de Pesquisa - Filtros e Busca de Dados
+ * 
+ * Responsabilidades:
+ * - Carregar dados da tabela
+ * - Pesquisar com filtros de status
+ * - Gerenciar multi-select de status
+ * - Atualizar contagem de registros
+ * 
+ * RPC Calls:
+ * - getPortalData()
+ * 
+ * State Updates:
+ * - Estado.dadosOriginais
+ * - Estado.dadosFiltrados
+ * - Estado.paginaAtual
+ */
+
+// ========== MULTI-SELECT STATUS ==========
+/**
+ * Abre/fecha o dropdown de filtro por status
+ */
+function toggleDropdown() {
+  const multiSelect = document.querySelector(".multi-select");
+  if (multiSelect) {
+    multiSelect.classList.toggle("open");
+  }
+}
+
+/**
+ * Retorna array de status selecionados no filtro
+ * @returns {string[]} - Array com status selecionados
+ */
+function getStatusSelecionados() {
+  return Array.from(document.querySelectorAll(".filtroStatus:checked"))
+    .map(cb => cb.value);
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener("click", (e) => {
+  const container = document.querySelector(".multi-select");
+  if (container && !container.contains(e.target)) {
+    container.classList.remove("open");
+  }
+});
+
+// ========== CARREGAR DADOS ==========
+/**
+ * Carrega todos os dados da tabela do servidor
+ * Aplica filtro de status automaticamente
+ * RPC: getPortalData()
+ */
+function carregarTabela() {
+  Loading.show("Carregando dados...");
+  
+  google.script.run
+    .withSuccessHandler((dados) => {
+      Loading.hide();
+      
+      if (!Array.isArray(dados) || !dados.length) {
+        Estado.dadosOriginais = [];
+        Estado.dadosFiltrados = [];
+        renderizarTabelaPaginada();
+        return;
+      }
+      
+      Estado.dadosOriginais = dados;
+      Estado.paginaAtual = 1;
+      
+      // Aplica filtro de status após um pequeno delay
+      setTimeout(() => {
+        const cabecalho = dados[0];
+        const idxStatus = cabecalho.indexOf("STATUS");
+        const statusSelecionados = getStatusSelecionados();
+        
+        const linhasFiltradas = dados.slice(1).filter((linha) => {
+          const status = idxStatus >= 0 ? linha[idxStatus] : "";
+          return statusSelecionados.length === 0 || statusSelecionados.includes(status);
+        });
+        
+        Estado.dadosFiltrados = [cabecalho, ...linhasFiltradas];
+        renderizarTabelaPaginada();
+        atualizarContagemTabela();
+        mostrarToast(`${linhasFiltrados.length} registro(s) encontrado(s).`, "info");
+      }, 50);
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao carregar dados.", "error");
+    })
+    .getPortalData();
+}
+
+// ========== PESQUISAR ==========
+/**
+ * Pesquisa dados combinando termo de busca e filtro de status
+ * RPC: getPortalData()
+ */
+function pesquisar() {
+  const termo = (document.getElementById("termo")?.value || "").toLowerCase().trim();
+  const statusSelecionados = getStatusSelecionados();
+  
+  Loading.show("Pesquisando...");
+  
+  google.script.run
+    .withSuccessHandler((dados) => {
+      Loading.hide();
+      
+      if (!Array.isArray(dados) || !dados.length) {
+        Estado.dadosFiltrados = [];
+        renderizarTabelaPaginada();
+        atualizarContagemTabela();
+        return;
+      }
+      
+      const cabecalho = dados[0];
+      const idxStatus = cabecalho.indexOf("STATUS");
+      
+      // Filtra por termo de busca e status
+      const linhas = dados.slice(1).filter((linha) => {
+        const textoLinha = linha.join(" ").toLowerCase();
+        const status = idxStatus >= 0 ? linha[idxStatus] : "";
+        const byTermo = !termo || textoLinha.includes(termo);
+        const byStatus = !statusSelecionados.length || statusSelecionados.includes(status);
+        return byTermo && byStatus;
+      });
+      
+      Estado.dadosOriginais = dados;
+      Estado.dadosFiltrados = [cabecalho, ...linhas];
+      Estado.paginaAtual = 1;
+      
+      renderizarTabelaPaginada();
+      atualizarContagemTabela();
+      mostrarToast(`${linhas.length} registro(s) encontrado(s).`, "info");
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao pesquisar.", "error");
+    })
+    .getPortalData();
+}
+
+/**
+ * Atualiza o contador de registros encontrados
+ */
+function atualizarContagemTabela() {
+  const el = document.getElementById('contagemTabela');
+  if (el) {
+    const total = Estado.dadosFiltrados.length > 0 ? Estado.dadosFiltrados.length - 1 : 0;
+    el.textContent = total;
+  }
+}
+
+// ========== EVENT LISTENERS ==========
+// Permite busca com Enter no campo de pesquisa
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && e.target && e.target.id === "termo") {
+    pesquisar();
+  }
+});
+
+
+</script>
+</body>
+</html>

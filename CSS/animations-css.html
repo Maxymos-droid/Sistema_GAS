@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>animations Styles</title>
+</head>
+<body>
+<style>
+
+/* ====================== ANIMAÇÕES E TRANSIÇÕES ====================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ====================== TOAST/NOTIFICAÇÕES ====================== */
+#toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid;
+  animation: toastSlideIn 0.3s ease, toastSlideOut 0.3s ease 3.5s forwards;
+}
+
+.toast i {
+  font-size: 24px;
+}
+
+.toast-success {
+  border-left-color: var(--success-color);
+}
+
+.toast-success i {
+  color: var(--success-color);
+}
+
+.toast-error {
+  border-left-color: var(--danger-color);
+}
+
+.toast-error i {
+  color: var(--danger-color);
+}
+
+.toast-warning {
+  border-left-color: var(--warning-color);
+}
+
+.toast-warning i {
+  color: var(--warning-color);
+}
+
+.toast-info {
+  border-left-color: var(--info-color);
+}
+
+.toast-info i {
+  color: var(--info-color);
+}
+
+/* ====================== LOADING ====================== */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#loading-overlay[aria-hidden="false"] {
+  display: flex;
+}
+
+.spinner-border {
+  width: 60px;
+  height: 60px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ====================== BADGES E NOTIFICAÇÕES ====================== */
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  border: 2px solid white;
+}
+
+.header-notif {
+  position: relative;
+  display: inline-flex;
+}
+
+/* ====================== AJUDA ====================== */
+.ajuda-container {
+  max-width: 1000px;
+}
+
+.ajuda-busca {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.ajuda-busca input {
+  flex: 1;
+}
+
+.ajuda-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.ajuda-categoria {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ajuda-categoria h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.ajuda-categoria h3 i {
+  color: var(--primary-color);
+}
+
+.ajuda-categoria ul {
+  list-style: none;
+  padding: 0;
+}
+
+.ajuda-categoria li {
+  margin-bottom: 10px;
+}
+
+.ajuda-categoria a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 14px;
+  transition: var(--transition-fast);
+}
+
+.ajuda-categoria a:hover {
+  text-decoration: underline;
+  color: var(--primary-dark);
+}
+
+/* ====================== SCROLLBAR TEMA ESCURO ====================== */
+body.tema-escuro ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body.tema-escuro ::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+
+body.tema-escuro ::-webkit-scrollbar-thumb {
+  background: #2d3748;
+  border-radius: 5px;
+}
+
+body.tema-escuro ::-webkit-scrollbar-thumb:hover {
+  background: #4a5568;
+}
+
+/* ====================== TRANSIÇÕES GERAIS ====================== */
+/* Todas as transições usam variáveis CSS definidas em variables.css */
+/* --transition-fast: 0.2s ease;  */
+/* --transition-normal: 0.3s ease; */
+
+
+</style>
+</body>
+</html>

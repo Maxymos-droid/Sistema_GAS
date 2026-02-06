@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== TELA DE LOGIN ====================== -->
+<div id="telaLogin" class="tela ativa login-card">
+  <div class="login-logo">
+    <i class="material-icons">local_shipping</i>
+    <h2>CTRC Analyzer</h2>
+  </div>
+  
+  <h3 class="login-title">
+    <i class="material-icons">lock_open</i> Entrar no Sistema
+  </h3>
+  
+  <div class="login-field">
+    <i class="material-icons">person</i>
+    <input type="text" id="usuarioLogin" placeholder="Usuário" autocomplete="username" />
+  </div>
+  
+  <div class="login-field">
+    <i class="material-icons">vpn_key</i>
+    <input type="password" id="senhaLogin" placeholder="Senha" autocomplete="current-password" />
+    <span class="material-icons toggle-senha" onclick="toggleSenha('senhaLogin', this)">visibility</span>
+  </div>
+  
+  <div class="login-options">
+    <div class="login-remember">
+      <input type="checkbox" id="lembrarMe" />
+      <label for="lembrarMe">Lembrar-me</label>
+    </div>
+    <a href="#" class="link-esqueci-senha" onclick="mostrarEsqueciSenha(); return false;">
+      Esqueci minha senha
+    </a>
+  </div>
+  
+  <button onclick="fazerLogin()" class="btn-login">Entrar</button>
+  <p id="msgLogin" class="msg-login"></p>
+</div>
+
+<!-- ====================== TELA ESQUECI SENHA ====================== -->
+<div id="telaEsqueciSenha" class="tela login-card">
+  <h3 class="login-title">
+    <i class="material-icons">help_outline</i> Recuperar Senha
+  </h3>
+  <p class="login-subtitle">Informe seu email cadastrado. Uma senha temporária será enviada.</p>
+  
+  <div class="login-field">
+    <i class="material-icons">email</i>
+    <input type="email" id="emailRecuperacao" placeholder="Email cadastrado" />
+  </div>
+  
+  <button onclick="enviarRecuperacao()" class="btn-login">Enviar Email</button>
+  <button onclick="voltarLogin()" class="btn-login-secondary">Voltar ao Login</button>
+  <p id="msgRecuperacao" class="msg-login"></p>
+</div>
+
+<!-- ====================== TELA ALTERAR SENHA (Forçada) ====================== -->
+<div id="telaAlterarSenha" class="tela login-card">
+  <h3 class="login-title">
+    <i class="material-icons">lock</i> Alterar Senha
+  </h3>
+  <p class="login-subtitle">Por segurança, altere sua senha.</p>
+  
+  <div class="login-field">
+    <i class="material-icons">person</i>
+    <input type="text" id="usuarioAlterar" placeholder="Usuário" readonly />
+  </div>
+  
+  <div class="login-field">
+    <i class="material-icons">vpn_key</i>
+    <input type="password" id="senhaAtual" placeholder="Senha Atual" />
+    <span class="material-icons toggle-senha" onclick="toggleSenha('senhaAtual', this)">visibility</span>
+  </div>
+  
+  <div class="login-field">
+    <i class="material-icons">lock</i>
+    <input type="password" id="novaSenha" placeholder="Nova Senha" />
+    <span class="material-icons toggle-senha" onclick="toggleSenha('novaSenha', this)">visibility</span>
+  </div>
+  
+  <div class="login-field">
+    <i class="material-icons">lock</i>
+    <input type="password" id="confirmarSenha" placeholder="Confirmar Nova Senha" />
+    <span class="material-icons toggle-senha" onclick="toggleSenha('confirmarSenha', this)">visibility</span>
+  </div>
+  
+  <button type="button" class="btn-login" onclick="alterarSenha()">Alterar Senha</button>
+  <p id="msgAlterar" class="msg-login"></p>
+</div>
+
+</body>
+</html>

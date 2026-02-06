@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== DASHBOARD ========================== */
+/**
+ * Módulo de Dashboard - Métricas, Cards e Gráficos
+ * 
+ * Responsabilidades:
+ * - Carregar dados de métricas do servidor
+ * - Gerenciar cache de dashboard
+ * - Renderizar cards de status
+ * - Criar gráficos (Chart.js)
+ * - Exibir métricas de tempo
+ * - Listar parceiros/locais com entregas
+ * 
+ * RPC Calls:
+ * - getPortalDataComMetricas()
+ * - contarTicketsPendentes(usuario, isAdmin)
+ * 
+ * State Updates:
+ * - Estado.chart (Chart.js instance)
+ * - Estado.chartParceiro (Chart.js instance)
+ * - Estado.dashboardCache
+ */
+
+/**
+ * Carrega dados do dashboard do servidor e aplica
+ */
+function carregarDashboard() {
+  Loading.show("Carregando dashboard...");
+  
+  google.script.run
+    .withSuccessHandler((dados) => {
+      aplicarDadosDashboard(dados);
+      
+      // Salva no cache
+      Cookies.set('dashboardCache', {
+        dados: dados,
+        timestamp: new Date().getTime()
+      });
+      
+      Loading.hide();
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao carregar dashboard.", "error");
+      atualizarDashboardVazio();
+    })
+    .getPortalDataComMetricas();
+}
+
+/**
+ * Força atualização do dashboard (limpa cache)
+ */
+function forcarAtualizacaoDashboard() {
+  Cookies.delete('dashboardCache');
+  carregarDashboard();
+}
+
+/**
+ * Aplica os dados do dashboard na interface
+ * @param {Object} dados - Dados do dashboard com status, gráficos e métricas
+ */
+function aplicarDadosDashboard(dados) {
+  if (!dados || !dados.status) {
+    atualizarDashboardVazio();
+    return;
+  }
+  
+  // Atualiza cards de status
+  atualizarCardsStatus(dados.status);
+  
+  // Atualiza gráficos
+  atualizarGraficos(dados.status, dados.porParceiro || {});
+  
+  // Atualiza métricas de tempo
+  atualizarMetricas(dados.metricas || {}, dados.porParceiro || {});
+}
+
+/**
+ * Atualiza dashboard com dados vazios (quando há erro)
+ */
+function atualizarDashboardVazio() {
+  atualizarCardsStatus({
+    transito: 0,
+    parceiro: 0,
+    rota: 0,
+    aguardando: 0,
+    entregue: 0,
+    devolucao: 0,
+    conferencia: 0,
+    naoAtende: 0,
+    decisao: 0
+  });
+  atualizarGraficos({}, {});
+  atualizarMetricas({}, {});
+}
+
+// ========== CARDS DE STATUS ==========
+/**
+ * Atualiza os cards de contagem por status
+ * @param {Object} contadores - Objeto com contadores por status
+ */
+function atualizarCardsStatus(contadores) {
+  const cards = {
+    cardTransito: contadores.transito || 0,
+    cardParceiro: contadores.parceiro || 0,
+    cardRota: contadores.rota || 0,
+    cardAguardando: contadores.aguardando || 0,
+    cardEntregue: contadores.entregue || 0,
+    cardDevolucao: contadores.devolucao || 0,
+    cardConferencia: contadores.conferencia || 0,
+    cardNaoAtende: contadores.naoAtende || 0,
+    cardDecisao: contadores.decisao || 0
+  };
+  
+  Object.entries(cards).forEach(([id, valor]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = valor;
+  });
+}
+
+// ========== GRÁFICOS ==========
+/**
+ * Renderiza os gráficos do dashboard
+ * - Gráfico de barras: status
+ * - Gráfico de rosca: top 15 parceiros
+ * 
+ * @param {Object} contadores - Contadores por status
+ * @param {Object} porParceiro - Contadores por parceiro
+ */
+function atualizarGraficos(contadores, porParceiro) {
+  // Gráfico de Status (Barras)
+  const ctxStatus = document.getElementById("chartStatus");
+  if (ctxStatus) {
+    if (Estado.chart) Estado.chart.destroy();
+    
+    Estado.chart = new Chart(ctxStatus, {
+      type: "bar",
+      data: {
+        labels: ["Trânsito", "Parceiro", "Rota", "Aguardando", "Entregue", "Devolução", "Conferência", "Não Atende", "Decisão"],
+        datasets: [{
+          label: "Quantidade",
+          data: [
+            contadores.transito || 0,
+            contadores.parceiro || 0,
+            contadores.rota || 0,
+            contadores.aguardando || 0,
+            contadores.entregue || 0,
+            contadores.devolucao || 0,
+            contadores.conferencia || 0,
+            contadores.naoAtende || 0,
+            contadores.decisao || 0
+          ],
+          backgroundColor: [
+            '#007bff', '#6f42c1', '#fd7e14', '#ffc107', '#28a745',
+            '#dc3545', '#17a2b8', '#6c757d', '#e83e8c'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+  
+  // Gráfico de Parceiros (TOP 15 pendentes) - Rosca
+  const ctxParceiro = document.getElementById("chartParceiro");
+  if (ctxParceiro) {
+    if (Estado.chartParceiro) Estado.chartParceiro.destroy();
+    
+    const top15 = Object.entries(porParceiro)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15);
+    
+    Estado.chartParceiro = new Chart(ctxParceiro, {
+      type: "doughnut",
+      data: {
+        labels: top15.map(([nome]) => nome),
+        datasets: [{
+          data: top15.map(([, qtd]) => qtd),
+          backgroundColor: [
+            '#007bff', '#6f42c1', '#fd7e14', '#ffc107', '#28a745',
+            '#dc3545', '#17a2b8', '#6c757d', '#e83e8c', '#20c997',
+            '#17c1e8', '#e91e63', '#9c27b0', '#3f51b5', '#00bcd4'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              boxWidth: 12,
+              font: { size: 11 }
+            }
+          }
+        }
+      }
+    });
+  }
+}
+
+// ========== MÉTRICAS ==========
+/**
+ * Atualiza as métricas de tempo e lista de parceiros
+ * Remove "Não informado" e filtra dados vazios
+ * 
+ * @param {Object} metricas - Tempos médios (emissaoParceiro, parceiroHoje, parceiroEntrega)
+ * @param {Object} porParceiro - Contadores por parceiro/local
+ */
+function atualizarMetricas(metricas, porParceiro) {
+  // Tempos médios em dias
+  const tempoEmissaoParceiro = document.getElementById("tempoEmissaoParceiro");
+  const tempoParceiroHoje = document.getElementById("tempoParceiroHoje");
+  const tempoParceiroEntrega = document.getElementById("tempoParceiroEntrega");
+  
+  if (tempoEmissaoParceiro) {
+    tempoEmissaoParceiro.textContent = metricas && metricas.emissaoParceiro 
+      ? `${metricas.emissaoParceiro.toFixed(1)} dias`
+      : "0 dias";
+  }
+  
+  if (tempoParceiroHoje) {
+    tempoParceiroHoje.textContent = metricas && metricas.parceiroHoje 
+      ? `${metricas.parceiroHoje.toFixed(1)} dias`
+      : "0 dias";
+  }
+  
+  if (tempoParceiroEntrega) {
+    tempoParceiroEntrega.textContent = metricas && metricas.parceiroEntrega 
+      ? `${metricas.parceiroEntrega.toFixed(1)} dias`
+      : "0 dias";
+  }
+  
+  // Lista de locais/parceiros (TOP 15 pendentes)
+  // Remove entradas com nome vazio ou "Não informado"
+  const container = document.getElementById("entregasPorLocal");
+  if (container) {
+    container.innerHTML = "";
+    
+    const ordenados = Object.entries(porParceiro)
+      .filter(([nome]) => nome && nome.trim() !== "" && nome.trim().toUpperCase() !== "NÃO INFORMADO")
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15);
+    
+    if (ordenados.length === 0) {
+      container.innerHTML = "<p style='text-align:center; color:#6c757d; padding:20px;'>Nenhum parceiro com entregas pendentes</p>";
+    } else {
+      ordenados.forEach(([nome, qtd]) => {
+        const div = document.createElement("div");
+        div.className = "location-item";
+        div.innerHTML = `
+          <span class="location-name">${nome}</span>
+          <span class="location-count">${qtd}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+  }
+}
+
+// ========== NOTIFICAÇÕES ==========
+/**
+ * Atualiza contador de notificações (tickets pendentes)
+ */
+function atualizarContadorNotificacoes() {
+  google.script.run
+    .withSuccessHandler((count) => {
+      const badge = document.getElementById('notifBadge');
+      if (badge && count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline';
+      } else if (badge) {
+        badge.style.display = 'none';
+      }
+    })
+    .withFailureHandler(() => {
+      // Silencioso
+    })
+    .contarTicketsPendentes(Estado.usuarioAtual, Estado.isAdmin);
+}
+
+// Atualiza notificações a cada 30 segundos (se logado)
+setInterval(() => {
+  if (Estado.usuarioAtual) {
+    atualizarContadorNotificacoes();
+  }
+}, 30000);
+
+
+</script>
+</body>
+</html>

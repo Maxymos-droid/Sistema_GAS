@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tables Styles</title>
+</head>
+<body>
+<style>
+
+/* ====================== TABELAS ====================== */
+.search-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.table-wrapper {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.table-header {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, var(--success-color) 0%, #1e7e34 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-count {
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.table-count strong {
+  font-weight: 700;
+}
+
+.table-container {
+  overflow-x: auto;
+  padding: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+}
+
+thead tr {
+  background: var(--bg-body);
+}
+
+th {
+  padding: 14px 12px !important;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+th > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+td {
+  padding: 12px !important;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+tbody tr {
+  transition: var(--transition-fast);
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.btn-action {
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-action:hover {
+  transform: scale(1.1);
+}
+
+.btn-editar {
+  font-size: 18px;
+  color: var(--primary-color);
+  cursor: pointer;
+  margin-left: 8px;
+  transition: var(--transition-fast);
+}
+
+.btn-editar:hover {
+  color: var(--primary-dark);
+  transform: scale(1.1);
+}
+
+/* Table filter icon */
+.table-container th i.filter-icon {
+  font-size: 16px;
+  color: #6c757d;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.table-container th i.filter-icon:hover {
+  color: var(--primary-color);
+  transform: scale(1.2);
+}
+
+/* ====================== PAGINAÇÃO ====================== */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.page-size-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  font-size: 14px;
+}
+
+.paginacao-list {
+  list-style: none;
+  display: flex;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+}
+
+.paginacao-list li {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: white;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.paginacao-list li:hover:not([disabled]) {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.paginacao-list li.ativo {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.paginacao-list li[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ====================== USUÁRIOS TABELA ====================== */
+.users-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+#tabelaUsuarios {
+  margin-bottom: 0;
+}
+
+#tabelaUsuarios th {
+  background: var(--bg-body);
+}
+
+.user-status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.user-status-badge.ativo {
+  background: rgba(40, 167, 69, 0.1);
+  color: var(--success-color);
+}
+
+.user-status-badge.inativo {
+  background: rgba(108, 117, 125, 0.1);
+  color: var(--secondary-color);
+}
+
+.user-actions {
+  display: flex;
+  gap: 8px;
+}
+
+
+</style>
+</body>
+</html>

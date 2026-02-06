@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tickets Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== SISTEMA DE TICKETS ========================== */
+/**
+ * Módulo de Tickets - Ocorrências e Sugestões
+ * 
+ * Responsabilidades:
+ * - Listar tickets do usuário/admin
+ * - Criar novo ticket (ocorrência/sugestão)
+ * - Visualizar detalhes do ticket
+ * - Adicionar comentários
+ * - Alterar status (somente admin)
+ * - Filtrar por status
+ * 
+ * RPC Calls:
+ * - listarTickets(usuario, isAdmin)
+ * - criarTicket(ticket)
+ * - atualizarStatusTicket(id, novoStatus)
+ * - listarComentariosTicket(ticketId)
+ * - adicionarComentarioTicket(ticketId, comentario)
+ * 
+ * Estados de Ticket:
+ * - aberto, andamento, resolvido, fechado
+ * 
+ * Prioridades:
+ * - alta, media, baixa
+ * 
+ * Tipos:
+ * - ocorrencia, sugestao
+ */
+
+/**
+ * Carrega tickets do usuário/admin
+ * RPC: listarTickets(usuario, isAdmin)
+ * 
+ * @param {string} filtro - Filtro por status ('todos', 'aberto', etc)
+ */
+function carregarTickets(filtro = 'todos', q = '') {
+  Loading.show("Carregando tickets...");
+
+  google.script.run
+    .withSuccessHandler((tickets) => {
+      Loading.hide();
+      renderizarTickets(tickets, filtro, q);
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao carregar tickets.", "error");
+    })
+    .listarTickets(Estado.usuarioAtual, Estado.isAdmin);
+}
+
+/**
+ * Renderiza a lista de tickets com filtro
+ * @param {Array} tickets - Array de tickets
+ * @param {string} filtro - Filtro por status
+ */
+function renderizarTickets(tickets, filtro, q = '') {
+  const tbody = document.getElementById('corpoTabelaTickets');
+  if (!tbody) {
+    console.error('Tbody de tickets não encontrado');
+    return;
+  }
+
+  tbody.innerHTML = "";
+
+  // Valida array de tickets
+  if (!Array.isArray(tickets)) {
+    tbody.innerHTML = "<tr><td colspan=8 style='text-align:center; padding:24px; color:#6c757d;'>Erro ao carregar tickets</td></tr>";
+    return;
+  }
+
+  // Aplica filtro por status
+  let ticketsFiltrados = tickets;
+  if (filtro && filtro !== 'todos') {
+    ticketsFiltrados = tickets.filter(t => t.status === filtro);
+  }
+
+  // Aplica pesquisa de texto quando fornecida
+  const termo = (q || '').toString().trim().toLowerCase();
+  if (termo) {
+    ticketsFiltrados = ticketsFiltrados.filter(t => {
+      const combinado = `${t.assunto || ''} ${t.descricao || ''} ${t.usuario || ''} ${t.id || ''}`.toLowerCase();
+      return combinado.indexOf(termo) !== -1;
+    });
+  }
+
+  // Atualiza contagem
+  const contagem = document.getElementById('contagemTickets');
+  if (contagem) contagem.textContent = ticketsFiltrados.length;
+
+  if (ticketsFiltrados.length === 0) {
+    tbody.innerHTML = "<tr><td colspan=8 style='text-align:center; padding:40px; color:#6c757d;'>Nenhum ticket encontrado</td></tr>";
+    return;
+  }
+
+  // Renderiza linhas da tabela
+  ticketsFiltrados.forEach(ticket => {
+    const tr = document.createElement('tr');
+    tr.onclick = () => abrirDetalheTicket(ticket);
+
+    const tdId = document.createElement('td');
+    tdId.textContent = ticket.id;
+
+    const tdTipo = document.createElement('td');
+    tdTipo.textContent = ticket.tipo === 'ocorrencia' ? 'Ocorrência' : 'Sugestão';
+
+    const tdAssunto = document.createElement('td');
+    tdAssunto.textContent = ticket.assunto;
+
+    const tdPrioridade = document.createElement('td');
+    tdPrioridade.textContent = ticket.prioridade === 'alta' ? 'Alta' : ticket.prioridade === 'media' ? 'Média' : 'Baixa';
+    tdPrioridade.className = `ticket-prioridade ${ticket.prioridade}`;
+
+    const tdUsuario = document.createElement('td');
+    tdUsuario.textContent = ticket.usuario;
+
+    const tdStatus = document.createElement('td');
+    tdStatus.innerHTML = `<span class="ticket-status ${ticket.status}">${formatarStatus(ticket.status)}</span>`;
+
+    const tdData = document.createElement('td');
+    tdData.textContent = formatarDataISO(ticket.data);
+
+    const tdAcoes = document.createElement('td');
+    tdAcoes.className = 'table-actions';
+
+    // Ações (botões) - evitar propagation para não abrir modal
+    if (Estado.isAdmin) {
+      const btnAnd = document.createElement('button');
+      btnAnd.className = 'btn-sm btn-primary';
+      btnAnd.textContent = 'Andamento';
+      btnAnd.onclick = (e) => { e.stopPropagation(); alterarStatusTicket(ticket.id, 'andamento'); };
+
+      const btnRes = document.createElement('button');
+      btnRes.className = 'btn-sm btn-success';
+      btnRes.textContent = 'Resolver';
+      btnRes.onclick = (e) => { e.stopPropagation(); alterarStatusTicket(ticket.id, 'resolvido'); };
+
+      const btnFec = document.createElement('button');
+      btnFec.className = 'btn-sm btn-secondary';
+      btnFec.textContent = 'Fechar';
+      btnFec.onclick = (e) => { e.stopPropagation(); alterarStatusTicket(ticket.id, 'fechado'); };
+
+      tdAcoes.appendChild(btnAnd);
+      tdAcoes.appendChild(btnRes);
+      tdAcoes.appendChild(btnFec);
+    } else {
+      const btnView = document.createElement('button');
+      btnView.className = 'btn-sm btn-primary';
+      btnView.textContent = 'Ver';
+      btnView.onclick = (e) => { e.stopPropagation(); abrirDetalheTicket(ticket); };
+      tdAcoes.appendChild(btnView);
+    }
+
+    tr.appendChild(tdId);
+    tr.appendChild(tdTipo);
+    tr.appendChild(tdAssunto);
+    tr.appendChild(tdPrioridade);
+    tr.appendChild(tdUsuario);
+    tr.appendChild(tdStatus);
+    tr.appendChild(tdData);
+    tr.appendChild(tdAcoes);
+
+    tbody.appendChild(tr);
+  });
+}
+
+/**
+ * Formata o nome do status para exibição
+ * @param {string} status - Status interno
+ * @returns {string} - Status formatado
+ */
+function formatarStatus(status) {
+  const map = {
+    'aberto': 'Aberto',
+    'andamento': 'Em Andamento',
+    'resolvido': 'Resolvido',
+    'fechado': 'Fechado'
+  };
+  return map[status] || status;
+}
+
+/**
+ * Filtra tickets por status e recarrega
+ * @param {string} filtro - Status para filtrar
+ */
+function filtrarTickets(filtro) {
+  // Atualiza botões de filtro
+  document.querySelectorAll('.btn-filtro').forEach(btn => {
+    btn.classList.remove('active');
+    if (btn.dataset.filtro === filtro) {
+      btn.classList.add('active');
+    }
+  });
+  // Preserva termo de busca atual
+  const termo = document.getElementById('ticketsSearch') ? document.getElementById('ticketsSearch').value : '';
+  carregarTickets(filtro, termo);
+}
+
+/**
+ * Executa busca por termo combinada com filtro ativo
+ */
+function buscarTickets() {
+  const termo = document.getElementById('ticketsSearch') ? document.getElementById('ticketsSearch').value : '';
+  const ativo = document.querySelector('.btn-filtro.active');
+  const filtro = ativo ? ativo.dataset.filtro : 'todos';
+  carregarTickets(filtro, termo);
+}
+
+/**
+ * Abre modal para criar novo ticket
+ */
+function abrirModalNovoTicket() {
+  document.getElementById('formTicket').reset();
+  document.getElementById('modalNovoTicket').classList.add('show');
+}
+
+/**
+ * Fecha modal de novo ticket
+ */
+function fecharModalTicket() {
+  document.getElementById('modalNovoTicket').classList.remove('show');
+}
+
+/**
+ * Salva novo ticket
+ * RPC: criarTicket(ticket)
+ */
+function salvarTicket() {
+  const tipo = document.getElementById('ticketTipo').value;
+  const assunto = document.getElementById('ticketAssunto').value.trim();
+  const descricao = document.getElementById('ticketDescricao').value.trim();
+  const prioridade = document.getElementById('ticketPrioridade').value;
+  
+  if (!assunto || !descricao) {
+    mostrarToast("Preencha todos os campos obrigatórios.", "warning");
+    return;
+  }
+  
+  const ticket = {
+    tipo,
+    assunto,
+    descricao,
+    prioridade,
+    usuario: Estado.usuarioAtual,
+    status: 'aberto',
+    data: new Date().toISOString()
+  };
+  
+  Loading.show("Enviando ticket...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      
+      if (res.status === "ok") {
+        mostrarToast("Ticket criado com sucesso!", "success");
+        fecharModalTicket();
+        carregarTickets();  // Recarrega lista
+      } else {
+        mostrarToast(res.msg || "Erro ao criar ticket.", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao criar ticket.", "error");
+    })
+    .criarTicket(ticket);
+}
+
+/**
+ * Abre modal com detalhes completos do ticket
+ * @param {Object} ticket - Dados do ticket
+ */
+function abrirDetalheTicket(ticket) {
+  const modal = document.createElement('div');
+  modal.className = 'modal show';
+  modal.innerHTML = `
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3><i class="material-icons">support</i> Ticket #${ticket.id}</h3>
+        <span class="modal-close" onclick="this.closest('.modal').remove()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="ticket-detail">
+          <div class="ticket-info-grid">
+            <div><strong>Tipo:</strong> ${ticket.tipo === 'ocorrencia' ? 'Ocorrência' : 'Sugestão'}</div>
+            <div><strong>Status:</strong> <span class="ticket-status ${ticket.status}">${formatarStatus(ticket.status)}</span></div>
+            <div><strong>Prioridade:</strong> ${ticket.prioridade}</div>
+            <div><strong>Usuário:</strong> ${ticket.usuario}</div>
+            <div><strong>Data:</strong> ${formatarDataISO(ticket.data)}</div>
+          </div>
+          
+          <div class="ticket-content">
+            <h4>${ticket.assunto}</h4>
+            <p>${ticket.descricao}</p>
+          </div>
+          
+          <div class="ticket-historico">
+            <h4><i class="material-icons">history</i> Histórico de Conversas</h4>
+            <div id="historicoTicket${ticket.id}">
+              <p style="text-align: center; color: #6c757d; padding: 20px;">Carregando histórico...</p>
+            </div>
+          </div>
+          
+          <div class="ticket-resposta">
+            <h4>Adicionar Comentário</h4>
+            <textarea id="comentarioTicket" class="form-control" rows="3" placeholder="Digite seu comentário..."></textarea>
+            <button class="btn-primary" style="margin-top: 10px;" onclick="adicionarComentario('${ticket.id}')">
+              <i class="material-icons">send</i> Enviar
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="this.closest('.modal').remove()">Fechar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // Carrega histórico de comentários
+  carregarHistoricoTicket(ticket.id);
+}
+
+/**
+ * Carrega histórico de comentários do ticket
+ * RPC: listarComentariosTicket(ticketId)
+ * 
+ * @param {string} ticketId - ID do ticket
+ */
+function carregarHistoricoTicket(ticketId) {
+  Loading.show("Carregando histórico...");
+  
+  google.script.run
+    .withSuccessHandler((comentarios) => {
+      Loading.hide();
+      const container = document.getElementById(`historicoTicket${ticketId}`);
+      if (!container) return;
+      
+      if (!comentarios || comentarios.length === 0) {
+        container.innerHTML = "<p style='text-align: center; color: #6c757d;'>Nenhum comentário ainda</p>";
+        return;
+      }
+      
+      // Renderiza comentários
+      container.innerHTML = comentarios.map(c => `
+        <div class="comentario-item">
+          <div class="comentario-header">
+            <strong>${c.usuario}</strong>
+            <span>${formatarDataISO(c.data)}</span>
+          </div>
+          <p>${c.texto}</p>
+        </div>
+      `).join('');
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      const container = document.getElementById(`historicoTicket${ticketId}`);
+      if (container) {
+        container.innerHTML = "<p style='text-align: center; color: #dc3545;'>Erro ao carregar histórico</p>";
+      }
+    })
+    .listarComentariosTicket(ticketId);
+}
+
+/**
+ * Adiciona comentário a um ticket
+ * RPC: adicionarComentarioTicket(ticketId, comentario)
+ * 
+ * @param {string} ticketId - ID do ticket
+ */
+function adicionarComentario(ticketId) {
+  const textarea = document.getElementById('comentarioTicket');
+  const texto = textarea?.value.trim();
+  
+  if (!texto) {
+    mostrarToast("Digite um comentário", "warning");
+    return;
+  }
+  
+  Loading.show("Enviando comentário...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      if (res.status === "ok") {
+        mostrarToast("Comentário adicionado!", "success");
+        textarea.value = "";
+        carregarHistoricoTicket(ticketId);  // Recarrega histórico
+      } else {
+        mostrarToast(res.msg || "Erro ao adicionar comentário", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao adicionar comentário", "error");
+    })
+    .adicionarComentarioTicket(ticketId, {
+      usuario: Estado.usuarioAtual,
+      texto: texto,
+      data: new Date().toISOString()
+    });
+}
+
+/**
+ * Altera status de um ticket (somente admin)
+ * RPC: atualizarStatusTicket(id, novoStatus)
+ * 
+ * @param {string} id - ID do ticket
+ * @param {string} novoStatus - Novo status
+ */
+function alterarStatusTicket(id, novoStatus) {
+  Loading.show("Atualizando status...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      
+      if (res.status === "ok") {
+        mostrarToast("Status atualizado!", "success");
+        carregarTickets();  // Recarrega lista
+      } else {
+        mostrarToast(res.msg || "Erro ao atualizar status.", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao atualizar status.", "error");
+    })
+    .atualizarStatusTicket(id, novoStatus);
+}
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bugs Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== CORREÇÕES DE BUGS ========================== */
+/**
+ * Módulo de Correções de Bugs - Patches e Hotfixes
+ * 
+ * Este módulo contém correções de bugs encontrados durante testes
+ * e melhorias de UX que não se encaixam em outros módulos
+ * 
+ * Bugs Corrigidos:
+ * 1. BUG #1: Aside - Não recarregar se já estiver ativo
+ * 2. BUG #2: Contador de notificações usando badges
+ * 4. BUG #4: Atualizar métricas corretamente
+ * 5. BUG #5: Filtrar "Não informado" da lista de parceiros
+ * 6. BUG #6 e #7: Renderizar tabela com largura fixa e ícones de filtro
+ * 7. BUG #7: Função de filtro por coluna (placeholder)
+ * 9. BUG #9: Botão Adicionar Novo funcionando
+ * 10. BUG #10: Tickets - Verificar elemento antes de acessar
+ * 11. BUG #11: Modal de detalhes do ticket com histórico
+ */
+
+// ========== BUG #6 e #7: Renderizar tabela com ícones de filtro ==========
+/**
+ * Função de filtro por coluna (placeholder)
+ * TODO: Implementar filtro específico por coluna
+ * 
+ * @param {string} nomeColuna - Nome da coluna a filtrar
+ */
+function filtrarColuna(nomeColuna) {
+  mostrarToast(`Filtro da coluna "${nomeColuna}" em desenvolvimento`, "info");
+  // TODO: Implementar filtro específico por coluna
+}
+
+// ========== MELHORIAS DE UX ==========
+// Esses são patches que melhoram a experiência do usuário
+
+/**
+ * Melhoria: Evitar recarregar dados se já está na mesma tela
+ * Implementado já em navigation.js mostrarTela()
+ * Referência BUG #1
+ */
+
+/**
+ * Melhoria: Validação robusta de elementos antes de manipular DOM
+ * Implementado em todos os módulos com checagem de null/undefined
+ * Referência BUG #10
+ */
+
+/**
+ * Melhoria: Tratamento de datas em diferentes formatos
+ * Implementado em table.js com formatarDataISO()
+ * Evita erros ao receber datas de diferentes fontes
+ */
+
+/**
+ * Melhoria: Tratamento de erros em operações RPC
+ * Todos os google.script.run usam withFailureHandler()
+ * Garante que usuário recebe feedback mesmo em erro
+ */
+
+
+</script>
+</body>
+</html>

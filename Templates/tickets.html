@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== TICKETS ====================== -->
+<section id="telaTickets" class="tela-interna">
+  <div class="page-header">
+    <h2><i class="material-icons">support</i> Tickets</h2>
+    <button class="btn-primary" onclick="abrirModalNovoTicket()">
+      <i class="material-icons">add</i> Novo Ticket
+    </button>
+  </div>
+
+  <div class="tickets-container">
+    <!-- Controles de tickets (filtros e busca) -->
+    <div class="tickets-controls">
+      <div class="tickets-filtros">
+        <button class="btn-filtro active" data-filtro="todos" onclick="filtrarTickets('todos')">Todos</button>
+        <button class="btn-filtro" data-filtro="aberto" onclick="filtrarTickets('aberto')">Abertos</button>
+        <button class="btn-filtro" data-filtro="andamento" onclick="filtrarTickets('andamento')">Em Andamento</button>
+        <button class="btn-filtro" data-filtro="resolvido" onclick="filtrarTickets('resolvido')">Resolvidos</button>
+        <button class="btn-filtro" data-filtro="fechado" onclick="filtrarTickets('fechado')">Fechados</button>
+      </div>
+
+      <div class="tickets-search">
+        <input id="ticketsSearch" type="search" placeholder="Buscar por assunto, usuário ou ID" aria-label="Buscar tickets" />
+        <button class="btn-secondary" onclick="buscarTickets()"><i class="material-icons">search</i> Buscar</button>
+      </div>
+    </div>
+
+    <!-- Tabela Profissional de Tickets -->
+    <div class="table-wrapper">
+      <div class="table-header">
+        <span>TICKETS DO SISTEMA</span>
+        <span class="table-count">Total: <strong id="contagemTickets">0</strong> registros</span>
+      </div>
+      <div class="table-container">
+        <table id="tabelaTickets" class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Assunto</th>
+              <th>Prioridade</th>
+              <th>Usuário</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabelaTickets">
+            <!-- Tickets serão carregados aqui via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

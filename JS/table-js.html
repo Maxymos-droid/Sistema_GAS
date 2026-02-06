@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>table Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== TABELAS E PAGINAÇÃO ========================== */
+/**
+ * Módulo de Tabelas - Renderização e Controle de Paginação
+ * 
+ * Responsabilidades:
+ * - Render da tabela com paginação
+ * - Controles de navegação (anterior, próximo, páginas)
+ * - Detalhes expandíveis de registros
+ * - Edição de registros em modal
+ * - Exportação para Excel
+ * - Formatação de datas
+ * 
+ * Funções principais:
+ * - renderizarTabelaPaginada() - Renderiza com paginação
+ * - atualizarPaginacao() - Muda linhas por página
+ * - exportarParaExcel() - Exporta dados filtrados
+ */
+
+// ========== UTILIDADES ==========
+/**
+ * Formata data ISO para DD/MM/YYYY
+ * @param {string} dataStr - Data em formato ISO ou string
+ * @returns {string} - Data formatada
+ */
+function formatarDataISO(dataStr) {
+  if (!dataStr) return "";
+  const data = new Date(dataStr);
+  if (isNaN(data)) return dataStr;
+  
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const ano = data.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
+/**
+ * Converte data de yyyy-mm-dd para DD/MM/YYYY
+ * @param {string} dataStr - Data em formato de input
+ * @returns {string} - Data formatada
+ */
+function converterDataParaInput(dataStr) {
+  if (!dataStr) return "";
+  // Converte dd/mm/yyyy para yyyy-mm-dd
+  const partes = dataStr.split('/');
+  if (partes.length === 3) {
+    return `${partes[2]}-${partes[1]}-${partes[0]}`;
+  }
+  return dataStr;
+}
+
+// ========== PAGINAÇÃO ==========
+/**
+ * Atualiza o número de linhas por página
+ * Carrega nova página e rerendera
+ */
+function atualizarPaginacao() {
+  const sel = document.getElementById("linhasPorPagina");
+  Estado.linhasPorPagina = parseInt(sel?.value || "10", 10);
+  Estado.paginaAtual = 1;
+  renderizarTabelaPaginada();
+}
+
+/**
+ * Renderiza a tabela com paginação aplicada
+ * Calcula offset baseado em página e linhas por página
+ */
+function renderizarTabelaPaginada() {
+  const dados = Estado.dadosFiltrados;
+  const cabecalho = dados[0] || [];
+  const linhas = dados.length > 1 ? dados.slice(1) : [];
+  
+  const totalPaginas = Math.max(1, Math.ceil(linhas.length / Estado.linhasPorPagina));
+  if (Estado.paginaAtual > totalPaginas) Estado.paginaAtual = totalPaginas;
+  
+  const inicio = (Estado.paginaAtual - 1) * Estado.linhasPorPagina;
+  const fim = inicio + Estado.linhasPorPagina;
+  const linhasPagina = linhas.slice(inicio, fim);
+  
+  renderizarTabela([cabecalho, ...linhasPagina]);
+  renderizarControlesPaginacao(totalPaginas);
+}
+
+// ========== RENDERIZAÇÃO DA TABELA ==========
+/**
+ * Renderiza a tabela HTML com linhas e colunas
+ * @param {Array[]} dados - Array da primeira linha (cabeçalho) + linhas
+ */
+function renderizarTabela(dados) {
+  const tabela = document.getElementById("dadosTabela");
+  if (!tabela) return;
+  
+  const thead = tabela.querySelector("thead");
+  const tbody = tabela.querySelector("tbody");
+  
+  if (thead) thead.innerHTML = "";
+  if (tbody) tbody.innerHTML = "";
+  
+  if (!dados || !dados.length) {
+    if (tbody) tbody.innerHTML = "<tr><td colspan='100%' style='text-align:center; padding:40px;'>Nenhum dado encontrado</td></tr>";
+    return;
+  }
+  
+  const cabecalho = dados[0];
+  const colunasResumo = [
+    "ID", "DACTE", "CAVALO", "REMETENTE", "DESTINATARIO",
+    "UF/CIDADE DEST", "NOTA FISCAL", "ENTREGADOR", "STATUS"
+  ];
+  
+  // Larguras fixas para cada coluna
+  const larguras = {
+    "ID": "60px",
+    "DACTE": "100px",
+    "CAVALO": "100px",
+    "REMETENTE": "150px",
+    "DESTINATARIO": "150px",
+    "UF/CIDADE DEST": "120px",
+    "NOTA FISCAL": "120px",
+    "ENTREGADOR": "120px",
+    "STATUS": "150px"
+  };
+  
+  // Renderiza cabeçalho
+  if (thead) {
+    thead.innerHTML = `
+      <tr>
+        <th style="width: 80px; text-align: center;">Ações</th>
+        ${colunasResumo.map(c => `
+          <th style="width: ${larguras[c] || '120px'};">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              ${c}
+              <i class="material-icons" style="font-size: 16px; color: #6c757d; cursor: pointer;" 
+                 onclick="filtrarColuna('${c}')" title="Filtrar">filter_list</i>
+            </div>
+          </th>
+        `).join("")}
+      </tr>
+    `;
+  }
+  
+  // Renderiza linhas
+  for (let i = 1; i < dados.length; i++) {
+    const linha = dados[i];
+    const obj = {};
+    cabecalho.forEach((col, idx) => obj[col] = linha[idx]);
+    
+    const idxLinha = (Estado.paginaAtual - 1) * Estado.linhasPorPagina + (i - 1);
+    
+    const rowHTML = `
+      <tr ondblclick="abrirModalEdicao(${idxLinha})">
+        <td style="text-align: center; width: 80px;">
+          <i class="material-icons btn-action" onclick="toggleDetalhes(${idxLinha}); event.stopPropagation();" 
+             id="btn${idxLinha}" 
+             style="color:#28a745; cursor:pointer; font-size:20px;" 
+             title="Expandir">add_circle</i>
+          <i class="material-icons btn-action" onclick="abrirModalEdicao(${idxLinha}); event.stopPropagation();" 
+             style="color:#007bff; cursor:pointer; font-size:20px; margin-left:4px;" 
+             title="Editar">edit</i>
+        </td>
+        ${colunasResumo.map(c => {
+          let valor = obj[c] ?? "";
+          
+          // Formatação de datas
+          if (c.toUpperCase().includes("DATA")) {
+            valor = formatarDataISO(valor);
+          }
+          
+          const largura = larguras[c] || '120px';
+          
+          return `<td style="max-width: ${largura}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${valor}">${valor}</td>`;
+        }).join("")}
+      </tr>
+    `;
+    
+    // Renderiza linha de detalhes (expandível)
+    const colunasDetalhe = cabecalho.filter(c => !colunasResumo.includes(c));
+    
+    const detalheHTML = `
+      <tr id="detalhes${idxLinha}" style="display:none; background:#f8f9fa;">
+        <td colspan="${colunasResumo.length + 1}" style="padding:20px !important;">
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:12px;">
+            ${colunasDetalhe.map(c => {
+              let val = obj[c] ?? "";
+              if (c.toUpperCase().includes("DATA")) {
+                val = formatarDataISO(val);
+              }
+              return `<div><strong>${c}:</strong> ${val}</div>`;
+            }).join("")}
+          </div>
+        </td>
+      </tr>
+    `;
+    
+    if (tbody) tbody.insertAdjacentHTML("beforeend", rowHTML + detalheHTML);
+  }
+}
+
+/**
+ * Alterna visibilidade da linha de detalhes
+ * @param {number} idx - Índice da linha
+ */
+function toggleDetalhes(idx) {
+  const detalhe = document.getElementById(`detalhes${idx}`);
+  const btn = document.getElementById(`btn${idx}`);
+  
+  if (!detalhe || !btn) return;
+  
+  const visivel = detalhe.style.display === "table-row";
+  detalhe.style.display = visivel ? "none" : "table-row";
+  btn.textContent = visivel ? "add_circle" : "remove_circle";
+  btn.style.color = visivel ? "#28a745" : "#dc3545";
+  btn.title = visivel ? "Expandir" : "Recolher";
+}
+
+// ========== EDIÇÃO DE REGISTROS ==========
+/**
+ * Abre modal de edição de registro
+ * Preenche campos com dados atuais
+ * @param {number} idx - Índice da linha nos dados filtrados
+ */
+function abrirModalEdicao(idx) {
+  const linha = Estado.dadosFiltrados[idx + 1];
+  const cabecalho = Estado.dadosFiltrados[0];
+  
+  if (!linha || !cabecalho) return;
+  
+  Estado.registroEditando = { idx, linha, cabecalho };
+  
+  const modal = document.getElementById('modalEditarRegistro');
+  const corpo = document.getElementById('corpoModalRegistro');
+  
+  if (!modal || !corpo) return;
+  
+  // Gera formulário com os campos
+  let html = '<div class="form-edit-grid">';
+  
+  cabecalho.forEach((col, i) => {
+    const valor = linha[i] || "";
+    const isData = col.toUpperCase().includes("DATA");
+    const isObservacao = col.toUpperCase() === "OBSERVAÇÃO";
+    
+    html += `
+      <div class="form-group ${isObservacao ? 'full-width' : ''}">
+        <label>${col}</label>
+        ${isObservacao 
+          ? `<textarea class="form-control" id="campo_${i}" rows="3">${valor}</textarea>`
+          : `<input type="${isData ? 'date' : 'text'}" class="form-control" id="campo_${i}" value="${isData ? converterDataParaInput(valor) : valor}" />`
+        }
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  corpo.innerHTML = html;
+  modal.classList.add('show');
+}
+
+/**
+ * Fecha o modal de edição
+ */
+function fecharModalRegistro() {
+  document.getElementById('modalEditarRegistro').classList.remove('show');
+  Estado.registroEditando = null;
+}
+
+/**
+ * Salva as alterações do registro editado
+ */
+function salvarRegistro() {
+  if (!Estado.registroEditando) return;
+  
+  const { idx, cabecalho } = Estado.registroEditando;
+  const novosValores = [];
+  
+  cabecalho.forEach((col, i) => {
+    const campo = document.getElementById(`campo_${i}`);
+    if (campo) {
+      let valor = campo.value;
+      // Se for data, converte de volta
+      if (col.toUpperCase().includes("DATA") && valor) {
+        const partes = valor.split('-');
+        if (partes.length === 3) {
+          valor = `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+      }
+      novosValores.push(valor);
+    }
+  });
+  
+  // Atualiza no estado local
+  Estado.dadosFiltrados[idx + 1] = novosValores;
+  
+  // TODO: Salvar no backend via RPC
+  // google.script.run.salvarRegistro(idRegistro, novosValores);
+  
+  renderizarTabelaPaginada();
+  fecharModalRegistro();
+  mostrarToast("Registro atualizado com sucesso!", "success");
+}
+
+/**
+ * Abre modal para adicionar novo registro
+ */
+function abrirModalNovo() {
+  const modal = document.getElementById('modalEditarRegistro');
+  const titulo = document.getElementById('tituloModalRegistro');
+  const corpo = document.getElementById('corpoModalRegistro');
+  
+  if (!modal || !corpo) {
+    mostrarToast("Modal não encontrado", "error");
+    return;
+  }
+  
+  if (titulo) titulo.textContent = "Novo Registro";
+  
+  const cabecalho = Estado.dadosFiltrados[0] || [];
+  
+  if (cabecalho.length === 0) {
+    mostrarToast("Carregue os dados primeiro", "warning");
+    return;
+  }
+  
+  Estado.registroEditando = { idx: -1, linha: [], cabecalho };
+  
+  // Gera formulário vazio
+  let html = '<div class="form-edit-grid">';
+  
+  cabecalho.forEach((col, i) => {
+    const isData = col.toUpperCase().includes("DATA");
+    const isObservacao = col.toUpperCase() === "OBSERVAÇÃO";
+    
+    html += `
+      <div class="form-group ${isObservacao ? 'full-width' : ''}">
+        <label>${col}</label>
+        ${isObservacao 
+          ? `<textarea class="form-control" id="campo_${i}" rows="3"></textarea>`
+          : `<input type="${isData ? 'date' : 'text'}" class="form-control" id="campo_${i}" value="" />`
+        }
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  corpo.innerHTML = html;
+  modal.classList.add('show');
+}
+
+// ========== CONTROLES DE PAGINAÇÃO ==========
+/**
+ * Renderiza os controles de paginação (anterior, números, próximo)
+ * @param {number} totalPaginas - Total de páginas
+ */
+function renderizarControlesPaginacao(totalPaginas) {
+  const wrap = document.getElementById("paginacao");
+  if (!wrap) return;
+  
+  wrap.innerHTML = "";
+  const ul = document.createElement("ul");
+  ul.className = "paginacao-list";
+  
+  // Botão Anterior
+  const liPrev = document.createElement("li");
+  liPrev.innerHTML = `<i class="material-icons">arrow_back</i>`;
+  if (Estado.paginaAtual === 1) {
+    liPrev.setAttribute('disabled', 'true');
+  }
+  liPrev.onclick = () => {
+    if (Estado.paginaAtual > 1) {
+      Estado.paginaAtual--;
+      renderizarTabelaPaginada();
+    }
+  };
+  ul.appendChild(liPrev);
+  
+  // Números de página
+  const maxExibir = 7;
+  let inicio = Math.max(1, Estado.paginaAtual - Math.floor(maxExibir / 2));
+  let fim = Math.min(totalPaginas, inicio + maxExibir - 1);
+  
+  if (fim - inicio < maxExibir - 1) {
+    inicio = Math.max(1, fim - maxExibir + 1);
+  }
+  
+  for (let i = inicio; i <= fim; i++) {
+    const li = document.createElement("li");
+    li.textContent = i;
+    if (i === Estado.paginaAtual) li.classList.add("ativo");
+    li.onclick = () => {
+      Estado.paginaAtual = i;
+      renderizarTabelaPaginada();
+    };
+    ul.appendChild(li);
+  }
+  
+  // Botão Próximo
+  const liNext = document.createElement("li");
+  liNext.innerHTML = `<i class="material-icons">arrow_forward</i>`;
+  if (Estado.paginaAtual === totalPaginas) {
+    liNext.setAttribute('disabled', 'true');
+  }
+  liNext.onclick = () => {
+    if (Estado.paginaAtual < totalPaginas) {
+      Estado.paginaAtual++;
+      renderizarTabelaPaginada();
+    }
+  };
+  ul.appendChild(liNext);
+  
+  wrap.appendChild(ul);
+}
+
+// ========== EXPORTAÇÃO ==========
+/**
+ * Exporta os dados filtrados para arquivo Excel
+ * Requer ChartJS ou biblioteca similar de XLSX
+ */
+function exportarParaExcel() {
+  if (!window.XLSX) {
+    mostrarToast("Biblioteca de exportação não carregada", "error");
+    return;
+  }
+  
+  const dados = Estado.dadosFiltrados;
+  if (!dados || dados.length === 0) {
+    mostrarToast("Nenhum dado para exportar", "warning");
+    return;
+  }
+  
+  // Cria workbook
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  
+  XLSX.utils.book_append_sheet(wb, ws, "Entregas");
+  
+  // Gera arquivo
+  const dataAtual = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `entregas_${dataAtual}.xlsx`);
+  
+  mostrarToast("Arquivo exportado com sucesso!", "success");
+}
+
+// ========== FILTROS (PLACEHOLDER) ==========
+/**
+ * Função placeholder para filtro por coluna
+ * TODO: Implementar filtro específico por coluna
+ * @param {string} nomeColuna - Nome da coluna
+ */
+function filtrarColuna(nomeColuna) {
+  mostrarToast(`Filtro da coluna "${nomeColuna}" em desenvolvimento`, "info");
+}
+
+
+</script>
+</body>
+</html>

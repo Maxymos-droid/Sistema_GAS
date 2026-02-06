@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>storage Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== COOKIES (PERSISTÊNCIA) ========================== */
+/**
+ * Módulo de Cookies - Gerenciamento de Armazenamento Persistente
+ * 
+ * Responsabilidades:
+ * - Salvar/recuperar dados em cookies
+ * - Gerenciar expiração de cookies
+ * - Limpar todos os cookies (para logout)
+ * 
+ * Métodos:
+ * - set(nome, valor, dias) - Salva um cookie
+ * - get(nome) - Recupera um cookie
+ * - delete(nome) - Remove um cookie
+ * - limparTodos() - Remove todos os cookies
+ */
+
+const Cookies = {
+  /**
+   * Salva um valor em cookie
+   * @param {string} nome - Nome do cookie
+   * @param {any} valor - Valor a salvar (será JSON stringificado)
+   * @param {number} dias - Dias até expiração (padrão: 7)
+   */
+  set(nome, valor, dias = 7) {
+    try {
+      const data = new Date();
+      data.setTime(data.getTime() + (dias * 24 * 60 * 60 * 1000));
+      const expires = "expires=" + data.toUTCString();
+      document.cookie = nome + "=" + JSON.stringify(valor) + ";" + expires + ";path=/";
+    } catch(e) {
+      console.error('Erro ao salvar cookie:', e);
+    }
+  },
+  
+  /**
+   * Recupera um valor do cookie
+   * @param {string} nome - Nome do cookie
+   * @returns {any} - Valor armazenado ou null
+   */
+  get(nome) {
+    try {
+      const name = nome + "=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return JSON.parse(c.substring(name.length, c.length));
+        }
+      }
+      return null;
+    } catch(e) {
+      console.error('Erro ao ler cookie:', e);
+      return null;
+    }
+  },
+  
+  /**
+   * Deleta um cookie específico
+   * @param {string} nome - Nome do cookie
+   */
+  delete(nome) {
+    document.cookie = nome + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  },
+  
+  /**
+   * Limpa todos os cookies (usado no logout)
+   */
+  limparTodos() {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    }
+  }
+};
+
+
+</script>
+</body>
+</html>

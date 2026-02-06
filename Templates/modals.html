@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== MODAIS ====================== -->
+
+<!-- ====================== MODAL EDITAR REGISTRO ====================== -->
+<div id="modalEditarRegistro" class="modal">
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+      <h3><i class="material-icons">edit</i> <span id="tituloModalRegistro">Editar Registro</span></h3>
+      <span class="modal-close" onclick="fecharModalRegistro()">&times;</span>
+    </div>
+    <div class="modal-body" id="corpoModalRegistro">
+      <!-- Será preenchido dinamicamente com os campos do registro -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModalRegistro()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarRegistro()">
+        <i class="material-icons">save</i> Salvar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL NOVO USUÁRIO ====================== -->
+<div id="modalNovoUsuario" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="material-icons">person_add</i> <span id="tituloModalUsuario">Novo Usuário</span></h3>
+      <span class="modal-close" onclick="fecharModalUsuario()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="formUsuario">
+        <input type="hidden" id="usuarioId" />
+        
+        <div class="form-group">
+          <label>Nome Completo *</label>
+          <input type="text" id="usuarioNome" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label>Login *</label>
+          <input type="text" id="usuarioLogin" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="usuarioEmail" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label>Senha *</label>
+          <div class="input-with-icon">
+            <input type="password" id="usuarioSenha" class="form-control" required />
+            <span class="material-icons toggle-senha" onclick="toggleSenha('usuarioSenha', this)">visibility</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Perfil *</label>
+          <select id="usuarioPerfil" class="form-select" required>
+            <option value="user">Operador</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <select id="usuarioStatus" class="form-select">
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModalUsuario()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarUsuario()">
+        <i class="material-icons">save</i> Salvar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL NOVO TICKET ====================== -->
+<div id="modalNovoTicket" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="material-icons">add</i> Novo Ticket</h3>
+      <span class="modal-close" onclick="fecharModalTicket()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form id="formTicket">
+        <div class="form-group">
+          <label>Tipo *</label>
+          <select id="ticketTipo" class="form-select" required>
+            <option value="ocorrencia">Ocorrência</option>
+            <option value="sugestao">Sugestão</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Assunto *</label>
+          <input type="text" id="ticketAssunto" class="form-control" placeholder="Descreva brevemente" required />
+        </div>
+
+        <div class="form-group">
+          <label>Descrição *</label>
+          <textarea id="ticketDescricao" class="form-control" rows="5" placeholder="Descreva detalhadamente..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Prioridade</label>
+          <select id="ticketPrioridade" class="form-select">
+            <option value="baixa">Baixa</option>
+            <option value="media" selected>Média</option>
+            <option value="alta">Alta</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModalTicket()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarTicket()">
+        <i class="material-icons">send</i> Enviar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL LOGOUT ====================== -->
+<div id="modalLogout" class="modal">
+  <div class="modal-content modal-small">
+    <div class="modal-header">
+      <h3><i class="material-icons">exit_to_app</i> Confirmar Saída</h3>
+    </div>
+    <div class="modal-body">
+      <p style="text-align: center; font-size: 16px; margin: 20px 0;">
+        Deseja realmente sair do sistema?
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModalLogout()">Não</button>
+      <button class="btn-danger" onclick="confirmarSaida()">
+        <i class="material-icons">exit_to_app</i> Sim, Sair
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

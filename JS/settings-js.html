@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>settings Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== CONFIGURAÇÕES ========================== */
+/**
+ * Módulo de Configurações - Preferências do Sistema
+ * 
+ * Responsabilidades:
+ * - Alternância de tema (claro/escuro)
+ * - Alternância de notificações
+ * - Salvar preferências em localStorage
+ * 
+ * LocalStorage Keys:
+ * - tema: 'claro', 'escuro', 'automatico'
+ * - notificacoes: '1' ou '0'
+ */
+
+/**
+ * Alterna o tema da aplicação
+ * Salva preferência em localStorage
+ * 
+ * @param {string} tema - 'claro', 'escuro', ou 'automatico'
+ */
+function alterarTema(tema) {
+  // Salva preferência
+  localStorage.setItem('tema', tema);
+  
+  // Aplica tema
+  if (tema === 'escuro') {
+    document.body.classList.add('tema-escuro');
+  } else if (tema === 'claro') {
+    document.body.classList.remove('tema-escuro');
+  } else {
+    // Automático - detecta preferência do sistema
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('tema-escuro');
+    } else {
+      document.body.classList.remove('tema-escuro');
+    }
+  }
+  
+  mostrarToast("Tema atualizado!", "success");
+}
+
+/**
+ * Alterna notificações
+ * (Placeholder para implementação futura)
+ */
+function alternarNotificacoes() {
+  const status = localStorage.getItem('notificacoes') === '1' ? '0' : '1';
+  localStorage.setItem('notificacoes', status);
+  mostrarToast(status === '1' ? "Notificações ativadas" : "Notificações desativadas", "info");
+}
+
+
+</script>
+</body>
+</html>

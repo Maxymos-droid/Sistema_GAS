@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>navigation Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== NAVEGAÇÃO DE TELAS ========================== */
+/**
+ * Módulo de Navegação - Gerenciamento de Transições entre Telas
+ * 
+ * Responsabilidades:
+ * - Alternar telas (login, app, etc)
+ * - Mostrar/ocultar telas internas
+ * - Carregar dados ao mudar de tela
+ * - Gerenciar estado de menu ativo
+ * 
+ * Função principal:
+ * - mostrarTela(id) - Exibe uma tela e atualiza o menu
+ * - alternarTelaDeNivelSuperior(id) - Troca entre telas principais
+ * 
+ * Telas:
+ * - telaLogin, telaEsqueciSenha, telaAlterarSenha - Autenticação
+ * - app - Aplicação principal
+ *   - telaDashboard, telaPesquisa, telaTickets, telaConfigSistema, etc
+ */
+
+/**
+ * Alterna entre telas de nível superior (login vs app)
+ * @param {string} id - ID da tela a ativar
+ */
+function alternarTelaDeNivelSuperior(id) {
+  const telas = ["telaLogin", "telaEsqueciSenha", "telaAlterarSenha", "app"];
+  telas.forEach((telaId) => {
+    const tela = document.getElementById(telaId);
+    if (tela) tela.classList.remove("ativa");
+  });
+
+  const telaAtiva = document.getElementById(id);
+  if (telaAtiva) telaAtiva.classList.add("ativa");
+}
+
+/**
+ * Mostra uma tela interna e atualiza o menu
+ * Evita recarregar se já estiver na mesma tela
+ * @param {string} id - ID da tela a exibir
+ */
+function mostrarTela(id) {
+  const telaAtual = document.querySelector('.tela-interna.ativa');
+  const idAtual = telaAtual?.id;
+  
+  // Se já está na tela, não faz nada
+  if (idAtual === id) {
+    return;
+  }
+  
+  // Remove active de todos os itens do menu
+  document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
+  
+  // Remove ativa de todas as telas internas
+  document.querySelectorAll(".tela-interna").forEach(t => t.classList.remove("ativa"));
+  
+  // Ativa a tela selecionada
+  const tela = document.getElementById(id);
+  if (tela) tela.classList.add("ativa");
+  
+  // Ativa menu correspondente
+  const menuItem = document.querySelector(`.menu-item[data-tela="${id.replace('tela', '').toLowerCase()}"]`);
+  if (menuItem) menuItem.classList.add("active");
+  
+  // Fecha sidebar no mobile
+  fecharSidebarMobile();
+}
+
+/**
+ * Mostra a tela de perfil e carrega dados do usuário
+ */
+function mostrarTelaPerfil() {
+  mostrarTela("telaPerfil");
+  carregarDadosPerfil();
+}
+
+/**
+ * Mostra o dashboard, com suporte a cache
+ */
+function mostrarTelaDashboard() {
+  mostrarTela("telaDashboard");
+  
+  // Tenta carregar do cache primeiro
+  const cache = Cookies.get('dashboardCache');
+  const agora = new Date().getTime();
+  
+  if (cache && (agora - cache.timestamp) < Estado.cacheExpiracao) {
+    // Usa cache
+    aplicarDadosDashboard(cache.dados);
+    mostrarToast("Dashboard carregado do cache", "info");
+  } else {
+    // Carrega do servidor
+    carregarDashboard();
+  }
+}
+
+/**
+ * Mostra a tela de pesquisa e carrega dados se necessário
+ */
+function mostrarTelaPesquisa() {
+  mostrarTela("telaPesquisa");
+  if (Estado.dadosOriginais.length === 0) {
+    carregarTabela();
+  }
+}
+
+/**
+ * Mostra a tela de tickets
+ */
+function mostrarTelaTickets() {
+  mostrarTela("telaTickets");
+  carregarTickets();
+}
+
+/**
+ * Mostra a tela de configurações do sistema
+ */
+function mostrarTelaConfigSistema() {
+  mostrarTela("telaConfigSistema");
+  fecharSidebarMobile();
+}
+
+/**
+ * Mostra a tela de cadastro (carregar transportadoras, etc)
+ */
+function mostrarTelaCadastro() {
+  mostrarTela("telaCadastro");
+  fecharSidebarMobile();
+}
+
+/**
+ * Mostra a tela de usuários (somente Admin)
+ */
+function mostrarTelaUsuarios() {
+  if (!Estado.isAdmin) {
+    mostrarToast("Acesso negado. Apenas administradores.", "error");
+    return;
+  }
+  mostrarTela("telaUsuarios");
+  carregarUsuarios();
+}
+
+/**
+ * Mostra a tela de ajuda e FAQ
+ */
+function mostrarTelaAjuda() {
+  mostrarTela("telaAjuda");
+  fecharSidebarMobile();
+}
+
+
+</script>
+</body>
+</html>

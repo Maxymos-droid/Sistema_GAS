@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>themes Styles</title>
+</head>
+<body>
+<style>
+
+/* ====================== TEMA ESCURO ====================== */
+body.tema-escuro {
+  --bg-body: #1a1a2e;
+  --bg-card: #16213e;
+  --text-primary: #eee;
+  --text-secondary: #bbb;
+  --border-color: #2d3748;
+}
+
+body.tema-escuro .sidebar {
+  background: #0f3460;
+}
+
+body.tema-escuro .table-wrapper,
+body.tema-escuro .users-container,
+body.tema-escuro .ajuda-categoria {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+body.tema-escuro th {
+  background: #1a1a2e !important;
+  color: var(--text-primary);
+}
+
+body.tema-escuro tbody tr:hover {
+  background: rgba(0, 123, 255, 0.05);
+}
+
+/* ====================== TEMA ESCURO - FORMULÁRIOS ====================== */
+body.tema-escuro .login-field input,
+body.tema-escuro .form-control,
+body.tema-escuro .form-select,
+body.tema-escuro .multi-select,
+body.tema-escuro textarea {
+  background: #1a1a2e;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+body.tema-escuro .form-control:focus,
+body.tema-escuro .form-select:focus,
+body.tema-escuro .multi-select:focus,
+body.tema-escuro textarea:focus {
+  background: #1a1a2e;
+  color: var(--text-primary);
+  border-color: var(--primary-color);
+}
+
+body.tema-escuro .form-control::placeholder,
+body.tema-escuro .login-field input::placeholder,
+body.tema-escuro textarea::placeholder {
+  color: #888;
+}
+
+body.tema-escuro .login-field i {
+  color: var(--primary-color);
+}
+
+/* ====================== TEMA ESCURO - BOTÕES ====================== */
+body.tema-escuro .btn-refresh {
+  background: #16213e;
+  color: var(--primary-color);
+  border-color: var(--border-color);
+}
+
+body.tema-escuro .btn-refresh:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* ====================== TEMA ESCURO - TOAST ====================== */
+body.tema-escuro .toast {
+  background: #16213e;
+  color: var(--text-primary);
+}
+
+/* ====================== TEMA ESCURO - DROPDOWN ====================== */
+body.tema-escuro .dropdown-content {
+  background: #16213e;
+  border-color: var(--primary-color);
+  color: var(--text-primary);
+}
+
+body.tema-escuro .dropdown-content label {
+  color: var(--text-primary);
+}
+
+body.tema-escuro .dropdown-content label:hover {
+  background: #1a1a2e;
+}
+
+/* ====================== TEMA ESCURO - COMPONENTES ====================== */
+body.tema-escuro .card-status,
+body.tema-escuro .page-size-control {
+  background: #16213e;
+  border-color: var(--border-color);
+}
+
+body.tema-escuro .paginacao-list li {
+  background: #16213e;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.tema-escuro .paginacao-list li:hover:not([disabled]) {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+body.tema-escuro .paginacao-list li.ativo {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* ====================== TEMA ESCURO - LABELS E TEXTOS ====================== */
+body.tema-escuro .form-group label,
+body.tema-escuro .config-option label,
+body.tema-escuro .login-title,
+body.tema-escuro .page-header h2,
+body.tema-escuro .metric-card h3,
+body.tema-escuro .ajuda-categoria h3,
+body.tema-escuro .config-card h3,
+body.tema-escuro .ticket-card h4 {
+  color: var(--text-primary);
+}
+
+body.tema-escuro .metric-label,
+body.tema-escuro .card-label,
+body.tema-escuro .login-subtitle,
+body.tema-escuro .ajuda-categoria a {
+  color: var(--text-secondary);
+}
+
+/* ====================== TEMA ESCURO - TABELAS ====================== */
+body.tema-escuro .table-header {
+  background: linear-gradient(135deg, #1e4b2a 0%, #0f3460 100%);
+  color: white;
+}
+
+body.tema-escuro table {
+  background: #16213e;
+  color: var(--text-primary);
+}
+
+body.tema-escuro td,
+body.tema-escuro th {
+  border-color: var(--border-color);
+}
+
+body.tema-escuro .user-status-badge.ativo,
+body.tema-escuro .user-status-badge.inativo {
+  background: rgba(40, 167, 69, 0.1);
+}
+
+/* ====================== CORREÇÕES CSS GERAIS ====================== */
+
+/* Colocar os ajudantes de classe aqui - correções que não se encaixam em outras categorias */
+
+/* Correção: Sidebar mobile overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+
+</style>
+</body>
+</html>

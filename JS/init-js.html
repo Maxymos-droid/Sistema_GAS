@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>init Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== INICIALIZAÇÃO ========================== */
+/**
+ * Módulo de Inicialização - Setup da Aplicação
+ * 
+ * Responsabilidades:
+ * - Carregar preferências salvas (tema, "lembrar-me")
+ * - Esconder overlay de loading
+ * - Redirecionar para telaLogin
+ * - Event listeners globais
+ * 
+ * Executado: Ao carregar a página (load event)
+ */
+
+/**
+ * Inicializa a aplicação
+ * Carrega preferências, mostra tela inicial, etc
+ */
+window.addEventListener("load", () => {
+  Loading.hide();
+  
+  // ===== Restaura preferência "Lembrar-me" =====
+  try {
+    const lembrar = localStorage.getItem("lembrarMe") === "1";
+    const usuario = localStorage.getItem("usuario") || "";
+    const ck = document.getElementById("lembrarMe");
+    const inUser = document.getElementById("usuarioLogin");
+    
+    if (ck) ck.checked = lembrar;
+    if (lembrar && inUser) inUser.value = usuario;
+  } catch(_) {
+    // Silencioso - localStorage pode estar indisponível
+  }
+  
+  // ===== Carrega tema salvo =====
+  try {
+    const tema = localStorage.getItem('tema');
+    if (tema) {
+      const select = document.getElementById('configTema');
+      if (select) select.value = tema;
+      alterarTema(tema);
+    }
+  } catch(_) {
+    // Silencioso
+  }
+  
+  // ===== Inicia na tela de login =====
+  alternarTelaDeNivelSuperior("telaLogin");
+});
+
+
+</script>
+</body>
+</html>

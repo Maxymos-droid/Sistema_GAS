@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>responsive Styles</title>
+</head>
+<body>
+<style>
+
+/* ====================== RESPONSIVO ====================== */
+
+/* ===== MOBILE SIDEBAR ===== */
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.show-mobile {
+    transform: translateX(0);
+  }
+  
+  .header {
+    left: 0;
+  }
+}
+
+/* ===== DISPOSITIVOS PEQUENOS ===== */
+@media (max-width: 576px) {
+  .btn-sair span {
+    display: none;
+  }
+
+  .login-card {
+    margin: 40px auto;
+    padding: 30px 20px;
+  }
+
+  .search-container {
+    flex-direction: column;
+  }
+
+  .multi-select,
+  .search-wrap {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .page-size-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .paginacao-list {
+    justify-content: center;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-actions-group {
+    width: 100%;
+  }
+}
+
+/* ===== TABLETS ===== */
+@media (max-width: 992px) {
+  .dashboard-cards {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .tickets-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== MODO LANDSCAPE MOBILE ===== */
+@media (max-height: 600px) and (max-width: 992px) {
+  .sidebar {
+    max-height: calc(100vh - 20px);
+    overflow-y: auto;
+  }
+  
+  .main-content {
+    padding: 12px;
+  }
+}
+
+
+</style>
+</body>
+</html>

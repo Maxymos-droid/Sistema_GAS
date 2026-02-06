@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>help Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== AJUDA E FAQ ========================== */
+/**
+ * Módulo de Ajuda - Sistema de Help/FAQ
+ * 
+ * Responsabilidades:
+ * - Exibir tópicos de ajuda
+ * - Buscar por tópico
+ * - Criar modals com conteúdo formatado
+ * - Organizar documentação por seção
+ * 
+ * Categorias de Ajuda:
+ * - Login e Autenticação
+ * - Usando o Dashboard
+ * - Pesquisa e Filtros
+ * - Sistema de Tickets
+ * - Gestão de Usuários (Admin)
+ */
+
+/**
+ * Mostra item de ajuda em modal
+ * @param {string} item - ID do item de ajuda
+ */
+function mostrarAjudaItem(item) {
+  const conteudo = {
+    'login': {
+      titulo: 'Como fazer login',
+      texto: `
+        <h4>Acessando o Sistema</h4>
+        <ol>
+          <li>Digite seu usuário e senha nos campos apropriados</li>
+          <li>Marque "Lembrar-me" se quiser que o sistema salve seu usuário</li>
+          <li>Clique em "Entrar"</li>
+        </ol>
+        <p><strong>Dica:</strong> Se esqueceu sua senha, clique em "Esqueci minha senha" e siga as instruções.</p>
+      `
+    },
+    'senha': {
+      titulo: 'Recuperar senha',
+      texto: `
+        <h4>Recuperação de Senha</h4>
+        <ol>
+          <li>Na tela de login, clique em "Esqueci minha senha"</li>
+          <li>Digite o email cadastrado em seu perfil</li>
+          <li>Clique em "Enviar Email"</li>
+          <li>Verifique sua caixa de entrada (e spam)</li>
+          <li>Use a senha temporária recebida para fazer login</li>
+          <li>Você será direcionado para alterar sua senha</li>
+        </ol>
+        <p><strong>Importante:</strong> Altere a senha temporária imediatamente por segurança.</p>
+      `
+    },
+    'perfil': {
+      titulo: 'Editar meu perfil',
+      texto: `
+        <h4>Atualizando suas Informações</h4>
+        <ol>
+          <li>Clique em "Meu Perfil" no menu lateral</li>
+          <li>Atualize Nome e Email conforme necessário</li>
+          <li>Para alterar senha, preencha os 3 campos de senha</li>
+          <li>Clique em "Salvar Alterações"</li>
+        </ol>
+        <p><strong>Observação:</strong> O campo "Login" não pode ser alterado.</p>
+      `
+    },
+    'dashboard-cards': {
+      titulo: 'Entender os cards de status',
+      texto: `
+        <h4>Cards do Dashboard</h4>
+        <p>Cada card representa um status diferente das entregas:</p>
+        <ul>
+          <li><strong>Em Trânsito:</strong> Mercadorias em deslocamento</li>
+          <li><strong>Parceiro:</strong> Já chegou ao parceiro/transportadora</li>
+          <li><strong>Rota de Entrega:</strong> Saiu para entrega</li>
+          <li><strong>Aguardando Cliente:</strong> Aguardando recebimento</li>
+          <li><strong>Entregue:</strong> Entrega concluída com sucesso</li>
+          <li><strong>Devolução:</strong> Solicitada devolução</li>
+          <li><strong>Conferência:</strong> Em averiguação</li>
+          <li><strong>Não Atende Rota:</strong> Fora da área de entrega</li>
+          <li><strong>Aguardando Decisão:</strong> Pendente de decisão</li>
+        </ul>
+      `
+    },
+    'dashboard-graficos': {
+      titulo: 'Interpretar os gráficos',
+      texto: `
+        <h4>Gráficos do Dashboard</h4>
+        <p><strong>Gráfico de Barras (Status):</strong> Mostra a distribuição de todas as entregas por status.</p>
+        <p><strong>Gráfico de Rosca (Parceiros):</strong> Exibe os 15 parceiros com mais entregas pendentes.</p>
+        <p>Passe o mouse sobre as barras/fatias para ver valores detalhados.</p>
+      `
+    },
+    'dashboard-metricas': {
+      titulo: 'Métricas de tempo',
+      texto: `
+        <h4>Compreendendo as Métricas</h4>
+        <ul>
+          <li><strong>Emissão → Parceiro:</strong> Tempo médio desde a emissão até chegar ao parceiro</li>
+          <li><strong>Parceiro → Hoje:</strong> Tempo médio que entregas pendentes estão com o parceiro</li>
+          <li><strong>Parceiro → Entrega:</strong> Tempo médio do parceiro até a entrega final</li>
+        </ul>
+        <p>Valores em dias. Use para identificar gargalos no processo.</p>
+      `
+    },
+    'pesquisa-buscar': {
+      titulo: 'Como buscar entregas',
+      texto: `
+        <h4>Pesquisando Entregas</h4>
+        <ol>
+          <li>Digite no campo de busca: DACTE, Nota Fiscal ou Nome do Destinatário</li>
+          <li>Pressione Enter ou clique no ícone de busca</li>
+          <li>Os resultados aparecerão filtrados na tabela</li>
+        </ol>
+        <p><strong>Dica:</strong> Combine a busca com filtros de status para resultados mais precisos.</p>
+      `
+    },
+    'pesquisa-filtrar': {
+      titulo: 'Filtrar por status',
+      texto: `
+        <h4>Filtrando Entregas</h4>
+        <ol>
+          <li>Clique em "Filtrar por Status"</li>
+          <li>Marque/desmarque os status desejados</li>
+          <li>Clique fora do menu para aplicar</li>
+          <li>A tabela será atualizada automaticamente</li>
+        </ol>
+        <p>Você pode selecionar múltiplos status simultaneamente.</p>
+      `
+    },
+    'pesquisa-exportar': {
+      titulo: 'Exportar para Excel',
+      texto: `
+        <h4>Exportando Dados</h4>
+        <ol>
+          <li>Filtre/pesquise os dados desejados</li>
+          <li>Clique no botão "Exportar" no topo da página</li>
+          <li>O arquivo Excel será baixado automaticamente</li>
+        </ol>
+        <p>O arquivo conterá todos os dados filtrados atualmente visíveis.</p>
+      `
+    },
+    'pesquisa-editar': {
+      titulo: 'Editar registros',
+      texto: `
+        <h4>Editando Informações</h4>
+        <p>Há duas formas de editar:</p>
+        <ol>
+          <li><strong>Duplo clique:</strong> Clique duas vezes em qualquer linha</li>
+          <li><strong>Botão Editar:</strong> Clique no ícone de lápis na coluna "Ações"</li>
+        </ol>
+        <p>Um modal abrirá com todos os campos editáveis. Após editar, clique em "Salvar".</p>
+      `
+    },
+    'admin-usuarios': {
+      titulo: 'Gerenciar usuários',
+      texto: `
+        <h4>Gestão de Usuários (Admin)</h4>
+        <p><strong>Criar usuário:</strong></p>
+        <ol>
+          <li>Vá em Configurações → Cadastros → Usuários</li>
+          <li>Clique em "Novo Usuário"</li>
+          <li>Preencha todos os campos obrigatórios</li>
+          <li>Defina o perfil (Admin ou Operador)</li>
+          <li>Clique em "Salvar"</li>
+        </ol>
+        <p><strong>Editar/Excluir:</strong> Use os ícones na coluna "Ações".</p>
+      `
+    },
+    'admin-permissoes': {
+      titulo: 'Definir permissões',
+      texto: `
+        <h4>Níveis de Acesso</h4>
+        <p><strong>Administrador:</strong></p>
+        <ul>
+          <li>Acesso total ao sistema</li>
+          <li>Gerenciar usuários</li>
+          <li>Ver todos os tickets</li>
+          <li>Configurações avançadas</li>
+        </ul>
+        <p><strong>Operador:</strong></p>
+        <ul>
+          <li>Dashboard (visualização)</li>
+          <li>Pesquisa e filtros</li>
+          <li>Criar tickets próprios</li>
+          <li>Editar próprio perfil</li>
+        </ul>
+      `
+    },
+    'tickets-criar': {
+      titulo: 'Criar um ticket',
+      texto: `
+        <h4>Abrindo Ocorrências/Sugestões</h4>
+        <ol>
+          <li>Vá em "Tickets" no menu lateral</li>
+          <li>Clique em "Novo Ticket"</li>
+          <li>Escolha o tipo: Ocorrência ou Sugestão</li>
+          <li>Preencha assunto e descrição detalhada</li>
+          <li>Defina a prioridade</li>
+          <li>Clique em "Enviar"</li>
+        </ol>
+        <p>Você poderá acompanhar o status do seu ticket na mesma tela.</p>
+      `
+    },
+    'tickets-acompanhar': {
+      titulo: 'Acompanhar tickets',
+      texto: `
+        <h4>Status dos Tickets</h4>
+        <ul>
+          <li><strong>Aberto:</strong> Ticket criado, aguardando análise</li>
+          <li><strong>Em Andamento:</strong> Sendo tratado pela equipe</li>
+          <li><strong>Resolvido:</strong> Solução implementada</li>
+          <li><strong>Fechado:</strong> Ticket finalizado</li>
+        </ul>
+        <p>Use os botões de filtro para ver apenas tickets de um status específico.</p>
+      `
+    }
+  };
+  
+  const dados = conteudo[item];
+  if (!dados) {
+    mostrarToast("Item de ajuda não encontrado", "warning");
+    return;
+  }
+  
+  // Cria modal simples para exibir ajuda
+  const modal = document.createElement('div');
+  modal.className = 'modal show';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="material-icons">help</i> ${dados.titulo}</h3>
+        <span class="modal-close" onclick="this.closest('.modal').remove()">&times;</span>
+      </div>
+      <div class="modal-body">
+        ${dados.texto}
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="this.closest('.modal').remove()">Entendi</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+/**
+ * Busca items de ajuda por termo
+ * (Placeholder para implementação futura com busca full-text)
+ */
+function buscarAjuda() {
+  const termo = (document.getElementById("termoAjuda")?.value || "").toLowerCase();
+  if (!termo) {
+    mostrarToast("Digite um termo para buscar", "info");
+    return;
+  }
+  mostrarToast(`Buscando por: "${termo}"`, "info");
+  // TODO: Implementar busca
+}
+
+
+</script>
+</body>
+</html>

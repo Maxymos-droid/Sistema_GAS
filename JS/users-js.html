@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>users Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== GESTÃO DE USUÁRIOS (ADMIN) ========================== */
+/**
+ * Módulo de Gestão de Usuários - Administração de Contas
+ * 
+ * Responsabilidades (somente para Admin):
+ * - Listar usuários
+ * - Criar novo usuário
+ * - Editar usuário existente
+ * - Excluir usuário
+ * - Gerenciar perfis (admin/operador)
+ * - Gerenciar status (ativo/inativo)
+ * 
+ * RPC Calls:
+ * - listarUsuarios()
+ * - buscarUsuario(login)
+ * - salvarUsuario(usuario, tipo)
+ * - excluirUsuario(login)
+ * 
+ * Verificar: Estado.isAdmin antes de carregar esta tela
+ */
+
+/**
+ * Carrega lista de todos os usuários do sistema
+ * RPC: listarUsuarios()
+ */
+function carregarUsuarios() {
+  Loading.show("Carregando usuários...");
+  
+  google.script.run
+    .withSuccessHandler((usuarios) => {
+      Loading.hide();
+      
+      const tbody = document.querySelector("#tabelaUsuarios tbody");
+      if (!tbody) return;
+      
+      tbody.innerHTML = "";
+      
+      if (!usuarios || usuarios.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:40px;'>Nenhum usuário cadastrado</td></tr>";
+        return;
+      }
+      
+      // Renderiza tabela de usuários
+      usuarios.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${user.nome || "-"}</td>
+          <td>${user.login}</td>
+          <td>${user.email || "-"}</td>
+          <td>${user.perfil === "admin" ? "Administrador" : "Operador"}</td>
+          <td><span class="user-status-badge ${user.status || 'ativo'}">${user.status === "inativo" ? "Inativo" : "Ativo"}</span></td>
+          <td>
+            <div class="user-actions">
+              <button class="btn-icon edit" onclick="editarUsuario('${user.login}')" title="Editar">
+                <i class="material-icons">edit</i>
+              </button>
+              ${user.login !== Estado.usuarioAtual ? `
+                <button class="btn-icon delete" onclick="excluirUsuario('${user.login}')" title="Excluir">
+                  <i class="material-icons">delete</i>
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao carregar usuários.", "error");
+    })
+    .listarUsuarios();
+}
+
+/**
+ * Mostra modal para criar novo usuário
+ */
+function mostrarModalNovoUsuario() {
+  document.getElementById("tituloModalUsuario").textContent = "Novo Usuário";
+  document.getElementById("formUsuario").reset();
+  document.getElementById("usuarioId").value = "";
+  document.getElementById("usuarioLogin").readOnly = false;
+  document.getElementById("usuarioSenha").required = true;
+  document.getElementById("modalNovoUsuario").classList.add("show");
+}
+
+/**
+ * Abre modal para editar usuário existente
+ * RPC: buscarUsuario(login)
+ * 
+ * @param {string} login - Login do usuário a editar
+ */
+function editarUsuario(login) {
+  Loading.show();
+  
+  google.script.run
+    .withSuccessHandler((user) => {
+      Loading.hide();
+      
+      if (!user) {
+        mostrarToast("Usuário não encontrado.", "error");
+        return;
+      }
+      
+      // Preenche formulário com dados do usuário
+      document.getElementById("tituloModalUsuario").textContent = "Editar Usuário";
+      document.getElementById("usuarioId").value = user.login;
+      document.getElementById("usuarioNome").value = user.nome || "";
+      document.getElementById("usuarioLogin").value = user.login;
+      document.getElementById("usuarioLogin").readOnly = true;  // Não pode alterar login
+      document.getElementById("usuarioEmail").value = user.email || "";
+      document.getElementById("usuarioSenha").value = "";
+      document.getElementById("usuarioSenha").required = false;  // Senha é opcional na edição
+      document.getElementById("usuarioPerfil").value = user.perfil || "user";
+      document.getElementById("usuarioStatus").value = user.status || "ativo";
+      
+      document.getElementById("modalNovoUsuario").classList.add("show");
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao carregar usuário.", "error");
+    })
+    .buscarUsuario(login);
+}
+
+/**
+ * Fecha modal de usuário
+ */
+function fecharModalUsuario() {
+  document.getElementById("modalNovoUsuario").classList.remove("show");
+  document.getElementById("formUsuario").reset();
+  document.getElementById("usuarioLogin").readOnly = false;
+  document.getElementById("usuarioSenha").required = true;
+}
+
+/**
+ * Salva novo usuário ou atualiza existente
+ * RPC: salvarUsuario(usuario, tipo)
+ */
+function salvarUsuario() {
+  const id = document.getElementById("usuarioId").value;
+  const nome = document.getElementById("usuarioNome").value.trim();
+  const login = document.getElementById("usuarioLogin").value.trim();
+  const email = document.getElementById("usuarioEmail").value.trim();
+  const senha = document.getElementById("usuarioSenha").value.trim();
+  const perfil = document.getElementById("usuarioPerfil").value;
+  const status = document.getElementById("usuarioStatus").value;
+  
+  // Validações
+  if (!nome || !login || !email) {
+    mostrarToast("Preencha todos os campos obrigatórios.", "warning");
+    return;
+  }
+  
+  if (!id && !senha) {
+    mostrarToast("Senha é obrigatória para novos usuários.", "warning");
+    return;
+  }
+  
+  const usuario = { nome, login, email, senha, perfil, status };
+  
+  Loading.show("Salvando usuário...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      
+      if (res.status === "ok") {
+        mostrarToast(res.msg || "Usuário salvo com sucesso!", "success");
+        fecharModalUsuario();
+        carregarUsuarios();  // Recarrega lista
+      } else {
+        mostrarToast(res.msg || "Erro ao salvar usuário.", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao salvar usuário.", "error");
+    })
+    .salvarUsuario(usuario, id ? "editar" : "novo");
+}
+
+/**
+ * Exclui um usuário do sistema
+ * Requer confirmação
+ * RPC: excluirUsuario(login)
+ * 
+ * @param {string} login - Login do usuário a excluir
+ */
+function excluirUsuario(login) {
+  if (!confirm(`Deseja realmente excluir o usuário ${login}?`)) return;
+  
+  Loading.show("Excluindo usuário...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      
+      if (res.status === "ok") {
+        mostrarToast(res.msg || "Usuário excluído com sucesso!", "success");
+        carregarUsuarios();  // Recarrega lista
+      } else {
+        mostrarToast(res.msg || "Erro ao excluir usuário.", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao excluir usuário.", "error");
+    })
+    .excluirUsuario(login);
+}
+
+
+</script>
+</body>
+</html>

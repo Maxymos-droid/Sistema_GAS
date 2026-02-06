@@ -1,0 +1,266 @@
+# 🌐 HTML - Modularização v3.0
+
+## Visão Geral
+
+HTML convertido de arquivo monolítico (830 linhas) para **11 fragmentos especializados** com responsabilidades bem definidas.
+
+## 📁 Estrutura
+
+```
+HTML/
+├── global.html              ← Importador Principal (coordenador)
+│
+├── login.html               ← Tela de autenticação (60L)
+├── header.html              ← Barra superior (24L)
+├── sidebar.html             ← Menu lateral (48L)
+├── perfil.html              ← Página de perfil (62L)
+├── dashboard.html           ← Dashboard/Gráficos (168L)
+├── pesquisa.html            ← Busca de CTRCs (72L)
+├── tickets.html             ← Sistema de Tickets (56L)
+├── config-sistema.html      ← Configurações (35L)
+├── cadastro.html            ← Menu de Cadastros (18L)
+├── usuarios.html            ← Gestão de Usuários (28L)
+├── ajuda.html               ← Help/FAQ (72L)
+├── modals.html              ← Todos os modais (188L)
+│
+└── README.md                ← Este arquivo
+```
+
+## 🔄 Como Funciona
+
+**global.html** carrega fragmentos usando `include()`:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema</title>
+  <link rel="stylesheet" href="CSS/global.css">
+</head>
+<body>
+  <?!= include('login'); ?>
+  <?!= include('header'); ?>
+  <?!= include('sidebar'); ?>
+  
+  <main>
+    <?!= include('perfil'); ?>
+    <?!= include('dashboard'); ?>
+    <?!= include('pesquisa'); ?>
+    <?!= include('tickets'); ?>
+    <!-- ... outros fragments ... -->
+  </main>
+  
+  <?!= include('modals'); ?>
+  <?!= include('javascript.js'); ?>
+</body>
+</html>
+```
+
+A função `include()` está em **Google Scripts/config.gs**:
+
+```javascript
+function include(filename) {
+  return HtmlService.createHtmlOutput(
+    DriveApp.getFilesByName(filename + '.html')
+      .next()
+      .getBlob()
+      .getDataAsString()
+  ).getContent();
+}
+```
+
+## 📄 Fragmentos Detalhados
+
+### 🔐 **login.html** (60 linhas)
+- Tela de autenticação
+- Inputs: usuário, senha
+- Botões: Login, Recuperar senha
+- Exibido antes do login
+
+### 🎨 **header.html** (24 linhas)
+- Barra superior com logo
+- Nome do usuário autenticado
+- Botão de logout
+
+### 📍 **sidebar.html** (48 linhas)
+- Menu lateral (navegação)
+- Links para: Dashboard, Pesquisa, Tickets, etc
+- Toggle para mobile
+
+### 👤 **perfil.html** (62 linhas)
+- Página de perfil do usuário
+- Inputs: Nome, Email
+- Checkbox: Alterar senha
+- Botão: Salvar
+
+### 📊 **dashboard.html** (168 linhas)
+- Cards com contadores (Abertos, Em andamento, etc)
+- Gráficos (Charts.js)
+- Tabela com últimas entregas
+- Atualiza via `getPortalDataComMetricas()`
+
+### 🔍 **pesquisa.html** (72 linhas)
+- Campo de busca por CTRC
+- Filtro por status
+- Multi-select de status
+- Tabela de resultados
+
+### 🎫 **tickets.html** (56 linhas)
+- Botão: Novo Ticket
+- Filtros de status (Todos, Abertos, etc)
+- Busca por assunto/usuário
+- Tabela de tickets
+
+### ⚙️ **config-sistema.html** (35 linhas)
+- Toggle: Tema Escuro
+- Toggle: Notificações
+- Seletor: Idioma
+- Botões: Salvar, Reset
+
+### 📋 **cadastro.html** (18 linhas)
+- Menu de "Cadastros" (Admin)
+- Links para: Usuários, Categorias, etc
+
+### 👥 **usuarios.html** (28 linhas)
+- Listagem de usuários
+- Botão: Novo Usuário
+- Tabela com edição inline
+
+### ❓ **ajuda.html** (72 linhas)
+- Perguntas frequentes
+- Accordion com respostas
+- Link para documentação
+
+### 🪟 **modals.html** (188 linhas)
+- Modal: Novo Ticket
+- Modal: Editar Usuário
+- Modal: Deletar Confirmação
+- Modal: Visualizar Comentários
+- Todos os modais em um arquivo
+
+## 🎯 Localizar Componente
+
+| Procurando por | Arquivo |
+|---|---|
+| Tela de login | login.html |
+| Barra superior | header.html |
+| Menu lateral | sidebar.html |
+| Perfil usuário | perfil.html |
+| Dashboard/Gráficos | dashboard.html |
+| Busca de entregas | pesquisa.html |
+| Tickets | tickets.html |
+| Configurações | config-sistema.html |
+| Menu Cadastros | cadastro.html |
+| Usuários | usuarios.html |
+| Ajuda/FAQ | ajuda.html |
+| Modais/Diálogos | modals.html |
+
+## 📊 Estatísticas
+
+| Métrica | Antes | Depois |
+|---------|-------|--------|
+| Arquivos | 1 | 12 |
+| Linhas totais | 830 | ~900 |
+| Linhas/arquivo | 830 | ~75 (média) |
+| Manutenibilidade | ⭐ | ⭐⭐⭐⭐⭐ |
+| Colaboração | ⭐ | ⭐⭐⭐⭐⭐ |
+
+## ✨ Vantagens
+
+✅ Cada arquivo serve um propósito claro  
+✅ Fácil encontrar componente  
+✅ Sem código duplicado  
+✅ Colaboração paralela possível  
+✅ Reutilização de fragmentos  
+✅ Manutenção centralizada  
+✅ Escalável para novos fragmentos  
+✅ Cache de fragmentos  
+
+## 🚀 Adicionar Novo Fragmento
+
+**Exemplo: Adicionar página de "Relatórios"**
+
+1. Criar arquivo: `HTML/relatorios.html`
+```html
+<!-- Relatórios -->
+<section id="telaRelatorios" class="tela-interna">
+  <div class="page-header">
+    <h2>Relatórios</h2>
+    <button class="btn-primary" onclick="gerarRelatorio()">
+      Gerar
+    </button>
+  </div>
+  <!-- Conteúdo -->
+</section>
+```
+
+2. Adicionar em `global.html`:
+```html
+<?!= include('relatorios'); ?>
+```
+
+3. Adicionar link em `sidebar.html`:
+```html
+<a href="#" onclick="irTela('telaRelatorios')">Relatórios</a>
+```
+
+## 🔄 Ciclo de Vida
+
+```
+1. Usuário acessa URL
+   ↓
+2. Google Apps Script executa doGet()
+   ↓
+3. Renderiza global.html
+   ↓
+4. include() carrega cada fragmento
+   ↓
+5. HTML + CSS carregados
+   ↓
+6. JavaScript executa
+   ↓
+7. RPC chamadas ao backend
+   ↓
+8. Página interativa
+```
+
+## 🎨 Padrão de Estrutura
+
+Cada fragmento segue:
+
+```html
+<!-- SEÇÃO TÍTULO -->
+<section id="telaNome" class="tela-interna">
+  <div class="page-header">
+    <h2>Título</h2>
+    <button class="btn-primary">Ação</button>
+  </div>
+  
+  <div class="content">
+    <!-- Conteúdo dos dados -->
+  </div>
+</section>
+```
+
+## 📱 Responsivo
+
+Todos os fragmentos suportam:
+- ✅ Desktop (100% width)
+- ✅ Tablet (ajusta sidebar)
+- ✅ Mobile (sidebar colapsado)
+
+## 🧪 Testes
+
+Verificar:
+- Todos os fragmentos carregando
+- Sem erros no console
+- CSS aplicado corretamente
+- JavaScript funcionando
+
+---
+
+**Última atualização**: Fevereiro 2026  
+**Status**: ✅ Produção  
+**Responsivo**: ✅ Sim  
+**Compatibilidade**: 100% com versão anterior

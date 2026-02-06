@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== GESTÃO DE USUÁRIOS (ADMIN) ====================== -->
+<section id="telaUsuarios" class="tela-interna">
+  <div class="page-header">
+    <h2><i class="material-icons">people</i> Gestão de Usuários</h2>
+    <button class="btn-primary" onclick="mostrarModalNovoUsuario()">
+      <i class="material-icons">add</i> Novo Usuário
+    </button>
+  </div>
+
+  <div class="users-container">
+    <table id="tabelaUsuarios" class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Login</th>
+          <th>Email</th>
+          <th>Perfil</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Será preenchido dinamicamente -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</body>
+</html>

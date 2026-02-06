@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ui Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== COMPONENTES DE UI ========================== */
+/**
+ * Módulo de Componentes UI - Interações comuns na interface
+ * 
+ * Responsabilidades:
+ * - Sidebar mobile (mostrar/ocultar)
+ * - Submenus (expandir/recolher)
+ * - Campos de senha (mostrar/ocultar)
+ * - Event listeners de UI
+ * 
+ * Funções:
+ * - fecharSidebarMobile() - Fecha o menu lateral no mobile
+ * - toggleSubMenu(id) - Expande/recolhe um submenu
+ * - toggleSenha(idCampo, icone) - Alterna visibilidade de senha
+ */
+
+// ========== SIDEBAR MOBILE ==========
+/**
+ * Fecha o sidebar mobile e remove o overlay
+ */
+function fecharSidebarMobile() {
+  const sidebar = document.getElementById('appSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebar) sidebar.classList.remove('show-mobile');
+  if (overlay) overlay.remove();
+}
+
+// ========== SUBMENU ==========
+/**
+ * Abre/fecha um submenu e gerencia o estado visual
+ * @param {string} id - ID do submenu a alternar
+ */
+function toggleSubMenu(id) {
+  const submenu = document.getElementById(id);
+  const menuItem = submenu?.previousElementSibling;
+  
+  if (submenu) {
+    const isOpen = submenu.classList.contains('open');
+    
+    // Fecha todos os outros submenus
+    document.querySelectorAll('.submenu').forEach(sm => {
+      sm.classList.remove('open');
+      const arrow = sm.previousElementSibling?.querySelector('.submenu-arrow');
+      if (arrow) arrow.textContent = 'keyboard_arrow_down';
+    });
+    
+    // Abre/fecha o submenu clicado
+    if (!isOpen) {
+      submenu.classList.add('open');
+      const arrow = menuItem?.querySelector('.submenu-arrow');
+      if (arrow) arrow.textContent = 'keyboard_arrow_up';
+    }
+  }
+}
+
+// ========== CAMPOS DE SENHA ==========
+/**
+ * Alterna a visibilidade de um campo de senha
+ * @param {string} idCampo - ID do input de password
+ * @param {HTMLElement} icone - Elemento do ícone Material Icons
+ */
+function toggleSenha(idCampo, icone) {
+  const campo = document.getElementById(idCampo);
+  if (!campo) return;
+  
+  const novo = campo.type === "password" ? "text" : "password";
+  campo.type = novo;
+  if (icone) icone.textContent = novo === "password" ? "visibility" : "visibility_off";
+}
+
+// ========== SIDEBAR DESKTOP ==========
+// Inicializa event listeners do sidebar desktop ao carregar
+document.addEventListener('DOMContentLoaded', () => {
+  const btnSidebar = document.getElementById('btnSidebar');
+  const sidebar = document.getElementById('appSidebar');
+  const header = document.getElementById('appHeader');
+  const main = document.getElementById('appMain');
+  
+  if (btnSidebar && sidebar && header && main) {
+    btnSidebar.addEventListener('click', () => {
+      // Mobile
+      if (window.innerWidth <= 992) {
+        sidebar.classList.toggle('show-mobile');
+        
+        // Cria overlay se não existir
+        if (sidebar.classList.contains('show-mobile')) {
+          let overlay = document.getElementById('sidebarOverlay');
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'sidebarOverlay';
+            overlay.className = 'sidebar-overlay';
+            overlay.onclick = fecharSidebarMobile;
+            document.body.appendChild(overlay);
+          }
+        } else {
+          fecharSidebarMobile();
+        }
+      } else {
+        // Desktop - colapsa/expande
+        sidebar.classList.toggle('collapsed');
+        header.classList.toggle('collapsed');
+        main.classList.toggle('sidebar-collapsed');
+      }
+    });
+  }
+});
+
+// ========== PREVENÇÃO DE DRAG & DROP ==========
+// Previne comportamento padrão de arrastar/soltar de arquivos
+document.addEventListener('dragover', (e) => e.preventDefault());
+document.addEventListener('drop', (e) => e.preventDefault());
+
+
+</script>
+</body>
+</html>

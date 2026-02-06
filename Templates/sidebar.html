@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- SIDEBAR -->
+<aside class="sidebar" id="appSidebar">
+  <div class="sidebar-user">
+    <i class="material-icons">account_circle</i>
+    <div class="user-details">
+      <span class="user-name" id="nomeUsuarioSidebar">Usuário</span>
+      <span class="user-role" id="perfilUsuario">Operador</span>
+    </div>
+  </div>
+  
+  <ul class="sidebar-menu">
+    <li onclick="mostrarTelaPerfil()" class="menu-item" data-tela="perfil">
+      <i class="material-icons">person</i>
+      <span>Meu Perfil</span>
+    </li>
+    <li onclick="mostrarTelaDashboard()" class="menu-item active" data-tela="dashboard">
+      <i class="material-icons">dashboard</i>
+      <span>Dashboard</span>
+    </li>
+    <li onclick="mostrarTelaPesquisa()" class="menu-item" data-tela="pesquisa">
+      <i class="material-icons">search</i>
+      <span>Pesquisa</span>
+    </li>
+    <li onclick="mostrarTelaTickets()" class="menu-item" data-tela="tickets">
+      <i class="material-icons">support</i>
+      <span>Tickets</span>
+    </li>
+    <li onclick="toggleSubMenu('configMenu')" class="menu-item has-submenu" data-tela="config">
+      <i class="material-icons">settings</i>
+      <span>Configurações</span>
+      <i class="material-icons submenu-arrow">keyboard_arrow_down</i>
+    </li>
+    <ul class="submenu" id="configMenu">
+      <li onclick="mostrarTelaConfigSistema()" class="submenu-item">
+        <i class="material-icons">palette</i>
+        <span>Sistema</span>
+      </li>
+      <li onclick="mostrarTelaCadastro()" class="submenu-item admin-only">
+        <i class="material-icons">folder</i>
+        <span>Cadastros</span>
+      </li>
+    </ul>
+  </ul>
+</aside>
+
+</body>
+</html>

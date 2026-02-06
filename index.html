@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestão - Portal</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons">
+  
+  <!-- CSS Controlado pelo Backend -->
+  <?!= includeSistemaCSS(); ?>
+</head>
+<body>
+  <div class="app-wrapper">
+    
+    <!-- TELA DE LOGIN/AUTENTICAÇÃO -->
+    <?!= include('login'); ?>
+
+    <!-- HEADER/NAVEGAÇÃO PRINCIPAL -->
+    <?!= include('header'); ?>
+
+    <!-- SIDEBAR/MENU LATERAL -->
+    <?!= include('sidebar'); ?>
+   
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content" id="appMain">
+
+      <?!= include('perfil'); ?>
+
+      <?!= include('dashboard'); ?>
+
+      <?!= include('pesquisa'); ?>
+
+      <?!= include('tickets'); ?>
+
+      <?!= include('config-sistema'); ?>
+
+      <?!= include('cadastro'); ?>
+
+      <?!= include('usuarios'); ?>
+
+      <?!= include('ajuda'); ?>
+
+    </main>
+    
+  </div>
+
+  <!-- MODAIS DO SISTEMA -->
+  <?!= include('modals'); ?>
+
+  <!-- JavaScript Controlado pelo Backend -->
+  <?!= includeSistemaJS(); ?>
+
+</body>
+</html>
+

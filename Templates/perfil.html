@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== MEU PERFIL ====================== -->
+<section id="telaPerfil" class="tela-interna">
+  <div class="page-header">
+    <h2><i class="material-icons">person</i> Meu Perfil</h2>
+  </div>
+
+  <div class="perfil-container">
+    <div class="perfil-card">
+      <div class="perfil-avatar">
+        <i class="material-icons">account_circle</i>
+      </div>
+      
+      <form id="formPerfil" class="perfil-form-compact">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" id="perfilNome" class="form-control" placeholder="Seu nome completo" required />
+          </div>
+          <div class="form-group">
+            <label>Login</label>
+            <input type="text" id="perfilLogin" class="form-control" readonly />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="perfilEmail" class="form-control" placeholder="seu@email.com" required />
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <h4><i class="material-icons">lock</i> Alterar Senha</h4>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Senha Atual</label>
+            <div class="input-with-icon">
+              <input type="password" id="perfilSenhaAtual" class="form-control" />
+              <span class="material-icons toggle-senha" onclick="toggleSenha('perfilSenhaAtual', this)">visibility</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nova Senha</label>
+            <div class="input-with-icon">
+              <input type="password" id="perfilNovaSenha" class="form-control" />
+              <span class="material-icons toggle-senha" onclick="toggleSenha('perfilNovaSenha', this)">visibility</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirmar Nova Senha</label>
+            <div class="input-with-icon">
+              <input type="password" id="perfilConfirmarSenha" class="form-control" />
+              <span class="material-icons toggle-senha" onclick="toggleSenha('perfilConfirmarSenha', this)">visibility</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-primary" onclick="salvarPerfil()">
+            <i class="material-icons">save</i> Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

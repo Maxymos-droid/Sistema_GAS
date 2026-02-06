@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- ====================== PESQUISA ====================== -->
+<section id="telaPesquisa" class="tela-interna">
+  <div class="page-header">
+    <h2><i class="material-icons">search</i> Acompanhamento CTRC</h2>
+    <div class="header-actions-group">
+      <button class="btn-export" onclick="exportarParaExcel()" title="Exportar para Excel">
+        <i class="material-icons">download</i> Exportar
+      </button>
+      <button class="btn-primary" onclick="abrirModalNovo()" title="Adicionar novo registro">
+        <i class="material-icons">add</i> Adicionar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros e Busca -->
+  <div class="search-container">
+    <div class="multi-select" onclick="toggleDropdown()">
+      <span id="selectedStatus" class="selected-text">Filtrar por Status</span>
+      <i class="material-icons">arrow_drop_down</i>
+      <div id="dropdownStatus" class="dropdown-content">
+        <label><input type="checkbox" class="filtroStatus" value="EM TRANSITO" checked> Em Trânsito</label>
+        <label><input type="checkbox" class="filtroStatus" value="PARCEIRO" checked> Parceiro</label>
+        <label><input type="checkbox" class="filtroStatus" value="ROTA DE ENTREGA" checked> Rota de Entrega</label>
+        <label><input type="checkbox" class="filtroStatus" value="AGUARDANDO NO CLIENTE" checked> Aguardando Cliente</label>
+        <label><input type="checkbox" class="filtroStatus" value="ENTREGUE COM SUCESSO"> Entregue</label>
+        <label><input type="checkbox" class="filtroStatus" value="DEVOLUÇÃO SOLICITADA" checked> Devolução</label>
+        <label><input type="checkbox" class="filtroStatus" value="EM CONFERÊNCIA / AVERIGUAÇÃO" checked> Conferência</label>
+        <label><input type="checkbox" class="filtroStatus" value="NÃO ATENDE ROTA" checked> Não Atende Rota</label>
+        <label><input type="checkbox" class="filtroStatus" value="AGUARDANDO DECISÃO" checked> Aguardando Decisão</label>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input type="text" id="termo" placeholder="Pesquisar por DACTE, Nota, Destinatário..." />
+      <button class="btn-search" onclick="pesquisar()">
+        <i class="material-icons">search</i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabela com filtros -->
+  <div class="table-wrapper">
+    <div class="table-header">
+      <span>ACOMPANHAMENTO DOS DACTE E SEUS STATUS</span>
+      <span class="table-count">Total: <strong id="contagemTabela">0</strong> registros</span>
+    </div>
+    <div class="table-container">
+      <table id="dadosTabela" class="table table-bordered table-striped table-filterable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Paginação -->
+  <div class="pagination-container">
+    <div class="page-size-control">
+      <label>Mostrar</label>
+      <select id="linhasPorPagina" class="form-select" onchange="atualizarPaginacao()">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+      <span>linhas</span>
+    </div>
+    <div id="paginacao"></div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>profile Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== MEU PERFIL ========================== */
+/**
+ * Módulo de Perfil do Usuário - Gerenciamento de Dados Pessoais
+ * 
+ * Responsabilidades:
+ * - Carregar dados do perfil do usuário autenticado
+ * - Editar nome e email
+ * - Alterar senha do usuário
+ * - Atualizar sidebar com novo nome
+ * 
+ * RPC Calls:
+ * - buscarUsuario(login)
+ * - atualizarPerfil(usuario, dados)
+ * 
+ * Requer: Estado.usuarioAtual estar definido
+ */
+
+/**
+ * Carrega os dados do perfil do usuário autenticado
+ * RPC: buscarUsuario(Estado.usuarioAtual)
+ */
+function carregarDadosPerfil() {
+  if (!Estado.usuarioAtual) return;
+  
+  Loading.show("Carregando perfil...");
+  
+  google.script.run
+    .withSuccessHandler((user) => {
+      Loading.hide();
+      
+      if (!user) {
+        mostrarToast("Erro ao carregar perfil.", "error");
+        return;
+      }
+      
+      // Preenche campos com dados atuais
+      document.getElementById("perfilNome").value = user.nome || "";
+      document.getElementById("perfilLogin").value = user.login || "";
+      document.getElementById("perfilEmail").value = user.email || "";
+      
+      // Limpa campos de senha
+      document.getElementById("perfilSenhaAtual").value = "";
+      document.getElementById("perfilNovaSenha").value = "";
+      document.getElementById("perfilConfirmarSenha").value = "";
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao carregar perfil.", "error");
+    })
+    .buscarUsuario(Estado.usuarioAtual);
+}
+
+/**
+ * Salva alterações no perfil do usuário
+ * Pode atualizar nome, email e/ou senha
+ * RPC: atualizarPerfil(usuario, dados)
+ */
+function salvarPerfil() {
+  const nome = document.getElementById("perfilNome").value.trim();
+  const email = document.getElementById("perfilEmail").value.trim();
+  const senhaAtual = document.getElementById("perfilSenhaAtual").value.trim();
+  const novaSenha = document.getElementById("perfilNovaSenha").value.trim();
+  const confirmarSenha = document.getElementById("perfilConfirmarSenha").value.trim();
+  
+  // Validações básicas
+  if (!nome || !email) {
+    mostrarToast("Nome e email são obrigatórios.", "warning");
+    return;
+  }
+  
+  // Se está alterando senha
+  if (senhaAtual || novaSenha || confirmarSenha) {
+    if (!senhaAtual || !novaSenha || !confirmarSenha) {
+      mostrarToast("Preencha todos os campos de senha.", "warning");
+      return;
+    }
+    
+    if (novaSenha !== confirmarSenha) {
+      mostrarToast("As senhas não coincidem.", "warning");
+      return;
+    }
+    
+    if (novaSenha.length < 6) {
+      mostrarToast("A senha deve ter no mínimo 6 caracteres.", "warning");
+      return;
+    }
+  }
+  
+  Loading.show("Salvando perfil...");
+  
+  const dados = {
+    nome,
+    email,
+    senhaAtual: senhaAtual || null,
+    novaSenha: novaSenha || null
+  };
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      
+      if (res.status === "ok") {
+        mostrarToast(res.msg || "Perfil atualizado com sucesso!", "success");
+        
+        // Limpa campos de senha
+        document.getElementById("perfilSenhaAtual").value = "";
+        document.getElementById("perfilNovaSenha").value = "";
+        document.getElementById("perfilConfirmarSenha").value = "";
+        
+        // Atualiza nome na sidebar
+        const nomeSidebar = document.getElementById("nomeUsuarioSidebar");
+        if (nomeSidebar) nomeSidebar.textContent = nome;
+        
+        // Se era senha temporária, agora não é mais
+        Estado.senhaTemporaria = false;
+      } else {
+        mostrarToast(res.msg || "Erro ao atualizar perfil.", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao atualizar perfil.", "error");
+    })
+    .atualizarPerfil(Estado.usuarioAtual, dados);
+}
+
+
+</script>
+</body>
+</html>

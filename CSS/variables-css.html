@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>variables Styles</title>
+</head>
+<body>
+<style>
+
+/* ====================== RESET E BASE ====================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Cores principais */
+  --primary-color: #007bff;
+  --primary-dark: #0056b3;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+  
+  /* Status cores */
+  --status-transito: #007bff;
+  --status-parceiro: #6f42c1;
+  --status-rota: #fd7e14;
+  --status-aguardando: #ffc107;
+  --status-entregue: #28a745;
+  --status-devolucao: #dc3545;
+  --status-conferencia: #17a2b8;
+  --status-nao-atende: #6c757d;
+  --status-decisao: #e83e8c;
+  
+  /* Layout */
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 70px;
+  --header-height: 64px;
+  
+  /* Cores neutras */
+  --bg-body: #f4f6f9;
+  --bg-card: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  
+  /* Transições */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-body);
+  color: var(--text-primary);
+}
+
+/* ====================== CONTROLE DE TELAS ====================== */
+.tela {
+  display: none;
+}
+
+.tela.ativa {
+  display: block;
+}
+
+.tela-interna {
+  display: none;
+}
+
+.tela-interna.ativa {
+  display: block;
+}
+
+
+</style>
+</body>
+</html>

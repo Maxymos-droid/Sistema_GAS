@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>auth Script</title>
+</head>
+<body>
+<script>
+
+/* ========================== AUTENTICAÇÃO ========================== */
+/**
+ * Módulo de Autenticação - Gerenciamento de Login e Senhas
+ * 
+ * Responsabilidades:
+ * - Fazer login no sistema
+ * - Recuperar senha esquecida
+ * - Alterar senha
+ * - Fazer logout
+ * - Validar credenciais
+ * 
+ * RPC Calls:
+ * - loginUsuario(usuario, senha)
+ * - recuperarSenha(email)
+ * - alterarSenha(usuario, senhaAtual, novaSenha)
+ * 
+ * State Management:
+ * - Estado.usuarioAtual
+ * - Estado.isAdmin
+ * - Estado.senhaTemporaria
+ */
+
+/**
+ * Realiza login no sistema
+ * Valida credenciais, salva cookie se "Lembrar-me", e redireciona
+ */
+function fazerLogin() {
+  const usuario = (document.getElementById("usuarioLogin")?.value || "").trim();
+  const senha = (document.getElementById("senhaLogin")?.value || "").trim();
+  const msg = document.getElementById("msgLogin");
+  
+  if (msg) msg.textContent = "";
+  
+  if (!usuario || !senha) {
+    if (msg) msg.textContent = "Preencha todos os campos.";
+    return;
+  }
+
+  const lembrar = document.getElementById("lembrarMe")?.checked;
+  
+  // Salva preferência de "lembrar-me"
+  try {
+    if (lembrar) {
+      localStorage.setItem("lembrarMe", "1");
+      localStorage.setItem("usuario", usuario);
+    } else {
+      localStorage.removeItem("lembrarMe");
+      localStorage.removeItem("usuario");
+    }
+  } catch(_) {}
+
+  Loading.show("Autenticando...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      
+      if (res && res.status === "ok") {
+        // Salva dados do usuário no Estado
+        Estado.usuarioAtual = res.usuario;
+        Estado.isAdmin = res.perfil === "admin";
+        Estado.senhaTemporaria = res.senhaTemporaria || false;
+        
+        // Adiciona classe ao body se for admin
+        if (Estado.isAdmin) {
+          document.body.classList.add("is-admin");
+        }
+        
+        // Atualiza nome do usuário na sidebar
+        const nomeSidebar = document.getElementById("nomeUsuarioSidebar");
+        const perfilUsuario = document.getElementById("perfilUsuario");
+        
+        if (nomeSidebar) nomeSidebar.textContent = res.nome || usuario;
+        if (perfilUsuario) perfilUsuario.textContent = Estado.isAdmin ? "Administrador" : "Operador";
+        
+        if (res.senhaPadrao || Estado.senhaTemporaria) {
+          // Força alteração de senha
+          const usuarioAlterar = document.getElementById("usuarioAlterar");
+          if (usuarioAlterar) usuarioAlterar.value = res.login || usuario;
+          alternarTelaDeNivelSuperior("telaAlterarSenha");
+        } else {
+          // Login bem sucedido
+          alternarTelaDeNivelSuperior("app");
+          mostrarTelaDashboard();
+          mostrarToast(`Bem-vindo, ${res.nome || usuario}!`, "success");
+        }
+      } else {
+        if (msg) msg.textContent = res?.msg || "Usuário ou senha inválidos.";
+        mostrarToast(res?.msg || "Falha no login.", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      if (msg) msg.textContent = "Erro ao fazer login!";
+      console.error(err);
+      mostrarToast("Erro ao fazer login!", "error");
+    })
+    .loginUsuario(usuario, senha);
+}
+
+/**
+ * Mostra a tela de recuperação de senha
+ */
+function mostrarEsqueciSenha() {
+  alternarTelaDeNivelSuperior("telaEsqueciSenha");
+}
+
+/**
+ * Volta para a tela de login, limpa mensagens
+ */
+function voltarLogin() {
+  alternarTelaDeNivelSuperior("telaLogin");
+  
+  // Limpa mensagens de erro
+  const msgs = ["msgLogin", "msgRecuperacao", "msgAlterar"];
+  msgs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "";
+  });
+}
+
+/**
+ * Envia email de recuperação de senha
+ */
+function enviarRecuperacao() {
+  const email = (document.getElementById("emailRecuperacao")?.value || "").trim();
+  const msg = document.getElementById("msgRecuperacao");
+  
+  if (msg) msg.textContent = "";
+  
+  if (!email) {
+    if (msg) msg.textContent = "Informe o email cadastrado.";
+    return;
+  }
+
+  Loading.show("Enviando email...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      const texto = res?.msg || "Email enviado com sucesso!";
+      if (msg) {
+        msg.textContent = texto;
+        msg.style.color = res?.status === "ok" ? "green" : "red";
+      }
+      mostrarToast(texto, res?.status === "ok" ? "success" : "error");
+      
+      if (res?.status === "ok") {
+        // Marca que pode usar senha temporária
+        Estado.senhaTemporaria = true;
+        setTimeout(() => voltarLogin(), 3000);
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      if (msg) msg.textContent = "Erro ao enviar email!";
+      console.error(err);
+      mostrarToast("Erro ao enviar email!", "error");
+    })
+    .recuperarSenha(email);
+}
+
+/**
+ * Altera a senha do usuário
+ * Valida força de senha e confirmação
+ */
+function alterarSenha() {
+  const usuario = (document.getElementById("usuarioAlterar")?.value || "").trim();
+  const senhaAtual = (document.getElementById("senhaAtual")?.value || "").trim();
+  const novaSenha = (document.getElementById("novaSenha")?.value || "").trim();
+  const confirmarSenha = (document.getElementById("confirmarSenha")?.value || "").trim();
+  const msg = document.getElementById("msgAlterar");
+  
+  if (msg) msg.textContent = "";
+  
+  if (!usuario || !senhaAtual || !novaSenha || !confirmarSenha) {
+    if (msg) msg.textContent = "Preencha todos os campos.";
+    return;
+  }
+  
+  if (novaSenha !== confirmarSenha) {
+    if (msg) msg.textContent = "As senhas não coincidem.";
+    return;
+  }
+  
+  if (novaSenha.length < 6) {
+    if (msg) msg.textContent = "A senha deve ter no mínimo 6 caracteres.";
+    return;
+  }
+
+  Loading.show("Alterando senha...");
+  
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      const texto = res?.msg || "Senha alterada.";
+      if (msg) {
+        msg.textContent = texto;
+        msg.style.color = res?.status === "ok" ? "green" : "red";
+      }
+      mostrarToast(texto, res?.status === "ok" ? "success" : "error");
+      
+      if (res?.status === "ok") {
+        Estado.senhaTemporaria = false;
+        setTimeout(() => {
+          alternarTelaDeNivelSuperior("app");
+          mostrarTelaDashboard();
+        }, 1500);
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      if (msg) msg.textContent = "Erro ao alterar senha!";
+      console.error(err);
+      mostrarToast("Erro ao alterar senha!", "error");
+    })
+    .alterarSenha(usuario, senhaAtual, novaSenha);
+}
+
+/**
+ * Abre modal de confirmação de logout
+ */
+function confirmarLogout() {
+  document.getElementById('modalLogout').classList.add('show');
+}
+
+/**
+ * Fecha o modal de logout
+ */
+function fecharModalLogout() {
+  document.getElementById('modalLogout').classList.remove('show');
+}
+
+/**
+ * Realiza logout - limpa cookies, estado e retorna ao login
+ */
+function confirmarSaida() {
+  // Limpa todos os cookies
+  Cookies.limparTodos();
+  
+  // Limpa estado
+  Estado.usuarioAtual = null;
+  Estado.isAdmin = false;
+  Estado.dadosOriginais = [];
+  Estado.dadosFiltrados = [];
+  Estado.dashboardCache = null;
+  
+  document.body.classList.remove("is-admin");
+  fecharModalLogout();
+  alternarTelaDeNivelSuperior("telaLogin");
+  mostrarToast("Logout realizado com sucesso!", "info");
+}
+
+
+</script>
+</body>
+</html>
