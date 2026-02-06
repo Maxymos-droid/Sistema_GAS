@@ -244,32 +244,32 @@ function includeSistemaJS() {
 function includeJS() {
   return `
     <!-- NÚCLEO (Fundação) -->
-    <script>${include('JS/state-js')}</script>
-    <script>${include('JS/storage-js')}</script>
+    ${include('JS/state-js')}
+    ${include('JS/storage-js')}
 
     <!-- UTILIDADES -->
-    <script>${include('JS/utils-js')}</script>
-    <script>${include('JS/ui-js')}</script>
+    ${include('JS/utils-js')}
+    ${include('JS/ui-js')}
 
     <!-- AUTENTICAÇÃO & NAVEGAÇÃO -->
-    <script>${include('JS/auth-js')}</script>
-    <script>${include('JS/navigation-js')}</script>
+    ${include('JS/auth-js')}
+    ${include('JS/navigation-js')}
     
     <!-- FEATURES (Dados) -->
-    <script>${include('JS/search-js')}</script>
-    <script>${include('JS/table-js')}</script>
-    <script>${include('JS/dashboard-js')}</script>
+    ${include('JS/search-js')}
+    ${include('JS/table-js')}
+    ${include('JS/dashboard-js')}
     
     <!-- GESTÃO DE ENTIDADES -->
-    <script>${include('JS/users-js')}</script>
-    <script>${include('JS/profile-js')}</script>
-    <script>${include('JS/tickets-js')}</script>
+    ${include('JS/users-js')}
+    ${include('JS/profile-js')}
+    ${include('JS/tickets-js')}
     
     <!-- SISTEMA -->
-    <script>${include('JS/settings-js')}</script>
-    <script>${include('JS/help-js')}</script>
-    <script>${include('JS/init-js')}</script>
-    <script>${include('JS/bugs-js')}</script>
+    ${include('JS/settings-js')}
+    ${include('JS/help-js')}
+    ${include('JS/init-js')}
+    ${include('JS/bugs-js')}
   `;
 }
 
