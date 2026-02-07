@@ -304,7 +304,8 @@ function excluirUsuario(login) {
  */
 function atualizarPerfil(login, dados) {
   try {
-    const sheet = getSheet(SHEET_LOGIN);
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('LOGIN');
     
     if (!sheet) {
       return { status: "erro", msg: "Planilha de login não encontrada" };
@@ -312,24 +313,11 @@ function atualizarPerfil(login, dados) {
     
     const usuarios = sheet.getDataRange().getValues();
     
-    // Suporta `login` ou `id` (id na coluna A)
-    let rowToUpdate = -1;
-    if (typeof login === 'string' && login.indexOf('USER_') === 0) {
-      rowToUpdate = findRowIndexById(SHEET_LOGIN, login);
-    } else {
-      for (let i = 1; i < usuarios.length; i++) {
-        if (String(usuarios[i][1]).trim() === login) {
-          rowToUpdate = i + 1;
-          break;
-        }
-      }
-    }
-
-    if (rowToUpdate > 1) {
-      sheet.getRange(rowToUpdate, 4).setValue(dados.nome);
-      sheet.getRange(rowToUpdate, 5).setValue(dados.email);
+    for (let i = 1; i < usuarios.length; i++) {
+      if (String(usuarios[i][1]).trim() === login) {
+        sheet.getRange(i + 1, 4).setValue(dados.nome);
+        sheet.getRange(i + 1, 5).setValue(dados.email);
         
-        // Se alterar senha, valida a senha atual
         if (dados.senhaAtual && dados.novaSenha) {
           const senhaAtual = String(usuarios[i][2]).trim();
           
@@ -338,14 +326,14 @@ function atualizarPerfil(login, dados) {
           }
           
           sheet.getRange(i + 1, 3).setValue(dados.novaSenha);
+          // Remove flag senha temporária
           sheet.getRange(i + 1, 8).setValue("false");
         }
         
-      Logger.log('Perfil atualizado: ' + login);
-      return { status: "ok", msg: "Perfil atualizado com sucesso!" };
+        return { status: "ok", msg: "Perfil atualizado com sucesso!" };
+      }
     }
-
-    return { status: "erro", msg: "Usuário não encontrado" };
+    
     return { status: "erro", msg: "Usuário não encontrado" };
   } catch (error) {
     Logger.log('Erro ao atualizar perfil: ' + error);

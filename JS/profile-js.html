@@ -37,6 +37,7 @@ function carregarDadosPerfil() {
       }
       
       // Preenche campos com dados atuais
+    
       document.getElementById("perfilNome").value = user.nome || "";
       document.getElementById("perfilLogin").value = user.login || "";
       document.getElementById("perfilEmail").value = user.email || "";
@@ -60,6 +61,7 @@ function carregarDadosPerfil() {
  * RPC: atualizarPerfil(usuario, dados)
  */
 function salvarPerfil() {
+  
   const nome = document.getElementById("perfilNome").value.trim();
   const email = document.getElementById("perfilEmail").value.trim();
   const senhaAtual = document.getElementById("perfilSenhaAtual").value.trim();
@@ -90,14 +92,14 @@ function salvarPerfil() {
     }
   }
   
-  Loading.show("Salvando perfil...");
-  
-  const dados = {
+const dados = {
     nome,
     email,
     senhaAtual: senhaAtual || null,
     novaSenha: novaSenha || null
   };
+
+  Loading.show("Salvando perfil...");
   
   google.script.run
     .withSuccessHandler((res) => {
