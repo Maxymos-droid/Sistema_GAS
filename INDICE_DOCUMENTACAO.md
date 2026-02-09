@@ -1,133 +1,133 @@
-# 📚 Índice de Documentação - Sistema CTRC v2.1.0
+# ðŸ“š Ãndice de DocumentaÃ§Ã£o - Sistema CTRC v2.1.0
 
-## 📖 Arquivos de Documentação Disponíveis
+## ðŸ“– Arquivos de DocumentaÃ§Ã£o DisponÃ­veis
 
-### 1. 📝 **[CHANGELOG.md](CHANGELOG.md)** 
-**O que é:** Histórico completo de todas as mudanças da versão 2.0 → 2.1.0
+### 1. ðŸ“ **[CHANGELOG.md](CHANGELOG.md)** 
+**O que Ã©:** HistÃ³rico completo de todas as mudanÃ§as da versÃ£o 2.0 â†’ 2.1.0
 
-**Seções:**
-- ✅ Alterações principais
-- ✅ Refatoração de interface
-- ✅ Atualização de includes
-- ✅ Sistema de CSS
-- ✅ Sistema de JavaScript
-- ✅ Correções de bugs
-- ✅ Comparação de versões
-- ✅ Próximas tarefas
+**SeÃ§Ãµes:**
+- âœ… AlteraÃ§Ãµes principais
+- âœ… RefatoraÃ§Ã£o de interface
+- âœ… AtualizaÃ§Ã£o de includes
+- âœ… Sistema de CSS
+- âœ… Sistema de JavaScript
+- âœ… CorreÃ§Ãµes de bugs
+- âœ… ComparaÃ§Ã£o de versÃµes
+- âœ… PrÃ³ximas tarefas
 
-**Quando ler:** Ao iniciar trabalho, para entender o contexto das mudanças
+**Quando ler:** Ao iniciar trabalho, para entender o contexto das mudanÃ§as
 
 ---
 
-### 2. 📦 **[SISTEMA_INCLUDE_CSS_JS.md](SISTEMA_INCLUDE_CSS_JS.md)**
-**O que é:** Documentação técnica completa do sistema de includes dinâmicos
+### 2. ðŸ“¦ **[SISTEMA_INCLUDE_CSS_JS.md](SISTEMA_INCLUDE_CSS_JS.md)**
+**O que Ã©:** DocumentaÃ§Ã£o tÃ©cnica completa do sistema de includes dinÃ¢micos
 
-**Seções:**
-- 📋 Visão geral e arquitetura
-- 🎨 Sistema de CSS (14 módulos)
-- ⚙️ Sistema de JavaScript (16 módulos)
-- ⚠️ Ordem crítica de dependências
-- ✅ Checklist para adicionar novos módulos
-- 🔍 Debugging de problemas
-- 📚 Referências
+**SeÃ§Ãµes:**
+- ðŸ“‹ VisÃ£o geral e arquitetura
+- ðŸŽ¨ Sistema de CSS (14 mÃ³dulos)
+- âš™ï¸ Sistema de JavaScript (16 mÃ³dulos)
+- âš ï¸ Ordem crÃ­tica de dependÃªncias
+- âœ… Checklist para adicionar novos mÃ³dulos
+- ðŸ” Debugging de problemas
+- ðŸ“š ReferÃªncias
 
 **Quando ler:** Ao precisar adicionar novo CSS/JS ou solucionar problemas de carregamento
 
 ---
 
-### 3. 📊 **[RELATORIO_ATUALIZACAO.md](RELATORIO_ATUALIZACAO.md)**
-**O que é:** Relatório executivo de todas as mudanças e status final
+### 3. ðŸ“Š **[RELATORIO_ATUALIZACAO.md](RELATORIO_ATUALIZACAO.md)**
+**O que Ã©:** RelatÃ³rio executivo de todas as mudanÃ§as e status final
 
-**Seções:**
-- ✅ Status final (Deploy bem-sucedido)
-- 📋 Resumo das mudanças
-- 📁 Lista de 50 arquivos enviados
-- 📚 Documentação criada
-- ✅ Validações realizadas
-- 🚀 Próximas etapas
-- 💡 Destaques da v2.1.0
-- 📊 Métricas
+**SeÃ§Ãµes:**
+- âœ… Status final (Deploy bem-sucedido)
+- ðŸ“‹ Resumo das mudanÃ§as
+- ðŸ“ Lista de 50 arquivos enviados
+- ðŸ“š DocumentaÃ§Ã£o criada
+- âœ… ValidaÃ§Ãµes realizadas
+- ðŸš€ PrÃ³ximas etapas
+- ðŸ’¡ Destaques da v2.1.0
+- ðŸ“Š MÃ©tricas
 
-**Quando ler:** Para ter visão geral do status do projeto
+**Quando ler:** Para ter visÃ£o geral do status do projeto
 
 ---
 
-### 4. 🔐 **[GUIA_DEBUG_TOKENS.md](GUIA_DEBUG_TOKENS.md)**
-**O que é:** Guia prático para encontrar e corrigir erros de token
+### 4. ðŸ” **[GUIA_DEBUG_TOKENS.md](GUIA_DEBUG_TOKENS.md)**
+**O que Ã©:** Guia prÃ¡tico para encontrar e corrigir erros de token
 
-**Seções:**
-- 📍 Como acessar o console
-- 🔍 Tipos de erros comuns
-- ✅ Verificação passo-a-passo
-- 🛠️ Técnicas de debugging
-- 🧪 Testes manuais
-- 📊 Checklist de debugging
-- 🆘 Se nada funcionar
+**SeÃ§Ãµes:**
+- ðŸ“ Como acessar o console
+- ðŸ” Tipos de erros comuns
+- âœ… VerificaÃ§Ã£o passo-a-passo
+- ðŸ› ï¸ TÃ©cnicas de debugging
+- ðŸ§ª Testes manuais
+- ðŸ“Š Checklist de debugging
+- ðŸ†˜ Se nada funcionar
 
 **Quando ler:** Quando ver erros de token no console do navegador
 
 ---
 
-## 🎯 Mapa de Navegação Rápida
+## ðŸŽ¯ Mapa de NavegaÃ§Ã£o RÃ¡pida
 
-### Para diferentes cenários:
+### Para diferentes cenÃ¡rios:
 
-| Cenário | Arquivo | Seção |
+| CenÃ¡rio | Arquivo | SeÃ§Ã£o |
 |---------|---------|-------|
-| Entender o que mudou | CHANGELOG.md | Alterações Principais |
+| Entender o que mudou | CHANGELOG.md | AlteraÃ§Ãµes Principais |
 | Adicionar novo CSS | SISTEMA_INCLUDE_CSS_JS.md | Sistema de CSS |
 | Adicionar novo JS | SISTEMA_INCLUDE_CSS_JS.md | Sistema de JavaScript |
-| Entender dependências JS | SISTEMA_INCLUDE_CSS_JS.md | Ordem de Dependências |
+| Entender dependÃªncias JS | SISTEMA_INCLUDE_CSS_JS.md | Ordem de DependÃªncias |
 | Ver erro de token | GUIA_DEBUG_TOKENS.md | Tipos de Erros Comuns |
-| Verificar o que foi feito | RELATORIO_ATUALIZACAO.md | Resumo das Mudanças |
-| Testar o sistema | RELATORIO_ATUALIZACAO.md | Próximas Etapas |
+| Verificar o que foi feito | RELATORIO_ATUALIZACAO.md | Resumo das MudanÃ§as |
+| Testar o sistema | RELATORIO_ATUALIZACAO.md | PrÃ³ximas Etapas |
 
 ---
 
-## 🔗 Links Diretos aos Arquivos de Código
+## ðŸ”— Links Diretos aos Arquivos de CÃ³digo
 
 ### Frontend
 - [index.html](index.html) - Arquivo principal HTML
-- [CSS/variables-css.html](CSS/variables-css.html) - Variáveis CSS
+- [CSS/variables-css.html](CSS/variables-css.html) - VariÃ¡veis CSS
 - [Templates/](Templates/) - Pasta com fragmentos HTML
 
 ### Backend (Apps Script)
 - [Sever/interface.js](Sever/interface.js) - Entry point web (doGet)
-- [Sever/config.js](Sever/config.js) - Funções includeCSS() e includeJS()
-- [Sever/auth.js](Sever/auth.js) - Autenticação
+- [Sever/config.js](Sever/config.js) - FunÃ§Ãµes includeCSS() e includeJS()
+- [Sever/auth.js](Sever/auth.js) - AutenticaÃ§Ã£o
 
 ### JavaScript Frontend
 - [JS/state-js.html](JS/state-js.html) - Estado global
-- [JS/auth-js.html](JS/auth-js.html) - Autenticação frontend
+- [JS/auth-js.html](JS/auth-js.html) - AutenticaÃ§Ã£o frontend
 - [JS/bugs-js.html](JS/bugs-js.html) - Tratamento de erros
 
 ---
 
-## ✅ Checklist de Leitura por Perfil
+## âœ… Checklist de Leitura por Perfil
 
-### 👨‍💻 **Para Desenvolvedores Backend**
+### ðŸ‘¨â€ðŸ’» **Para Desenvolvedores Backend**
 - [ ] CHANGELOG.md - Entender contexto
-- [ ] SISTEMA_INCLUDE_CSS_JS.md - Seção sistema de JS
+- [ ] SISTEMA_INCLUDE_CSS_JS.md - SeÃ§Ã£o sistema de JS
 - [ ] Revisar [Sever/config.js](Sever/config.js)
 
-### 🎨 **Para Desenvolvedores Frontend**
+### ðŸŽ¨ **Para Desenvolvedores Frontend**
 - [ ] CHANGELOG.md - Entender contexto
-- [ ] SISTEMA_INCLUDE_CSS_JS.md - Todas as seções
+- [ ] SISTEMA_INCLUDE_CSS_JS.md - Todas as seÃ§Ãµes
 - [ ] RELATORIO_ATUALIZACAO.md - Status dos arquivos
 
-### 🔧 **Para QA/Testadores**
-- [ ] RELATORIO_ATUALIZACAO.md - Próximas Etapas
-- [ ] GUIA_DEBUG_TOKENS.md - Toda a documentação
-- [ ] Executar checklist na seção "Verificação Passo-a-Passo"
+### ðŸ”§ **Para QA/Testadores**
+- [ ] RELATORIO_ATUALIZACAO.md - PrÃ³ximas Etapas
+- [ ] GUIA_DEBUG_TOKENS.md - Toda a documentaÃ§Ã£o
+- [ ] Executar checklist na seÃ§Ã£o "VerificaÃ§Ã£o Passo-a-Passo"
 
-### 👀 **Para Gestores/Lideranças**
-- [ ] RELATORIO_ATUALIZACAO.md - Seções: Status, Resumo, Métricas
+### ðŸ‘€ **Para Gestores/LideranÃ§as**
+- [ ] RELATORIO_ATUALIZACAO.md - SeÃ§Ãµes: Status, Resumo, MÃ©tricas
 
 ---
 
-## 📊 Estatísticas da Documentação
+## ðŸ“Š EstatÃ­sticas da DocumentaÃ§Ã£o
 
-| Arquivo | Linhas | Seções | Tabelas | Exemplos |
+| Arquivo | Linhas | SeÃ§Ãµes | Tabelas | Exemplos |
 |---------|--------|--------|---------|----------|
 | CHANGELOG.md | ~150 | 8 | 3 | 5 |
 | SISTEMA_INCLUDE_CSS_JS.md | ~400 | 15 | 4 | 10+ |
@@ -137,9 +137,9 @@
 
 ---
 
-## 🚀 Como Começar
+## ðŸš€ Como ComeÃ§ar
 
-### Se você é novo no projeto:
+### Se vocÃª Ã© novo no projeto:
 
 1. **Primeiro** - Ler [RELATORIO_ATUALIZACAO.md](RELATORIO_ATUALIZACAO.md)
    - Entender o status da v2.1.0
@@ -147,71 +147,85 @@
 
 2. **Segundo** - Ler [CHANGELOG.md](CHANGELOG.md)
    - Entender o que mudou
-   - Compreender as razões
+   - Compreender as razÃµes
 
 3. **Terceiro** - Ler [SISTEMA_INCLUDE_CSS_JS.md](SISTEMA_INCLUDE_CSS_JS.md)
    - Aprender o sistema
-   - Entender as dependências
+   - Entender as dependÃªncias
 
 4. **Quando aparecer erro** - Consultar [GUIA_DEBUG_TOKENS.md](GUIA_DEBUG_TOKENS.md)
    - Debugar problemas
    - Resolver rapidamente
 
-### Se você quer apenas corrigir um bug:
+### Se vocÃª quer apenas corrigir um bug:
 
-→ Vá direto para [GUIA_DEBUG_TOKENS.md](GUIA_DEBUG_TOKENS.md)
+â†’ VÃ¡ direto para [GUIA_DEBUG_TOKENS.md](GUIA_DEBUG_TOKENS.md)
 
-### Se você quer adicionar uma feature:
+### Se vocÃª quer adicionar uma feature:
 
-→ Consulte [SISTEMA_INCLUDE_CSS_JS.md](SISTEMA_INCLUDE_CSS_JS.md) - Seção "Checklist: Adicionar Novo Módulo"
+â†’ Consulte [SISTEMA_INCLUDE_CSS_JS.md](SISTEMA_INCLUDE_CSS_JS.md) - SeÃ§Ã£o "Checklist: Adicionar Novo MÃ³dulo"
 
 ---
 
-## 💡 Dicas Importantes
+## ðŸ’¡ Dicas Importantes
 
-### Ordem de Carregamento JS (Crítica)
+### Ordem de Carregamento JS (CrÃ­tica)
 ```
-state-js → storage-js → utils-js → ui-js → auth-js → navigation-js → 
-search-js → table-js → dashboard-js → users-js → profile-js → tickets-js 
-→ settings-js → help-js → init-js → bugs-js
+state-js â†’ storage-js â†’ utils-js â†’ ui-js â†’ auth-js â†’ navigation-js â†’ 
+search-js â†’ table-js â†’ dashboard-js â†’ users-js â†’ profile-js â†’ tickets-js 
+â†’ settings-js â†’ help-js â†’ init-js â†’ bugs-js
 ```
-⚠️ **NÃO ALTERAR SEM VALIDAR**
+âš ï¸ **NÃƒO ALTERAR SEM VALIDAR**
 
 ### Arquivos CSS Principais
 ```
-variables-css → layout-css → buttons-css → forms-css → 
-tables-css → modals-css → components-css → tickets-css → 
-animations-css → responsive-css → themes-css
+variables-css â†’ layout-css â†’ buttons-css â†’ forms-css â†’ 
+tables-css â†’ modals-css â†’ components-css â†’ tickets-css â†’ 
+animations-css â†’ responsive-css â†’ themes-css
 ```
 
-### Funções Principais em config.js
+### FunÃ§Ãµes Principais em config.js
 - `include(filename)` - Carrega arquivo HTML
 - `includeCSS()` - Retorna todos os includes de CSS
 - `includeJS()` - Retorna todos os includes de JS
 
 ---
 
-## 📞 Suporte e Contato
+## ðŸ“ž Suporte e Contato
 
-Para dúvidas sobre:
-- **Documentação**: Revisar o arquivo correspondente
+Para dÃºvidas sobre:
+- **DocumentaÃ§Ã£o**: Revisar o arquivo correspondente
 - **Erros em runtime**: Consultar GUIA_DEBUG_TOKENS.md
 - **Desenvolvimento**: Consultar SISTEMA_INCLUDE_CSS_JS.md
-- **Histórico**: Consultar CHANGELOG.md
+- **HistÃ³rico**: Consultar CHANGELOG.md
 
 ---
 
-## 🎖️ Informações da Documentação
+## ðŸŽ–ï¸ InformaÃ§Ãµes da DocumentaÃ§Ã£o
 
-**Versão**: 2.1.0  
-**Data criação**: Fevereiro 6, 2026  
-**Status**: ✅ Completo e em produção  
+**VersÃ£o**: 2.1.0  
+**Data criaÃ§Ã£o**: Fevereiro 6, 2026  
+**Status**: âœ… Completo e em produÃ§Ã£o  
 **Manutenido por**: Sistema CTRC Analyzer  
 
-**Próxima revisão**: Quando houver mudanças significativas
+**PrÃ³xima revisÃ£o**: Quando houver mudanÃ§as significativas
 
 ---
 
-**Bem-vindo à documentação do Sistema CTRC v2.1.0! 🎉**
+**Bem-vindo Ã  documentaÃ§Ã£o do Sistema CTRC v2.1.0! ðŸŽ‰**
 
-Aproveite a leitura e boa sorte com o desenvolvimento! 🚀
+Aproveite a leitura e boa sorte com o desenvolvimento! ðŸš€
+
+---
+
+## Atualização (2026-02-09)
+
+- Nova confirmação genérica via modal (Sim/Não).
+- Toasts corrigidos para não conflitar com Bootstrap.
+- IDs de usuário sequenciais na coluna A.
+
+Documentos relacionados:
+- CHANGELOG.md
+- RELATORIO_ATUALIZACAO.md
+- README.md
+

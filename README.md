@@ -1,32 +1,32 @@
-# 🌐 HTML - Modularização v3.0
+# ðŸŒ HTML - ModularizaÃ§Ã£o v3.0
 
-## Visão Geral
+## VisÃ£o Geral
 
-HTML convertido de arquivo monolítico (830 linhas) para **11 fragmentos especializados** com responsabilidades bem definidas.
+HTML convertido de arquivo monolÃ­tico (830 linhas) para **11 fragmentos especializados** com responsabilidades bem definidas.
 
-## 📁 Estrutura
+## ðŸ“ Estrutura
 
 ```
 HTML/
-├── global.html              ← Importador Principal (coordenador)
-│
-├── login.html               ← Tela de autenticação (60L)
-├── header.html              ← Barra superior (24L)
-├── sidebar.html             ← Menu lateral (48L)
-├── perfil.html              ← Página de perfil (62L)
-├── dashboard.html           ← Dashboard/Gráficos (168L)
-├── pesquisa.html            ← Busca de CTRCs (72L)
-├── tickets.html             ← Sistema de Tickets (56L)
-├── config-sistema.html      ← Configurações (35L)
-├── cadastro.html            ← Menu de Cadastros (18L)
-├── usuarios.html            ← Gestão de Usuários (28L)
-├── ajuda.html               ← Help/FAQ (72L)
-├── modals.html              ← Todos os modais (188L)
-│
-└── README.md                ← Este arquivo
+â”œâ”€â”€ global.html              â† Importador Principal (coordenador)
+â”‚
+â”œâ”€â”€ login.html               â† Tela de autenticaÃ§Ã£o (60L)
+â”œâ”€â”€ header.html              â† Barra superior (24L)
+â”œâ”€â”€ sidebar.html             â† Menu lateral (48L)
+â”œâ”€â”€ perfil.html              â† PÃ¡gina de perfil (62L)
+â”œâ”€â”€ dashboard.html           â† Dashboard/GrÃ¡ficos (168L)
+â”œâ”€â”€ pesquisa.html            â† Busca de CTRCs (72L)
+â”œâ”€â”€ tickets.html             â† Sistema de Tickets (56L)
+â”œâ”€â”€ config-sistema.html      â† ConfiguraÃ§Ãµes (35L)
+â”œâ”€â”€ cadastro.html            â† Menu de Cadastros (18L)
+â”œâ”€â”€ usuarios.html            â† GestÃ£o de UsuÃ¡rios (28L)
+â”œâ”€â”€ ajuda.html               â† Help/FAQ (72L)
+â”œâ”€â”€ modals.html              â† Todos os modais (188L)
+â”‚
+â””â”€â”€ README.md                â† Este arquivo
 ```
 
-## 🔄 Como Funciona
+## ðŸ”„ Como Funciona
 
 **global.html** carrega fragmentos usando `include()`:
 
@@ -57,7 +57,7 @@ HTML/
 </html>
 ```
 
-A função `include()` está em **Google Scripts/config.gs**:
+A funÃ§Ã£o `include()` estÃ¡ em **Google Scripts/config.gs**:
 
 ```javascript
 function include(filename) {
@@ -70,128 +70,128 @@ function include(filename) {
 }
 ```
 
-## 📄 Fragmentos Detalhados
+## ðŸ“„ Fragmentos Detalhados
 
-### 🔐 **login.html** (60 linhas)
-- Tela de autenticação
-- Inputs: usuário, senha
-- Botões: Login, Recuperar senha
+### ðŸ” **login.html** (60 linhas)
+- Tela de autenticaÃ§Ã£o
+- Inputs: usuÃ¡rio, senha
+- BotÃµes: Login, Recuperar senha
 - Exibido antes do login
 
-### 🎨 **header.html** (24 linhas)
+### ðŸŽ¨ **header.html** (24 linhas)
 - Barra superior com logo
-- Nome do usuário autenticado
-- Botão de logout
+- Nome do usuÃ¡rio autenticado
+- BotÃ£o de logout
 
-### 📍 **sidebar.html** (48 linhas)
-- Menu lateral (navegação)
+### ðŸ“ **sidebar.html** (48 linhas)
+- Menu lateral (navegaÃ§Ã£o)
 - Links para: Dashboard, Pesquisa, Tickets, etc
 - Toggle para mobile
 
-### 👤 **perfil.html** (62 linhas)
-- Página de perfil do usuário
+### ðŸ‘¤ **perfil.html** (62 linhas)
+- PÃ¡gina de perfil do usuÃ¡rio
 - Inputs: Nome, Email
 - Checkbox: Alterar senha
-- Botão: Salvar
+- BotÃ£o: Salvar
 
-### 📊 **dashboard.html** (168 linhas)
+### ðŸ“Š **dashboard.html** (168 linhas)
 - Cards com contadores (Abertos, Em andamento, etc)
-- Gráficos (Charts.js)
-- Tabela com últimas entregas
+- GrÃ¡ficos (Charts.js)
+- Tabela com Ãºltimas entregas
 - Atualiza via `getPortalDataComMetricas()`
 
-### 🔍 **pesquisa.html** (72 linhas)
+### ðŸ” **pesquisa.html** (72 linhas)
 - Campo de busca por CTRC
 - Filtro por status
 - Multi-select de status
 - Tabela de resultados
 
-### 🎫 **tickets.html** (56 linhas)
-- Botão: Novo Ticket
+### ðŸŽ« **tickets.html** (56 linhas)
+- BotÃ£o: Novo Ticket
 - Filtros de status (Todos, Abertos, etc)
-- Busca por assunto/usuário
+- Busca por assunto/usuÃ¡rio
 - Tabela de tickets
 
-### ⚙️ **config-sistema.html** (35 linhas)
+### âš™ï¸ **config-sistema.html** (35 linhas)
 - Toggle: Tema Escuro
-- Toggle: Notificações
+- Toggle: NotificaÃ§Ãµes
 - Seletor: Idioma
-- Botões: Salvar, Reset
+- BotÃµes: Salvar, Reset
 
-### 📋 **cadastro.html** (18 linhas)
+### ðŸ“‹ **cadastro.html** (18 linhas)
 - Menu de "Cadastros" (Admin)
-- Links para: Usuários, Categorias, etc
+- Links para: UsuÃ¡rios, Categorias, etc
 
-### 👥 **usuarios.html** (28 linhas)
-- Listagem de usuários
-- Botão: Novo Usuário
-- Tabela com edição inline
+### ðŸ‘¥ **usuarios.html** (28 linhas)
+- Listagem de usuÃ¡rios
+- BotÃ£o: Novo UsuÃ¡rio
+- Tabela com ediÃ§Ã£o inline
 
-### ❓ **ajuda.html** (72 linhas)
+### â“ **ajuda.html** (72 linhas)
 - Perguntas frequentes
 - Accordion com respostas
-- Link para documentação
+- Link para documentaÃ§Ã£o
 
-### 🪟 **modals.html** (188 linhas)
+### ðŸªŸ **modals.html** (188 linhas)
 - Modal: Novo Ticket
-- Modal: Editar Usuário
-- Modal: Deletar Confirmação
-- Modal: Visualizar Comentários
+- Modal: Editar UsuÃ¡rio
+- Modal: Deletar ConfirmaÃ§Ã£o
+- Modal: Visualizar ComentÃ¡rios
 - Todos os modais em um arquivo
 
-## 🎯 Localizar Componente
+## ðŸŽ¯ Localizar Componente
 
 | Procurando por | Arquivo |
 |---|---|
 | Tela de login | login.html |
 | Barra superior | header.html |
 | Menu lateral | sidebar.html |
-| Perfil usuário | perfil.html |
-| Dashboard/Gráficos | dashboard.html |
+| Perfil usuÃ¡rio | perfil.html |
+| Dashboard/GrÃ¡ficos | dashboard.html |
 | Busca de entregas | pesquisa.html |
 | Tickets | tickets.html |
-| Configurações | config-sistema.html |
+| ConfiguraÃ§Ãµes | config-sistema.html |
 | Menu Cadastros | cadastro.html |
-| Usuários | usuarios.html |
+| UsuÃ¡rios | usuarios.html |
 | Ajuda/FAQ | ajuda.html |
-| Modais/Diálogos | modals.html |
+| Modais/DiÃ¡logos | modals.html |
 
-## 📊 Estatísticas
+## ðŸ“Š EstatÃ­sticas
 
-| Métrica | Antes | Depois |
+| MÃ©trica | Antes | Depois |
 |---------|-------|--------|
 | Arquivos | 1 | 12 |
 | Linhas totais | 830 | ~900 |
-| Linhas/arquivo | 830 | ~75 (média) |
-| Manutenibilidade | ⭐ | ⭐⭐⭐⭐⭐ |
-| Colaboração | ⭐ | ⭐⭐⭐⭐⭐ |
+| Linhas/arquivo | 830 | ~75 (mÃ©dia) |
+| Manutenibilidade | â­ | â­â­â­â­â­ |
+| ColaboraÃ§Ã£o | â­ | â­â­â­â­â­ |
 
-## ✨ Vantagens
+## âœ¨ Vantagens
 
-✅ Cada arquivo serve um propósito claro  
-✅ Fácil encontrar componente  
-✅ Sem código duplicado  
-✅ Colaboração paralela possível  
-✅ Reutilização de fragmentos  
-✅ Manutenção centralizada  
-✅ Escalável para novos fragmentos  
-✅ Cache de fragmentos  
+âœ… Cada arquivo serve um propÃ³sito claro  
+âœ… FÃ¡cil encontrar componente  
+âœ… Sem cÃ³digo duplicado  
+âœ… ColaboraÃ§Ã£o paralela possÃ­vel  
+âœ… ReutilizaÃ§Ã£o de fragmentos  
+âœ… ManutenÃ§Ã£o centralizada  
+âœ… EscalÃ¡vel para novos fragmentos  
+âœ… Cache de fragmentos  
 
-## 🚀 Adicionar Novo Fragmento
+## ðŸš€ Adicionar Novo Fragmento
 
-**Exemplo: Adicionar página de "Relatórios"**
+**Exemplo: Adicionar pÃ¡gina de "RelatÃ³rios"**
 
 1. Criar arquivo: `HTML/relatorios.html`
 ```html
-<!-- Relatórios -->
+<!-- RelatÃ³rios -->
 <section id="telaRelatorios" class="tela-interna">
   <div class="page-header">
-    <h2>Relatórios</h2>
+    <h2>RelatÃ³rios</h2>
     <button class="btn-primary" onclick="gerarRelatorio()">
       Gerar
     </button>
   </div>
-  <!-- Conteúdo -->
+  <!-- ConteÃºdo -->
 </section>
 ```
 
@@ -202,55 +202,55 @@ function include(filename) {
 
 3. Adicionar link em `sidebar.html`:
 ```html
-<a href="#" onclick="irTela('telaRelatorios')">Relatórios</a>
+<a href="#" onclick="irTela('telaRelatorios')">RelatÃ³rios</a>
 ```
 
-## 🔄 Ciclo de Vida
+## ðŸ”„ Ciclo de Vida
 
 ```
-1. Usuário acessa URL
-   ↓
+1. UsuÃ¡rio acessa URL
+   â†“
 2. Google Apps Script executa doGet()
-   ↓
+   â†“
 3. Renderiza global.html
-   ↓
+   â†“
 4. include() carrega cada fragmento
-   ↓
+   â†“
 5. HTML + CSS carregados
-   ↓
+   â†“
 6. JavaScript executa
-   ↓
+   â†“
 7. RPC chamadas ao backend
-   ↓
-8. Página interativa
+   â†“
+8. PÃ¡gina interativa
 ```
 
-## 🎨 Padrão de Estrutura
+## ðŸŽ¨ PadrÃ£o de Estrutura
 
 Cada fragmento segue:
 
 ```html
-<!-- SEÇÃO TÍTULO -->
+<!-- SEÃ‡ÃƒO TÃTULO -->
 <section id="telaNome" class="tela-interna">
   <div class="page-header">
-    <h2>Título</h2>
-    <button class="btn-primary">Ação</button>
+    <h2>TÃ­tulo</h2>
+    <button class="btn-primary">AÃ§Ã£o</button>
   </div>
   
   <div class="content">
-    <!-- Conteúdo dos dados -->
+    <!-- ConteÃºdo dos dados -->
   </div>
 </section>
 ```
 
-## 📱 Responsivo
+## ðŸ“± Responsivo
 
 Todos os fragmentos suportam:
-- ✅ Desktop (100% width)
-- ✅ Tablet (ajusta sidebar)
-- ✅ Mobile (sidebar colapsado)
+- âœ… Desktop (100% width)
+- âœ… Tablet (ajusta sidebar)
+- âœ… Mobile (sidebar colapsado)
 
-## 🧪 Testes
+## ðŸ§ª Testes
 
 Verificar:
 - Todos os fragmentos carregando
@@ -260,7 +260,18 @@ Verificar:
 
 ---
 
-**Última atualização**: Fevereiro 2026  
-**Status**: ✅ Produção  
-**Responsivo**: ✅ Sim  
-**Compatibilidade**: 100% com versão anterior
+**Ãšltima atualizaÃ§Ã£o**: Fevereiro 2026  
+**Status**: âœ… ProduÃ§Ã£o  
+**Responsivo**: âœ… Sim  
+**Compatibilidade**: 100% com versÃ£o anterior
+
+---
+
+## Atualização (2026-02-09)
+
+- IDs de usuário agora são sequenciais na coluna A.
+- Toasts corrigidos (sem conflito com Bootstrap).
+- Confirmações migradas para modal genérico reutilizável.
+- Modal de logout legado removido.
+
+Nota: a estrutura atual usa `Templates/`, `JS/` e `CSS/` com `includeCSS()` e `includeJS()` em `Sever/config.js`.

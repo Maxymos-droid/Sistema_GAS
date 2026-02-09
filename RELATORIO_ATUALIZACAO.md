@@ -1,21 +1,21 @@
-# 📊 RELATÓRIO DE ATUALIZAÇÃO - Sistema CTRC Analyzer v2.1.0
+# ðŸ“Š RELATÃ“RIO DE ATUALIZAÃ‡ÃƒO - Sistema CTRC Analyzer v2.1.0
 
-## ✅ Status Final: IMPLANTADO COM SUCESSO
+## âœ… Status Final: IMPLANTADO COM SUCESSO
 
 Data: Fevereiro 6, 2026  
-Hora: Após habilitar Apps Script API  
-Resultado: ✅ **50 arquivos enviados com sucesso**
+Hora: ApÃ³s habilitar Apps Script API  
+Resultado: âœ… **50 arquivos enviados com sucesso**
 
 ---
 
-## 📋 Resumo das Mudanças
+## ðŸ“‹ Resumo das MudanÃ§as
 
-### 1. **Interface Principal** ✅
+### 1. **Interface Principal** âœ…
 - **Arquivo**: [Sever/interface.js](Sever/interface.js)
-- **Mudança**: `doGet()` → mudança de template de `'global'` para `'index'`
-- **Status**: ✅ Enviado
+- **MudanÃ§a**: `doGet()` â†’ mudanÃ§a de template de `'global'` para `'index'`
+- **Status**: âœ… Enviado
 
-### 2. **Refatoração de Includes HTML** ✅
+### 2. **RefatoraÃ§Ã£o de Includes HTML** âœ…
 - **Arquivo**: [index.html](index.html)
 - **Templates atualizados**:
   ```html
@@ -32,231 +32,231 @@ Resultado: ✅ **50 arquivos enviados com sucesso**
   <?!= include('Templates/ajuda'); ?>
   <?!= include('Templates/modals'); ?>
   ```
-- **Status**: ✅ Enviado
+- **Status**: âœ… Enviado
 
-### 3. **Sistema de CSS v2.1** ✅
+### 3. **Sistema de CSS v2.1** âœ…
 - **Arquivo**: [Sever/config.js](Sever/config.js#L160)
-- **Nova função**: `includeCSS()` (modular + dinâmica)
+- **Nova funÃ§Ã£o**: `includeCSS()` (modular + dinÃ¢mica)
 - **Antigos comentados**: `includeSistemaCSS()` (backup)
-- **Módulos carregados**: 11 arquivos CSS
-- **Status**: ✅ Enviado
-- **Correções**:
-  - ✅ Removido espaço extra em `'CSS/buttons-css '` → `'CSS/buttons-css'`
+- **MÃ³dulos carregados**: 11 arquivos CSS
+- **Status**: âœ… Enviado
+- **CorreÃ§Ãµes**:
+  - âœ… Removido espaÃ§o extra em `'CSS/buttons-css '` â†’ `'CSS/buttons-css'`
 
-### 4. **Sistema de JavaScript v2.1** ✅
+### 4. **Sistema de JavaScript v2.1** âœ…
 - **Arquivo**: [Sever/config.js](Sever/config.js#L244)
-- **Nova função**: `includeJS()` (modular + ordem crítica)
+- **Nova funÃ§Ã£o**: `includeJS()` (modular + ordem crÃ­tica)
 - **Antigos comentados**: `includeSistemaJS()` (backup)
-- **Módulos carregados**: 16 arquivos JS
-- **Ordem de dependência**: Respeitada
-- **Status**: ✅ Enviado
-- **Correções**:
-  - ✅ Removidas aspas incorretas `'<script>` 
-  - ✅ Removidos hífens quebrados `''<script>`
-  - ✅ Normalizado para template string válida
+- **MÃ³dulos carregados**: 16 arquivos JS
+- **Ordem de dependÃªncia**: Respeitada
+- **Status**: âœ… Enviado
+- **CorreÃ§Ãµes**:
+  - âœ… Removidas aspas incorretas `'<script>` 
+  - âœ… Removidos hÃ­fens quebrados `''<script>`
+  - âœ… Normalizado para template string vÃ¡lida
 
 ---
 
-## 📁 Arquivos Enviados (50 Total)
+## ðŸ“ Arquivos Enviados (50 Total)
 
 ### Estrutura Organizada
 ```
-✅ appsscript.json
-✅ Code.js
-✅ index.html
-│
-├─ CSS/ (14 arquivos)
-│  ├─ animations-css.html
-│  ├─ buttons-css.html ✨ (corrigido espaço)
-│  ├─ components-css.html
-│  ├─ forms-css.html
-│  ├─ global-css.html
-│  ├─ layout-css.html
-│  ├─ modals-css.html
-│  ├─ responsive-css.html
-│  ├─ tables-css.html
-│  ├─ themes-css.html
-│  ├─ tickets-css.html
-│  └─ variables-css.html
-│
-├─ JS/ (16 arquivos)
-│  ├─ auth-js.html
-│  ├─ bugs-js.html
-│  ├─ dashboard-js.html
-│  ├─ help-js.html
-│  ├─ init-js.html
-│  ├─ navigation-js.html
-│  ├─ profile-js.html
-│  ├─ search-js.html
-│  ├─ settings-js.html
-│  ├─ state-js.html
-│  ├─ storage-js.html
-│  ├─ table-js.html
-│  ├─ tickets-js.html
-│  ├─ ui-js.html
-│  ├─ users-js.html
-│  └─ utils-js.html
-│
-├─ Templates/ (13 arquivos)
-│  ├─ ajuda.html
-│  ├─ cadastro.html
-│  ├─ config-sistema.html
-│  ├─ dashboard.html
-│  ├─ header.html
-│  ├─ login.html
-│  ├─ modals.html
-│  ├─ perfil.html
-│  ├─ pesquisa.html
-│  ├─ sidebar.html
-│  ├─ tickets.html
-│  └─ usuarios.html
-│
-└─ Sever/ (7 arquivos)
-   ├─ auth.js
-   ├─ backendCoreApi_IMPORTADOR_v2.js
-   ├─ config.js ✨ (corrigido)
-   ├─ interface.js ✨ (atualizado)
-   ├─ portal.js
-   ├─ tickets.js
-   └─ users.js
+âœ… appsscript.json
+âœ… Code.js
+âœ… index.html
+â”‚
+â”œâ”€ CSS/ (14 arquivos)
+â”‚  â”œâ”€ animations-css.html
+â”‚  â”œâ”€ buttons-css.html âœ¨ (corrigido espaÃ§o)
+â”‚  â”œâ”€ components-css.html
+â”‚  â”œâ”€ forms-css.html
+â”‚  â”œâ”€ global-css.html
+â”‚  â”œâ”€ layout-css.html
+â”‚  â”œâ”€ modals-css.html
+â”‚  â”œâ”€ responsive-css.html
+â”‚  â”œâ”€ tables-css.html
+â”‚  â”œâ”€ themes-css.html
+â”‚  â”œâ”€ tickets-css.html
+â”‚  â””â”€ variables-css.html
+â”‚
+â”œâ”€ JS/ (16 arquivos)
+â”‚  â”œâ”€ auth-js.html
+â”‚  â”œâ”€ bugs-js.html
+â”‚  â”œâ”€ dashboard-js.html
+â”‚  â”œâ”€ help-js.html
+â”‚  â”œâ”€ init-js.html
+â”‚  â”œâ”€ navigation-js.html
+â”‚  â”œâ”€ profile-js.html
+â”‚  â”œâ”€ search-js.html
+â”‚  â”œâ”€ settings-js.html
+â”‚  â”œâ”€ state-js.html
+â”‚  â”œâ”€ storage-js.html
+â”‚  â”œâ”€ table-js.html
+â”‚  â”œâ”€ tickets-js.html
+â”‚  â”œâ”€ ui-js.html
+â”‚  â”œâ”€ users-js.html
+â”‚  â””â”€ utils-js.html
+â”‚
+â”œâ”€ Templates/ (13 arquivos)
+â”‚  â”œâ”€ ajuda.html
+â”‚  â”œâ”€ cadastro.html
+â”‚  â”œâ”€ config-sistema.html
+â”‚  â”œâ”€ dashboard.html
+â”‚  â”œâ”€ header.html
+â”‚  â”œâ”€ login.html
+â”‚  â”œâ”€ modals.html
+â”‚  â”œâ”€ perfil.html
+â”‚  â”œâ”€ pesquisa.html
+â”‚  â”œâ”€ sidebar.html
+â”‚  â”œâ”€ tickets.html
+â”‚  â””â”€ usuarios.html
+â”‚
+â””â”€ Sever/ (7 arquivos)
+   â”œâ”€ auth.js
+   â”œâ”€ backendCoreApi_IMPORTADOR_v2.js
+   â”œâ”€ config.js âœ¨ (corrigido)
+   â”œâ”€ interface.js âœ¨ (atualizado)
+   â”œâ”€ portal.js
+   â”œâ”€ tickets.js
+   â””â”€ users.js
 ```
 
 ---
 
-## 📚 Documentação Criada
+## ðŸ“š DocumentaÃ§Ã£o Criada
 
-### 1. **CHANGELOG.md** 📝
-- Documento completo de todas as mudanças da v2.0 → v2.1.0
-- Problemas identificados e soluções
-- Comparação de versões
-- Próximas tarefas
+### 1. **CHANGELOG.md** ðŸ“
+- Documento completo de todas as mudanÃ§as da v2.0 â†’ v2.1.0
+- Problemas identificados e soluÃ§Ãµes
+- ComparaÃ§Ã£o de versÃµes
+- PrÃ³ximas tarefas
 
-**Localização**: [CHANGELOG.md](CHANGELOG.md)
+**LocalizaÃ§Ã£o**: [CHANGELOG.md](CHANGELOG.md)
 
-### 2. **SISTEMA_INCLUDE_CSS_JS.md** 📦
+### 2. **SISTEMA_INCLUDE_CSS_JS.md** ðŸ“¦
 - Guia completo do sistema de includes
-- Documentação de cada módulo CSS e JS
-- Ordem de dependências JavaScript
-- Checklist para adicionar novos módulos
+- DocumentaÃ§Ã£o de cada mÃ³dulo CSS e JS
+- Ordem de dependÃªncias JavaScript
+- Checklist para adicionar novos mÃ³dulos
 - Debugging e troubleshooting
 
-**Localização**: [SISTEMA_INCLUDE_CSS_JS.md](SISTEMA_INCLUDE_CSS_JS.md)
+**LocalizaÃ§Ã£o**: [SISTEMA_INCLUDE_CSS_JS.md](SISTEMA_INCLUDE_CSS_JS.md)
 
 ---
 
-## 🎯 Validações Realizadas
+## ðŸŽ¯ ValidaÃ§Ãµes Realizadas
 
 | Item | Status | Nota |
 |------|--------|------|
-| Sintaxe CSS | ✅ | Espaço extra removido |
-| Sintaxe JS | ✅ | Aspas incorretas removidas |
-| Ordem de JS | ✅ | Dependências respeitadas |
-| Compatibilidade Reversa | ✅ | Funções antigas comentadas |
-| Testes Locais | ⏳ | Executar em desenvolvimento |
-| Testes em Produção | ⏳ | Acessar a URL e validar |
+| Sintaxe CSS | âœ… | EspaÃ§o extra removido |
+| Sintaxe JS | âœ… | Aspas incorretas removidas |
+| Ordem de JS | âœ… | DependÃªncias respeitadas |
+| Compatibilidade Reversa | âœ… | FunÃ§Ãµes antigas comentadas |
+| Testes Locais | â³ | Executar em desenvolvimento |
+| Testes em ProduÃ§Ã£o | â³ | Acessar a URL e validar |
 
 ---
 
-## 🔍 Investigação: Erros de Token
+## ðŸ” InvestigaÃ§Ã£o: Erros de Token
 
 ### O que foi encontrado:
 - Nenhum erro de token foi identificado durante o `clasp push`
 - O deploy foi 100% bem-sucedido
 
-### Próximos passos para validar:
-1. Acessar a URL do Apps Script em produção
+### PrÃ³ximos passos para validar:
+1. Acessar a URL do Apps Script em produÃ§Ã£o
 2. Abrir Developer Console (F12)
 3. Verificar abas:
    - **Console**: Procurar por erros
-   - **Network**: Verificar requisições HTTP
+   - **Network**: Verificar requisiÃ§Ãµes HTTP
    - **Application**: Inspecionar Storage/Cookies
 4. Procurar por: `token`, `undefined`, `null`, `403`, `401`
 
-### Possíveis causas de erro de token:
-- ⚠️ Autenticação expirada
-- ⚠️ Variáveis de estado (state-js) não inicializadas
-- ⚠️ Função auth.js falhando no login
-- ⚠️ LocalStorage/Cookies bloqueados
+### PossÃ­veis causas de erro de token:
+- âš ï¸ AutenticaÃ§Ã£o expirada
+- âš ï¸ VariÃ¡veis de estado (state-js) nÃ£o inicializadas
+- âš ï¸ FunÃ§Ã£o auth.js falhando no login
+- âš ï¸ LocalStorage/Cookies bloqueados
 
 ---
 
-## 🚀 Próximas Etapas
+## ðŸš€ PrÃ³ximas Etapas
 
 ### Imediatas
-- [ ] Testar sistema em produção (acessar URL)
+- [ ] Testar sistema em produÃ§Ã£o (acessar URL)
 - [ ] Abrir console e verificar erros
 - [ ] Validar CSS sendo aplicado
 - [ ] Validar JavaScript sendo executado
 
 ### Curto Prazo
 - [ ] Revisar auth-js.html para erros de token
-- [ ] Verificar estado-js.html está inicializando corretamente
-- [ ] Testar login com credenciais válidas
+- [ ] Verificar estado-js.html estÃ¡ inicializando corretamente
+- [ ] Testar login com credenciais vÃ¡lidas
 
-### Médio Prazo
+### MÃ©dio Prazo
 - [ ] Adicionar logging para debug de tokens
-- [ ] Implementar refresh automático de token
+- [ ] Implementar refresh automÃ¡tico de token
 - [ ] Adicionar tratamento de erro em bugs-js
 
 ---
 
-## 📊 Métricas da Atualização
+## ðŸ“Š MÃ©tricas da AtualizaÃ§Ã£o
 
-| Métrica | Valor |
+| MÃ©trica | Valor |
 |---------|-------|
 | Arquivos modificados | 3 |
 | Bugs corrigidos | 2 |
-| Documentação criada | 2 arquivos |
-| Linhas de código (backend) | ~340 |
-| Módulos CSS | 14 |
-| Módulos JS | 16 |
+| DocumentaÃ§Ã£o criada | 2 arquivos |
+| Linhas de cÃ³digo (backend) | ~340 |
+| MÃ³dulos CSS | 14 |
+| MÃ³dulos JS | 16 |
 | Templates | 13 |
 | Tempo de build | < 1s |
-| Deploy status | ✅ Sucesso |
+| Deploy status | âœ… Sucesso |
 
 ---
 
-## 💡 Destaques da v2.1.0
+## ðŸ’¡ Destaques da v2.1.0
 
-✨ **Modularização Aprimorada**
-- CSS e JS agora carregam de forma dinâmica via template strings
+âœ¨ **ModularizaÃ§Ã£o Aprimorada**
+- CSS e JS agora carregam de forma dinÃ¢mica via template strings
 
-✨ **Melhor Manutenibilidade**
-- Cada módulo é independente e testável
-- Ordem de dependências está documentada
+âœ¨ **Melhor Manutenibilidade**
+- Cada mÃ³dulo Ã© independente e testÃ¡vel
+- Ordem de dependÃªncias estÃ¡ documentada
 
-✨ **Flexibilidade**
-- Adicionar/remover módulos é simples
-- Ativar/desativar é fácil (comentar uma linha)
+âœ¨ **Flexibilidade**
+- Adicionar/remover mÃ³dulos Ã© simples
+- Ativar/desativar Ã© fÃ¡cil (comentar uma linha)
 
-✨ **Performance**
-- Inline loading (sem requisições HTTP extras)
-- Cache automático pelo Apps Script
+âœ¨ **Performance**
+- Inline loading (sem requisiÃ§Ãµes HTTP extras)
+- Cache automÃ¡tico pelo Apps Script
 
 ---
 
-## 🔗 Links Rápidos
+## ðŸ”— Links RÃ¡pidos
 
 - [CHANGELOG Completo](CHANGELOG.md)
 - [Guia de Includes](SISTEMA_INCLUDE_CSS_JS.md)
 - [Interface Principal](Sever/interface.js)
-- [Configurações](Sever/config.js)
+- [ConfiguraÃ§Ãµes](Sever/config.js)
 - [HTML Principal](index.html)
 
 ---
 
-## ✅ Conclusão
+## âœ… ConclusÃ£o
 
 **Sistema atualizado com sucesso para v2.1.0**
 
-✅ Todos os arquivos deploados  
-✅ Sintaxe validada  
-✅ Documentação completa  
-✅ Pronto para testes em produção  
+âœ… Todos os arquivos deploados  
+âœ… Sintaxe validada  
+âœ… DocumentaÃ§Ã£o completa  
+âœ… Pronto para testes em produÃ§Ã£o  
 
-**Status**: 🟢 **PRODUÇÃO** 
+**Status**: ðŸŸ¢ **PRODUÃ‡ÃƒO** 
 
-Próximo: Acessar a URL e validar funcionamento em tempo real.
+PrÃ³ximo: Acessar a URL e validar funcionamento em tempo real.
 
 ---
 
@@ -264,3 +264,14 @@ Próximo: Acessar a URL e validar funcionamento em tempo real.
 **Date**: Fevereiro 6, 2026  
 **Version**: 2.1.0  
 **Last Updated**: 2026-02-06 14:52:00
+
+---
+
+## Atualização 2026-02-09 (v2.1.1)
+
+- Correção de conflito de `id` entre login e modal de usuário.
+- IDs de usuário agora sequenciais na coluna A.
+- Toasts corrigidos para não conflitar com Bootstrap.
+- Confirmações migradas para modal genérico reutilizável.
+- Remoção do modal de logout legado.
+

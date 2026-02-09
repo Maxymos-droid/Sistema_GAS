@@ -54,16 +54,19 @@
 /* ====================== TOAST/NOTIFICAÇÕES ====================== */
 #toast-container {
   position: fixed;
-  top: 80px;
+  top: calc(var(--header-height) + 16px);
   right: 20px;
-  z-index: 3000;
+  left: auto;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 12px;
   max-width: 400px;
+  width: min(400px, calc(100vw - 32px));
 }
 
-.toast {
+.app-toast {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -73,41 +76,42 @@
   box-shadow: var(--shadow-lg);
   border-left: 4px solid;
   animation: toastSlideIn 0.3s ease, toastSlideOut 0.3s ease 3.5s forwards;
+  width: 100%;
 }
 
-.toast i {
+.app-toast i {
   font-size: 24px;
 }
 
-.toast-success {
+.app-toast-success {
   border-left-color: var(--success-color);
 }
 
-.toast-success i {
+.app-toast-success i {
   color: var(--success-color);
 }
 
-.toast-error {
+.app-toast-error {
   border-left-color: var(--danger-color);
 }
 
-.toast-error i {
+.app-toast-error i {
   color: var(--danger-color);
 }
 
-.toast-warning {
+.app-toast-warning {
   border-left-color: var(--warning-color);
 }
 
-.toast-warning i {
+.app-toast-warning i {
   color: var(--warning-color);
 }
 
-.toast-info {
+.app-toast-info {
   border-left-color: var(--info-color);
 }
 
-.toast-info i {
+.app-toast-info i {
   color: var(--info-color);
 }
 

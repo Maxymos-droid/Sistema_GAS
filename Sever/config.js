@@ -319,6 +319,33 @@ function gerarIdUnico(sheetName, prefix = '') {
 }
 
 /**
+ * Gera um ID numérico sequencial (1, 2, 3, ...) único na coluna A.
+ * @function gerarIdSequencial
+ * @param {string} sheetName - Nome da aba onde verificar duplicatas
+ * @returns {string} ID numérico sequencial
+ */
+function gerarIdSequencial(sheetName) {
+  const ss = getSpreadsheet();
+  let sheet = ss.getSheetByName(sheetName);
+
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.appendRow(['ID']);
+  }
+
+  const lastRow = Math.max(1, sheet.getLastRow());
+  const values = sheet.getRange(1, 1, lastRow, 1).getValues().flat();
+
+  let maxId = 0;
+  for (let i = 0; i < values.length; i++) {
+    const n = Number(values[i]);
+    if (!Number.isNaN(n) && n > maxId) maxId = n;
+  }
+
+  return String(maxId + 1);
+}
+
+/**
  * Procura a linha (1-based) onde o ID está presente na coluna A
  * @function findRowIndexById
  * @param {string} sheetName

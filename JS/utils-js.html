@@ -62,12 +62,55 @@ function mostrarToast(mensagem, tipo = "info") {
   };
 
   const toast = document.createElement("div");
-  toast.className = `toast toast-${tipo}`;
+  toast.className = `app-toast app-toast-${tipo}`;
   toast.innerHTML = `<i class="material-icons">${icons[tipo] || "info"}</i> <span>${mensagem}</span>`;
   container.appendChild(toast);
 
   // Remove após 4 segundos
   setTimeout(() => toast.remove(), 4000);
+}
+
+/**
+ * Modal de confirmação genérico (Sim/Não)
+ * @param {string} mensagem
+ * @param {string} [titulo]
+ * @param {string} [textoSim]
+ * @param {string} [textoNao]
+ * @returns {Promise<boolean>}
+ */
+function mostrarConfirmacao(mensagem, titulo = "Confirmar", textoSim = "Sim", textoNao = "Não") {
+  const modal = document.getElementById("modalConfirmacao");
+  const tituloEl = document.getElementById("tituloModalConfirmacao");
+  const textoEl = document.getElementById("textoModalConfirmacao");
+  const btnSim = document.getElementById("btnConfirmacaoSim");
+  const btnNao = document.getElementById("btnConfirmacaoNao");
+
+  if (!modal || !tituloEl || !textoEl || !btnSim || !btnNao) {
+    // Fallback
+    return Promise.resolve(confirm(mensagem));
+  }
+
+  tituloEl.textContent = titulo;
+  textoEl.textContent = mensagem;
+  btnSim.lastChild.nodeValue = ` ${textoSim}`;
+  btnNao.textContent = textoNao;
+
+  modal.classList.add("show");
+
+  return new Promise((resolve) => {
+    const cleanup = (val) => {
+      modal.classList.remove("show");
+      btnSim.replaceWith(btnSim.cloneNode(true));
+      btnNao.replaceWith(btnNao.cloneNode(true));
+      resolve(val);
+    };
+
+    const btnSimAtual = document.getElementById("btnConfirmacaoSim");
+    const btnNaoAtual = document.getElementById("btnConfirmacaoNao");
+
+    btnSimAtual.addEventListener("click", () => cleanup(true), { once: true });
+    btnNaoAtual.addEventListener("click", () => cleanup(false), { once: true });
+  });
 }
 
 

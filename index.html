@@ -18,12 +18,14 @@
   <!-- CSS Controlado pelo Backend -->
   <?!= includeCSS(); ?>
 </head>
-<body>
+<body class="page-loading-active">
    <!-- LOADING GLOBAL -->
   <div id="loading-overlay" aria-hidden="true">
     <div class="spinner-border"></div>
     <p class="loading-text">Carregando...</p>
   </div>
+  <!--  TOASTS  -->
+  <div id="toast-container"></div>
     
     <!-- TELA DE LOGIN/AUTENTICAÇÃO -->
     <?!= include('Templates/login'); ?>

@@ -177,7 +177,7 @@ function salvarUsuario(usuario, acao) {
       }
       
       // Gera ID único e grava na coluna A (chave primária)
-      const novoId = gerarIdUnico(SHEET_LOGIN, 'USER_');
+      const novoId = gerarIdSequencial(SHEET_LOGIN);
 
       sheet.appendRow([
         novoId,

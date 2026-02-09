@@ -38,7 +38,7 @@
 
         <div class="form-group">
           <label>Login *</label>
-          <input type="text" id="usuarioLogin" class="form-control" required />
+          <input type="text" id="usuarioLoginModal" class="form-control" required />
         </div>
 
         <div class="form-group">
@@ -126,21 +126,19 @@
   </div>
 </div>
 
-<!-- ====================== MODAL LOGOUT ====================== -->
-<div id="modalLogout" class="modal">
+<!-- ====================== MODAL CONFIRMAÇÃO (GENÉRICO) ====================== -->
+<div id="modalConfirmacao" class="modal">
   <div class="modal-content modal-small">
     <div class="modal-header">
-      <h3><i class="material-icons">exit_to_app</i> Confirmar Saída</h3>
+      <h3><i class="material-icons">help_outline</i> <span id="tituloModalConfirmacao">Confirmar</span></h3>
     </div>
     <div class="modal-body">
-      <p style="text-align: center; font-size: 16px; margin: 20px 0;">
-        Deseja realmente sair do sistema?
-      </p>
+      <p id="textoModalConfirmacao" style="text-align: center; font-size: 16px; margin: 20px 0;"></p>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary" onclick="fecharModalLogout()">Não</button>
-      <button class="btn-danger" onclick="confirmarSaida()">
-        <i class="material-icons">exit_to_app</i> Sim, Sair
+      <button class="btn-secondary" id="btnConfirmacaoNao">Não</button>
+      <button class="btn-danger" id="btnConfirmacaoSim">
+        <i class="material-icons">check</i> Sim
       </button>
     </div>
   </div>

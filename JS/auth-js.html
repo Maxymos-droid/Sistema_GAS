@@ -223,14 +223,14 @@ function alterarSenha() {
  * Abre modal de confirmação de logout
  */
 function confirmarLogout() {
-  document.getElementById('modalLogout').classList.add('show');
-}
-
-/**
- * Fecha o modal de logout
- */
-function fecharModalLogout() {
-  document.getElementById('modalLogout').classList.remove('show');
+  mostrarConfirmacao(
+    "Deseja realmente sair do sistema?",
+    "Confirmar saída",
+    "Sim, sair",
+    "Não"
+  ).then((ok) => {
+    if (ok) confirmarSaida();
+  });
 }
 
 /**
@@ -248,7 +248,6 @@ function confirmarSaida() {
   Estado.dashboardCache = null;
   
   document.body.classList.remove("is-admin");
-  fecharModalLogout();
   alternarTelaDeNivelSuperior("telaLogin");
   mostrarToast("Logout realizado com sucesso!", "info");
 }

@@ -84,7 +84,7 @@ function mostrarModalNovoUsuario() {
   document.getElementById("tituloModalUsuario").textContent = "Novo Usuário";
   document.getElementById("formUsuario").reset();
   document.getElementById("usuarioId").value = "";
-  document.getElementById("usuarioLogin").readOnly = false;
+  document.getElementById("usuarioLoginModal").readOnly = false;
   document.getElementById("usuarioSenha").required = true;
   document.getElementById("modalNovoUsuario").classList.add("show");
 }
@@ -111,8 +111,8 @@ function editarUsuario(login) {
       document.getElementById("tituloModalUsuario").textContent = "Editar Usuário";
       document.getElementById("usuarioId").value = user.login;
       document.getElementById("usuarioNome").value = user.nome || "";
-      document.getElementById("usuarioLogin").value = user.login;
-      document.getElementById("usuarioLogin").readOnly = true;  // Não pode alterar login
+      document.getElementById("usuarioLoginModal").value = user.login;
+      document.getElementById("usuarioLoginModal").readOnly = true;  // Não pode alterar login
       document.getElementById("usuarioEmail").value = user.email || "";
       document.getElementById("usuarioSenha").value = "";
       document.getElementById("usuarioSenha").required = false;  // Senha é opcional na edição
@@ -135,7 +135,7 @@ function editarUsuario(login) {
 function fecharModalUsuario() {
   document.getElementById("modalNovoUsuario").classList.remove("show");
   document.getElementById("formUsuario").reset();
-  document.getElementById("usuarioLogin").readOnly = false;
+  document.getElementById("usuarioLoginModal").readOnly = false;
   document.getElementById("usuarioSenha").required = true;
 }
 
@@ -146,7 +146,7 @@ function fecharModalUsuario() {
 function salvarUsuario() {
   const id = document.getElementById("usuarioId").value;
   const nome = document.getElementById("usuarioNome").value.trim();
-  const login = document.getElementById("usuarioLogin").value.trim();
+  const login = document.getElementById("usuarioLoginModal").value.trim();
   const email = document.getElementById("usuarioEmail").value.trim();
   const senha = document.getElementById("usuarioSenha").value.trim();
   const perfil = document.getElementById("usuarioPerfil").value;
@@ -194,8 +194,9 @@ function salvarUsuario() {
  * 
  * @param {string} login - Login do usuário a excluir
  */
-function excluirUsuario(login) {
-  if (!confirm(`Deseja realmente excluir o usuário ${login}?`)) return;
+async function excluirUsuario(login) {
+  const ok = await mostrarConfirmacao(`Deseja realmente excluir o usuário ${login}?`, "Confirmar exclusão", "Sim, excluir", "Não");
+  if (!ok) return;
   
   Loading.show("Excluindo usuário...");
   
