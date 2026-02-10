@@ -42,14 +42,176 @@ function carregarTickets(filtro = 'todos', q = '') {
   google.script.run
     .withSuccessHandler((tickets) => {
       Loading.hide();
+      window._ticketsLista = Array.isArray(tickets) ? tickets : (tickets && Array.isArray(tickets.tickets) ? tickets.tickets : []);
+      aplicarIconesFiltroTabela("tickets", "tabelaTickets", ["ID", "Ticket", "Tipo", "Assunto", "Prioridade", "Usuário", "Status", "Data"]);
       renderizarTickets(tickets, filtro, q);
+      if (typeof touchSessao === "function") {
+        touchSessao();
+      }
     })
     .withFailureHandler((err) => {
       Loading.hide();
       console.error(err);
-      mostrarToast("Erro ao carregar tickets.", "error");
+      const msg = err && err.message ? err.message : (typeof err === "string" ? err : "Erro ao carregar tickets.");
+      mostrarToast(msg, "error");
     })
     .listarTickets(Estado.usuarioAtual, Estado.isAdmin);
+}
+
+/**
+ * Atualiza badge de notificações de tickets pendentes
+ */
+function atualizarNotificacoesTickets() {
+  const badge = document.getElementById("badgeNotificacoes");
+  if (!badge) return;
+
+  const lastViewed = obterUltimaNotificacaoTicketsLida();
+
+  google.script.run
+    .withSuccessHandler((tickets) => {
+      const arrAll = Array.isArray(tickets) ? tickets : [];
+      const pendentes = arrAll.filter(t => isTicketPendenteParaNotificacao(t));
+      const pendentesNovos = pendentes.filter(t => {
+        const ts = Date.parse(t.data || "") || 0;
+        return ts > lastViewed;
+      }).length;
+
+      const ultimoId = obterUltimaNotificacaoSistemaLida();
+      google.script.run
+        .withSuccessHandler((qtdeSistema) => {
+          const pendentesSistema = Number(qtdeSistema) || 0;
+          const total = pendentesNovos + pendentesSistema;
+          badge.textContent = String(total);
+          badge.style.display = total > 0 ? "inline-flex" : "none";
+        })
+        .withFailureHandler(() => {
+          badge.textContent = String(pendentesNovos);
+          badge.style.display = pendentesNovos > 0 ? "inline-flex" : "none";
+        })
+        .contarNotificacoesSistema(ultimoId);
+    })
+    .withFailureHandler((err) => {
+      console.error(err);
+      badge.textContent = "0";
+      badge.style.display = "none";
+    })
+    .listarTickets(Estado.usuarioAtual, Estado.isAdmin);
+}
+
+function obterUltimaNotificacaoTicketsLida() {
+  try {
+    const k = `notifTicketsUltimo_${Estado.usuarioAtual || 'anon'}`;
+    return Number(localStorage.getItem(k) || "0");
+  } catch(_) {
+    return 0;
+  }
+}
+
+function marcarNotificacoesTicketsLidas(ts) {
+  try {
+    const k = `notifTicketsUltimo_${Estado.usuarioAtual || 'anon'}`;
+    localStorage.setItem(k, String(ts || 0));
+  } catch(_) {}
+}
+
+function obterUltimaNotificacaoSistemaLida() {
+  try {
+    const k = `notifSistemaUltimo_${Estado.usuarioAtual || 'anon'}`;
+    return Number(localStorage.getItem(k) || "0");
+  } catch(_) {
+    return 0;
+  }
+}
+
+// tabs removidas
+
+function marcarNotificacoesSistemaLidas(ultimoId) {
+  try {
+    const k = `notifSistemaUltimo_${Estado.usuarioAtual || 'anon'}`;
+    localStorage.setItem(k, String(ultimoId || 0));
+  } catch(_) {}
+}
+
+function abrirNotificacoes() {
+  const modal = document.getElementById("modalNotificacoes");
+  const lista = document.getElementById("listaNotificacoes");
+  if (!modal || !lista) return;
+  lista.innerHTML = "<p style='text-align:center; color:#6c757d;'>Carregando...</p>";
+  modal.classList.add("show");
+
+  google.script.run
+    .withSuccessHandler((tickets) => {
+      const arrAll = Array.isArray(tickets) ? tickets : [];
+      const arr = arrAll.filter(t => isTicketPendenteParaNotificacao(t));
+      const ticketHtml = arr.map(t => `
+        <div class="notif-item" onclick="abrirTicketPorId('${t.id}')">
+          <div class="notif-title">${formatarCodigoTicket(t, 0)} - ${formatarStatus(t.status)} - 
+          <span class="notif-sub">${formatarDataISO(t.data)}</spa></div>
+          <div style="margin-top:6px;">${t.ultimoComentario || t.descricao || ""}</div>
+        </div>
+      `).join("");
+
+      google.script.run
+        .withSuccessHandler((dados) => {
+          const sys = Array.isArray(dados) ? dados : [];
+          const sysHtml = sys.map(n => `
+            <div class="notif-item">
+              <div class="notif-title">${n.titulo} - 
+              <span class="notif-sub">${formatarDataISO(n.data)}</span></div>
+              <div style="margin-top:6px;">${n.mensagem}</div>
+            </div>
+          `).join("");
+
+          const combined = (ticketHtml || sysHtml) ? (ticketHtml + sysHtml) : "<p style='text-align:center; color:#6c757d;'>Sem notifica??es</p>";
+          lista.innerHTML = combined;
+
+          const lastTs = arr.length ? Math.max(...arr.map(t => Date.parse(t.data || "") || 0)) : 0;
+          marcarNotificacoesTicketsLidas(lastTs);
+          if (sys.length) {
+            const ultimoId = Math.max(...sys.map(x => Number(x.id) || 0));
+            marcarNotificacoesSistemaLidas(ultimoId);
+          }
+          atualizarNotificacoesTickets();
+        })
+        .withFailureHandler((err) => {
+          console.error(err);
+          lista.innerHTML = ticketHtml || "<p style='text-align:center; color:#dc3545;'>Erro ao carregar notifica??es</p>";
+          atualizarNotificacoesTickets();
+        })
+        .listarNotificacoesSistema();
+    })
+    .withFailureHandler((err) => {
+      console.error(err);
+      lista.innerHTML = "<p style='text-align:center; color:#dc3545;'>Erro ao carregar notifica??es</p>";
+    })
+    .listarTickets(Estado.usuarioAtual, Estado.isAdmin);
+}
+
+function fecharModalNotificacoes() {
+  const modal = document.getElementById("modalNotificacoes");
+  if (modal) modal.classList.remove("show");
+}
+
+// tabs removidas
+
+function abrirTicketPorId(id) {
+  const lista = window._ticketsLista || [];
+  const t = lista.find(x => String(x.id) === String(id));
+  if (t) {
+    fecharModalNotificacoes();
+    abrirDetalheTicket(t);
+  } else {
+    fecharModalNotificacoes();
+    carregarTickets();
+  }
+}
+
+function isTicketPendenteParaNotificacao(ticket) {
+  if (!ticket) return false;
+  if (Estado.isAdmin) {
+    return ticket.status === "aberto" || ticket.status === "andamento";
+  }
+  return ticket.status === "andamento" || ticket.status === "resolvido";
 }
 
 /**
@@ -66,9 +228,18 @@ function renderizarTickets(tickets, filtro, q = '') {
 
   tbody.innerHTML = "";
 
+  // Normaliza retorno caso venha null/undefined ou embrulhado
+  if (!tickets) {
+    tickets = [];
+  } else if (typeof tickets === 'object' && !Array.isArray(tickets)) {
+    if (Array.isArray(tickets.tickets)) {
+      tickets = tickets.tickets;
+    }
+  }
+
   // Valida array de tickets
   if (!Array.isArray(tickets)) {
-    tbody.innerHTML = "<tr><td colspan=8 style='text-align:center; padding:24px; color:#6c757d;'>Erro ao carregar tickets</td></tr>";
+    tbody.innerHTML = "<tr><td colspan=9 style='text-align:center; padding:24px; color:#6c757d;'>Erro ao carregar tickets</td></tr>";
     return;
   }
 
@@ -92,17 +263,20 @@ function renderizarTickets(tickets, filtro, q = '') {
   if (contagem) contagem.textContent = ticketsFiltrados.length;
 
   if (ticketsFiltrados.length === 0) {
-    tbody.innerHTML = "<tr><td colspan=8 style='text-align:center; padding:40px; color:#6c757d;'>Nenhum ticket encontrado</td></tr>";
+    tbody.innerHTML = "<tr><td colspan=9 style='text-align:center; padding:40px; color:#6c757d;'>Nenhum ticket encontrado</td></tr>";
     return;
   }
 
   // Renderiza linhas da tabela
-  ticketsFiltrados.forEach(ticket => {
+  ticketsFiltrados.forEach((ticket, index) => {
     const tr = document.createElement('tr');
     tr.onclick = () => abrirDetalheTicket(ticket);
 
     const tdId = document.createElement('td');
     tdId.textContent = ticket.id;
+
+    const tdTicket = document.createElement('td');
+    tdTicket.textContent = formatarCodigoTicket(ticket, index);
 
     const tdTipo = document.createElement('td');
     tdTipo.textContent = ticket.tipo === 'ocorrencia' ? 'Ocorrência' : 'Sugestão';
@@ -125,27 +299,26 @@ function renderizarTickets(tickets, filtro, q = '') {
 
     const tdAcoes = document.createElement('td');
     tdAcoes.className = 'table-actions';
+    tdAcoes.onclick = (e) => e.stopPropagation();
 
-    // Ações (botões) - evitar propagation para não abrir modal
+    // Ações - usar select para economizar espaço
     if (Estado.isAdmin) {
-      const btnAnd = document.createElement('button');
-      btnAnd.className = 'btn-sm btn-primary';
-      btnAnd.textContent = 'Andamento';
-      btnAnd.onclick = (e) => { e.stopPropagation(); alterarStatusTicket(ticket.id, 'andamento'); };
-
-      const btnRes = document.createElement('button');
-      btnRes.className = 'btn-sm btn-success';
-      btnRes.textContent = 'Resolver';
-      btnRes.onclick = (e) => { e.stopPropagation(); alterarStatusTicket(ticket.id, 'resolvido'); };
-
-      const btnFec = document.createElement('button');
-      btnFec.className = 'btn-sm btn-secondary';
-      btnFec.textContent = 'Fechar';
-      btnFec.onclick = (e) => { e.stopPropagation(); alterarStatusTicket(ticket.id, 'fechado'); };
-
-      tdAcoes.appendChild(btnAnd);
-      tdAcoes.appendChild(btnRes);
-      tdAcoes.appendChild(btnFec);
+      const select = document.createElement('select');
+      select.className = 'form-select form-select-sm';
+      select.innerHTML = `
+        <option value="">Ações</option>
+        <option value="andamento">Andamento</option>
+        <option value="resolvido">Resolver</option>
+        <option value="fechado">Fechar</option>
+      `;
+      select.onclick = (e) => e.stopPropagation();
+      select.onchange = (e) => {
+        e.stopPropagation();
+        const v = select.value;
+        if (v) alterarStatusTicket(ticket.id, v);
+        select.value = "";
+      };
+      tdAcoes.appendChild(select);
     } else {
       const btnView = document.createElement('button');
       btnView.className = 'btn-sm btn-primary';
@@ -155,6 +328,7 @@ function renderizarTickets(tickets, filtro, q = '') {
     }
 
     tr.appendChild(tdId);
+    tr.appendChild(tdTicket);
     tr.appendChild(tdTipo);
     tr.appendChild(tdAssunto);
     tr.appendChild(tdPrioridade);
@@ -180,6 +354,24 @@ function formatarStatus(status) {
     'fechado': 'Fechado'
   };
   return map[status] || status;
+}
+
+/**
+ * Formata código visual do ticket no padrão #0000
+ * @param {Object} ticket
+ * @param {number} index
+ * @returns {string}
+ */
+function formatarCodigoTicket(ticket, index = 0) {
+  if (ticket && ticket.codigo != null && String(ticket.codigo).trim() !== "") {
+    const raw = String(ticket.codigo).trim();
+    return raw.startsWith("#") ? raw : `#${String(raw).padStart(4, '0')}`;
+  }
+  const raw = ticket && ticket.id != null ? String(ticket.id) : '';
+  const digits = raw.replace(/\D/g, '');
+  let base = digits ? digits.slice(-4) : String(index + 1);
+  if (!base) base = String(index + 1);
+  return `#${String(base).padStart(4, '0')}`;
 }
 
 /**
@@ -259,6 +451,10 @@ function salvarTicket() {
         mostrarToast("Ticket criado com sucesso!", "success");
         fecharModalTicket();
         carregarTickets();  // Recarrega lista
+        atualizarNotificacoesTickets();
+        if (typeof touchSessao === "function") {
+          touchSessao();
+        }
       } else {
         mostrarToast(res.msg || "Erro ao criar ticket.", "error");
       }
@@ -281,7 +477,7 @@ function abrirDetalheTicket(ticket) {
   modal.innerHTML = `
     <div class="modal-content modal-large">
       <div class="modal-header">
-        <h3><i class="material-icons">support</i> Ticket #${ticket.id}</h3>
+        <h3><i class="material-symbols-outlined">support</i> Ticket ${formatarCodigoTicket(ticket, 0)}</h3>
         <span class="modal-close" onclick="this.closest('.modal').remove()">&times;</span>
       </div>
       <div class="modal-body">
@@ -300,7 +496,7 @@ function abrirDetalheTicket(ticket) {
           </div>
           
           <div class="ticket-historico">
-            <h4><i class="material-icons">history</i> Histórico de Conversas</h4>
+            <h4><i class="material-symbols-outlined">history</i> Histórico de Conversas</h4>
             <div id="historicoTicket${ticket.id}">
               <p style="text-align: center; color: #6c757d; padding: 20px;">Carregando histórico...</p>
             </div>
@@ -310,7 +506,7 @@ function abrirDetalheTicket(ticket) {
             <h4>Adicionar Comentário</h4>
             <textarea id="comentarioTicket" class="form-control" rows="3" placeholder="Digite seu comentário..."></textarea>
             <button class="btn-primary" style="margin-top: 10px;" onclick="adicionarComentario('${ticket.id}')">
-              <i class="material-icons">send</i> Enviar
+              <i class="material-symbols-outlined">send</i> Enviar
             </button>
           </div>
         </div>
@@ -356,6 +552,12 @@ function carregarHistoricoTicket(ticketId) {
           <p>${c.texto}</p>
         </div>
       `).join('');
+      if (typeof atualizarNotificacoesTickets === "function") {
+        atualizarNotificacoesTickets();
+      }
+      if (typeof touchSessao === "function") {
+        touchSessao();
+      }
     })
     .withFailureHandler((err) => {
       Loading.hide();
@@ -392,6 +594,9 @@ function adicionarComentario(ticketId) {
         mostrarToast("Comentário adicionado!", "success");
         textarea.value = "";
         carregarHistoricoTicket(ticketId);  // Recarrega histórico
+        if (typeof touchSessao === "function") {
+          touchSessao();
+        }
       } else {
         mostrarToast(res.msg || "Erro ao adicionar comentário", "error");
       }
@@ -425,6 +630,10 @@ function alterarStatusTicket(id, novoStatus) {
       if (res.status === "ok") {
         mostrarToast("Status atualizado!", "success");
         carregarTickets();  // Recarrega lista
+        atualizarNotificacoesTickets();
+        if (typeof touchSessao === "function") {
+          touchSessao();
+        }
       } else {
         mostrarToast(res.msg || "Erro ao atualizar status.", "error");
       }

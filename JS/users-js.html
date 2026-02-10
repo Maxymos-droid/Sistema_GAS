@@ -32,42 +32,12 @@ function carregarUsuarios() {
   google.script.run
     .withSuccessHandler((usuarios) => {
       Loading.hide();
-      
-      const tbody = document.querySelector("#tabelaUsuarios tbody");
-      if (!tbody) return;
-      
-      tbody.innerHTML = "";
-      
-      if (!usuarios || usuarios.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:40px;'>Nenhum usuário cadastrado</td></tr>";
-        return;
+      window._usuariosLista = Array.isArray(usuarios) ? usuarios : [];
+      aplicarIconesFiltroTabela("usuarios", "tabelaUsuarios", ["ID", "Nome", "Login", "Email", "Perfil", "Status"]);
+      renderizarUsuarios(window._usuariosLista);
+      if (typeof atualizarNotificacoesTickets === "function") {
+        atualizarNotificacoesTickets();
       }
-      
-      // Renderiza tabela de usuários
-      usuarios.forEach(user => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${user.id || "-"}</td>
-          <td>${user.nome || "-"}</td>
-          <td>${user.login}</td>
-          <td>${user.email || "-"}</td>
-          <td>${user.perfil === "admin" ? "Administrador" : "Operador"}</td>
-          <td><span class="user-status-badge ${user.status || 'ativo'}">${user.status === "inativo" ? "Inativo" : "Ativo"}</span></td>
-          <td>
-            <div class="user-actions">
-              <button class="btn-icon edit" onclick="editarUsuario('${user.login}')" title="Editar">
-                <i class="material-icons">edit</i>
-              </button>
-              ${user.login !== Estado.usuarioAtual ? `
-                <button class="btn-icon delete" onclick="excluirUsuario('${user.login}')" title="Excluir">
-                  <i class="material-icons">delete</i>
-                </button>
-              ` : ''}
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
     })
     .withFailureHandler((err) => {
       Loading.hide();
@@ -87,6 +57,43 @@ function mostrarModalNovoUsuario() {
   document.getElementById("usuarioLoginModal").readOnly = false;
   document.getElementById("usuarioSenha").required = true;
   document.getElementById("modalNovoUsuario").classList.add("show");
+}
+
+function renderizarUsuarios(usuarios) {
+  const tbody = document.querySelector("#tabelaUsuarios tbody");
+  if (!tbody) return;
+  
+  tbody.innerHTML = "";
+  
+  if (!usuarios || usuarios.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='7' style='text-align:center; padding:40px;'>Nenhum usuário cadastrado</td></tr>";
+    return;
+  }
+  
+  usuarios.forEach(user => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${user.id || "-"}</td>
+      <td>${user.nome || "-"}</td>
+      <td>${user.login}</td>
+      <td>${user.email || "-"}</td>
+      <td>${user.perfil === "admin" ? "Administrador" : "Operador"}</td>
+      <td><span class="user-status-badge ${user.status || 'ativo'}">${user.status === "inativo" ? "Inativo" : "Ativo"}</span></td>
+      <td>
+        <div class="user-actions">
+          <button class="btn-icon edit" onclick="editarUsuario('${user.login}')" title="Editar">
+            <i class="material-symbols-outlined">edit</i>
+          </button>
+          ${user.login !== Estado.usuarioAtual ? `
+            <button class="btn-icon delete" onclick="excluirUsuario('${user.login}')" title="Excluir">
+              <i class="material-symbols-outlined">delete</i>
+            </button>
+          ` : ''}
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 /**

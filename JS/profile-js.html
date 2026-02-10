@@ -46,6 +46,10 @@ function carregarDadosPerfil() {
       document.getElementById("perfilSenhaAtual").value = "";
       document.getElementById("perfilNovaSenha").value = "";
       document.getElementById("perfilConfirmarSenha").value = "";
+
+      if (typeof atualizarNotificacoesTickets === "function") {
+        atualizarNotificacoesTickets();
+      }
     })
     .withFailureHandler((err) => {
       Loading.hide();

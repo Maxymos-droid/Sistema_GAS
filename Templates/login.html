@@ -2,23 +2,23 @@
 <!-- ====================== TELA DE LOGIN ====================== -->
 <div id="telaLogin" class="tela ativa login-card">
   <div class="login-logo">
-    <i class="material-icons">local_shipping</i>
+    <i class="material-symbols-outlined">local_shipping</i>
     <h2>CTRC Analyzer</h2>
   </div>
   
   <h3 class="login-title">
-    <i class="material-icons">lock_open</i> Entrar no Sistema
+    <i class="material-symbols-outlined">lock_open</i> Entrar no Sistema
   </h3>
   
   <div class="login-field">
-    <i class="material-icons">person</i>
+    <i class="material-symbols-outlined">person</i>
     <input type="text" id="usuarioLogin" placeholder="Usuário" autocomplete="username" />
   </div>
   
   <div class="login-field">
-    <i class="material-icons">vpn_key</i>
+    <i class="material-symbols-outlined">vpn_key</i>
     <input type="password" id="senhaLogin" placeholder="Senha" autocomplete="current-password" />
-    <span class="material-icons toggle-senha" onclick="toggleSenha('senhaLogin', this)">visibility</span>
+    <span class="material-symbols-outlined toggle-senha" onclick="toggleSenha('senhaLogin', this)">visibility</span>
   </div>
   
   <div class="login-options">
@@ -38,12 +38,12 @@
 <!-- ====================== TELA ESQUECI SENHA ====================== -->
 <div id="telaEsqueciSenha" class="tela login-card">
   <h3 class="login-title">
-    <i class="material-icons">help_outline</i> Recuperar Senha
+    <i class="material-symbols-outlined">help_outline</i> Recuperar Senha
   </h3>
   <p class="login-subtitle">Informe seu email cadastrado. Uma senha temporária será enviada.</p>
   
   <div class="login-field">
-    <i class="material-icons">email</i>
+    <i class="material-symbols-outlined">email</i>
     <input type="email" id="emailRecuperacao" placeholder="Email cadastrado" />
   </div>
   
@@ -55,31 +55,31 @@
 <!-- ====================== TELA ALTERAR SENHA (Forçada) ====================== -->
 <div id="telaAlterarSenha" class="tela login-card">
   <h3 class="login-title">
-    <i class="material-icons">lock</i> Alterar Senha
+    <i class="material-symbols-outlined">lock</i> Alterar Senha
   </h3>
   <p class="login-subtitle">Por segurança, altere sua senha.</p>
   
   <div class="login-field">
-    <i class="material-icons">person</i>
+    <i class="material-symbols-outlined">person</i>
     <input type="text" id="usuarioAlterar" placeholder="Usuário" readonly />
   </div>
   
   <div class="login-field">
-    <i class="material-icons">vpn_key</i>
+    <i class="material-symbols-outlined">vpn_key</i>
     <input type="password" id="senhaAtual" placeholder="Senha Atual" />
-    <span class="material-icons toggle-senha" onclick="toggleSenha('senhaAtual', this)">visibility</span>
+    <span class="material-symbols-outlined toggle-senha" onclick="toggleSenha('senhaAtual', this)">visibility</span>
   </div>
   
   <div class="login-field">
-    <i class="material-icons">lock</i>
+    <i class="material-symbols-outlined">lock</i>
     <input type="password" id="novaSenha" placeholder="Nova Senha" />
-    <span class="material-icons toggle-senha" onclick="toggleSenha('novaSenha', this)">visibility</span>
+    <span class="material-symbols-outlined toggle-senha" onclick="toggleSenha('novaSenha', this)">visibility</span>
   </div>
   
   <div class="login-field">
-    <i class="material-icons">lock</i>
+    <i class="material-symbols-outlined">lock</i>
     <input type="password" id="confirmarSenha" placeholder="Confirmar Nova Senha" />
-    <span class="material-icons toggle-senha" onclick="toggleSenha('confirmarSenha', this)">visibility</span>
+    <span class="material-symbols-outlined toggle-senha" onclick="toggleSenha('confirmarSenha', this)">visibility</span>
   </div>
   
   <button type="button" class="btn-login" onclick="alterarSenha()">Alterar Senha</button>

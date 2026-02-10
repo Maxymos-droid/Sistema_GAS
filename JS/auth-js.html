@@ -62,6 +62,14 @@ function fazerLogin() {
         Estado.usuarioAtual = res.usuario;
         Estado.isAdmin = res.perfil === "admin";
         Estado.senhaTemporaria = res.senhaTemporaria || false;
+
+        salvarSessao({
+          usuario: res.usuario,
+          login: res.login || usuario,
+          nome: res.nome || usuario,
+          perfil: res.perfil || (Estado.isAdmin ? "admin" : "user"),
+          senhaTemporaria: Estado.senhaTemporaria
+        });
         
         // Adiciona classe ao body se for admin
         if (Estado.isAdmin) {
@@ -85,6 +93,11 @@ function fazerLogin() {
           alternarTelaDeNivelSuperior("app");
           mostrarTelaDashboard();
           mostrarToast(`Bem-vindo, ${res.nome || usuario}!`, "success");
+          // Atualiza notificações de tickets
+          if (typeof atualizarNotificacoesTickets === "function") {
+            atualizarNotificacoesTickets();
+          }
+          iniciarMonitorSessao();
         }
       } else {
         if (msg) msg.textContent = res?.msg || "Usuário ou senha inválidos.";
@@ -98,6 +111,97 @@ function fazerLogin() {
       mostrarToast("Erro ao fazer login!", "error");
     })
     .loginUsuario(usuario, senha);
+}
+
+// ====================== SESSÃO ======================
+const TEMPO_SESSAO_MS = 8 * 60 * 60 * 1000; // 8 horas
+
+function salvarSessao(info) {
+  const sessao = {
+    ...info,
+    lastAt: Date.now()
+  };
+  Cookies.set("sessao", sessao, 1); // cookie 1 dia, controlamos expiração via lastAt
+  try {
+    localStorage.setItem("sessao", JSON.stringify(sessao));
+  } catch(_) {}
+}
+
+function touchSessao() {
+  const s = Cookies.get("sessao");
+  if (s) {
+    s.lastAt = Date.now();
+    Cookies.set("sessao", s, 1);
+    try { localStorage.setItem("sessao", JSON.stringify(s)); } catch(_) {}
+    return;
+  }
+  try {
+    const ls = JSON.parse(localStorage.getItem("sessao") || "null");
+    if (ls) {
+      ls.lastAt = Date.now();
+      localStorage.setItem("sessao", JSON.stringify(ls));
+    }
+  } catch(_) {}
+}
+
+function limparSessao() {
+  Cookies.delete("sessao");
+  try { localStorage.removeItem("sessao"); } catch(_) {}
+}
+
+function restaurarSessao() {
+  let s = Cookies.get("sessao");
+  if (!s) {
+    try { s = JSON.parse(localStorage.getItem("sessao") || "null"); } catch(_) {}
+  }
+  if (!s || !s.lastAt) return false;
+  const agora = Date.now();
+  if ((agora - s.lastAt) > TEMPO_SESSAO_MS) {
+    limparSessao();
+    return false;
+  }
+
+  Estado.usuarioAtual = s.usuario || s.login || null;
+  Estado.isAdmin = s.perfil === "admin";
+  Estado.senhaTemporaria = !!s.senhaTemporaria;
+
+  if (Estado.isAdmin) {
+    document.body.classList.add("is-admin");
+  }
+
+  const nomeSidebar = document.getElementById("nomeUsuarioSidebar");
+  const perfilUsuario = document.getElementById("perfilUsuario");
+  if (nomeSidebar) nomeSidebar.textContent = s.nome || s.login || "";
+  if (perfilUsuario) perfilUsuario.textContent = Estado.isAdmin ? "Administrador" : "Operador";
+
+  if (Estado.senhaTemporaria) {
+    const usuarioAlterar = document.getElementById("usuarioAlterar");
+    if (usuarioAlterar) usuarioAlterar.value = s.login || "";
+    alternarTelaDeNivelSuperior("telaAlterarSenha");
+  } else {
+    alternarTelaDeNivelSuperior("app");
+    mostrarTelaDashboard();
+    if (typeof atualizarNotificacoesTickets === "function") {
+      atualizarNotificacoesTickets();
+    }
+  }
+
+  touchSessao();
+  iniciarMonitorSessao();
+  return true;
+}
+
+function iniciarMonitorSessao() {
+  if (window._sessaoTimer) clearInterval(window._sessaoTimer);
+  window._sessaoTimer = setInterval(() => {
+    const s = Cookies.get("sessao");
+    if (!s || !s.lastAt) return;
+    const agora = Date.now();
+    if ((agora - s.lastAt) > TEMPO_SESSAO_MS) {
+      mostrarToast("Sessão expirada. Faça login novamente.", "warning");
+      confirmarSaida();
+    }
+  }, 5 * 60 * 1000);
 }
 
 /**
@@ -239,6 +343,7 @@ function confirmarLogout() {
 function confirmarSaida() {
   // Limpa todos os cookies
   Cookies.limparTodos();
+  limparSessao();
   
   // Limpa estado
   Estado.usuarioAtual = null;
@@ -248,6 +353,14 @@ function confirmarSaida() {
   Estado.dashboardCache = null;
   
   document.body.classList.remove("is-admin");
+  if (window._notifTimer) {
+    clearInterval(window._notifTimer);
+    window._notifTimer = null;
+  }
+  if (window._sessaoTimer) {
+    clearInterval(window._sessaoTimer);
+    window._sessaoTimer = null;
+  }
   alternarTelaDeNivelSuperior("telaLogin");
   mostrarToast("Logout realizado com sucesso!", "info");
 }

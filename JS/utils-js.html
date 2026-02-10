@@ -63,7 +63,7 @@ function mostrarToast(mensagem, tipo = "info") {
 
   const toast = document.createElement("div");
   toast.className = `app-toast app-toast-${tipo}`;
-  toast.innerHTML = `<i class="material-icons">${icons[tipo] || "info"}</i> <span>${mensagem}</span>`;
+  toast.innerHTML = `<i class="material-symbols-outlined">${icons[tipo] || "info"}</i> <span>${mensagem}</span>`;
   container.appendChild(toast);
 
   // Remove após 4 segundos

@@ -3,18 +3,22 @@
 <header id="appHeader" class="header">
   <div class="header-left">
     <button id="btnSidebar" class="btn-menu" aria-label="Menu">
-      <span class="material-icons">menu</span>
+      <span class="material-symbols-outlined">menu</span>
     </button>
     <div class="logo">
-      <i class="material-icons">local_shipping</i>
+      <i class="material-symbols-outlined">local_shipping</i>
       CTRC Analyzer
     </div>
   </div>
   
   <nav class="header-actions">
-    <i class="material-icons" title="Ajuda" onclick="mostrarTelaAjuda()">help</i>
+    <div class="notif" title="Notificações" onclick="abrirNotificacoes()">
+      <i class="material-symbols-outlined">notifications</i>
+      <span id="badgeNotificacoes" class="notif-badge">0</span>
+    </div>
+    <i class="material-symbols-outlined" title="Ajuda" onclick="mostrarTelaAjuda()">help</i>
     <button class="btn-sair" onclick="confirmarLogout()" title="Sair">
-      <i class="material-icons">exit_to_app</i>
+      <i class="material-symbols-outlined">exit_to_app</i>
       <span>Sair</span>
     </button>
   </nav>

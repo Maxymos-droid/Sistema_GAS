@@ -2,13 +2,13 @@
 <!-- ====================== PESQUISA ====================== -->
 <section id="telaPesquisa" class="tela-interna">
   <div class="page-header">
-    <h2><i class="material-icons">search</i> Acompanhamento CTRC</h2>
+    <h2><i class="material-symbols-outlined">search</i> Acompanhamento CTRC</h2>
     <div class="header-actions-group">
       <button class="btn-export" onclick="exportarParaExcel()" title="Exportar para Excel">
-        <i class="material-icons">download</i> Exportar
+        <i class="material-symbols-outlined">download</i> Exportar
       </button>
       <button class="btn-primary" onclick="abrirModalNovo()" title="Adicionar novo registro">
-        <i class="material-icons">add</i> Adicionar
+        <i class="material-symbols-outlined">add</i> Adicionar
       </button>
     </div>
   </div>
@@ -17,7 +17,7 @@
   <div class="search-container">
     <div class="multi-select" onclick="toggleDropdown()">
       <span id="selectedStatus" class="selected-text">Filtrar por Status</span>
-      <i class="material-icons">arrow_drop_down</i>
+      <i class="material-symbols-outlined">arrow_drop_down</i>
       <div id="dropdownStatus" class="dropdown-content">
         <label><input type="checkbox" class="filtroStatus" value="EM TRANSITO" checked> Em Trânsito</label>
         <label><input type="checkbox" class="filtroStatus" value="PARCEIRO" checked> Parceiro</label>
@@ -34,7 +34,7 @@
     <div class="search-wrap">
       <input type="text" id="termo" placeholder="Pesquisar por DACTE, Nota, Destinatário..." />
       <button class="btn-search" onclick="pesquisar()">
-        <i class="material-icons">search</i>
+        <i class="material-symbols-outlined">search</i>
       </button>
     </div>
   </div>

@@ -66,6 +66,16 @@ function mostrarTela(id) {
   
   // Fecha sidebar no mobile
   fecharSidebarMobile();
+
+  // Atualiza badge de notificações ao trocar de tela
+  if (typeof atualizarNotificacoesTickets === "function") {
+    atualizarNotificacoesTickets();
+  }
+
+  // Atualiza timestamp da sessão
+  if (typeof touchSessao === "function") {
+    touchSessao();
+  }
 }
 
 /**
@@ -120,6 +130,9 @@ function mostrarTelaTickets() {
 function mostrarTelaConfigSistema() {
   mostrarTela("telaConfigSistema");
   fecharSidebarMobile();
+  if (typeof carregarNotificacoesSistemaAdmin === "function") {
+    carregarNotificacoesSistemaAdmin();
+  }
 }
 
 /**

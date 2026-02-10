@@ -55,25 +55,37 @@ function criarTicket(ticket) {
     // Cria aba TICKETS se não existir
     if (!sheet) {
       sheet = ss.insertSheet(SHEET_TICKETS);
-      sheet.appendRow(['ID', 'TIPO', 'ASSUNTO', 'DESCRIÇÃO', 'PRIORIDADE', 'USUÁRIO', 'STATUS', 'DATA', 'DATA_ABERTURA']);
+      sheet.appendRow(['ID', 'CODIGO', 'TIPO', 'ASSUNTO', 'DESCRIÇÃO', 'PRIORIDADE', 'USUÁRIO', 'STATUS', 'DATA', 'DATA_ABERTURA']);
+    }
+
+    // Garante coluna CODIGO na posição 2
+    const header = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+      .map(h => String(h || '').trim().toUpperCase());
+    if (header.indexOf('CODIGO') === -1) {
+      sheet.insertColumnAfter(1);
+      sheet.getRange(1, 2).setValue('CODIGO');
     }
     
-    const novoId = gerarIdUnico(SHEET_TICKETS, 'TICKET_');
+    const novoId = gerarIdSequencial(SHEET_TICKETS);
+    const codigoNum = gerarSequencialColuna(SHEET_TICKETS, 2);
+    const codigo = `#${String(codigoNum).padStart(4, '0')}`;
     const dataAbertura = new Date();
 
-    // Normaliza usuário: aceita `login` ou `id` (USER_...)
+    // Normaliza usuário: salva o NOME do usuário
     let usuarioArmazenado = '';
     if (ticket.usuario && typeof ticket.usuario === 'string') {
       if (ticket.usuario.indexOf('USER_') === 0) {
-        usuarioArmazenado = ticket.usuario;
+        const u = buscarUsuario(ticket.usuario);
+        usuarioArmazenado = (u && u.nome) ? u.nome : ticket.usuario;
       } else {
-        const usuarioObj = buscarUsuario(ticket.usuario);
-        usuarioArmazenado = usuarioObj && usuarioObj.id ? usuarioObj.id : String(ticket.usuario);
+        const u = buscarUsuario(ticket.usuario);
+        usuarioArmazenado = (u && u.nome) ? u.nome : String(ticket.usuario);
       }
     }
 
     sheet.appendRow([
       novoId,
+      codigo,
       ticket.tipo || 'ocorrencia',
       ticket.assunto,
       ticket.descricao,
@@ -84,8 +96,8 @@ function criarTicket(ticket) {
       dataAbertura
     ]);
     
-    Logger.log('Novo ticket criado: ' + novoId);
-    return { status: "ok", msg: "Ticket criado com sucesso!", id: novoId };
+    Logger.log('Novo ticket criado: ' + novoId + ' / CODIGO ' + codigo);
+    return { status: "ok", msg: "Ticket criado com sucesso!", id: novoId, codigo: codigo };
   } catch (error) {
     Logger.log('Erro ao criar ticket: ' + error);
     return { status: "erro", msg: "Erro ao criar ticket: " + error.message };
@@ -114,25 +126,49 @@ function criarTicket(ticket) {
  */
 function listarTickets(usuario, isAdmin) {
   try {
+    Logger.log('listarTickets - params: usuario=' + usuario + ' isAdmin=' + isAdmin);
     const sheet = getSheet(SHEET_TICKETS);
     
     if (!sheet || sheet.getLastRow() <= 1) {
+      Logger.log('listarTickets - planilha inexistente ou vazia');
       return [];
     }
     
     const dados = sheet.getDataRange().getValues();
+    // Mapeia último comentário por ticket
+    const ultimosComentarios = {};
+    const sheetComentarios = getSheet(SHEET_TICKET_COMENTARIOS);
+    if (sheetComentarios && sheetComentarios.getLastRow() > 1) {
+      const dadosComentarios = sheetComentarios.getDataRange().getValues();
+      for (let i = 1; i < dadosComentarios.length; i++) {
+        const ticketIdRaw = dadosComentarios[i][1];
+        const ticketId = String(ticketIdRaw).endsWith(".0") ? String(ticketIdRaw).replace(/\.0$/, "") : String(ticketIdRaw);
+        const texto = String(dadosComentarios[i][3] || '');
+        const data = dadosComentarios[i][4];
+        const ts = (data instanceof Date) ? data.getTime() : Date.parse(String(data || "")) || 0;
+        if (!ultimosComentarios[ticketId] || ultimosComentarios[ticketId].ts < ts) {
+          ultimosComentarios[ticketId] = { texto, ts };
+        }
+      }
+    }
     const tickets = [];
     
     for (let i = 1; i < dados.length; i++) {
+      // Espera layout: [ID, CODIGO, TIPO, ASSUNTO, DESCRIÇÃO, PRIORIDADE, USUÁRIO, STATUS, DATA, DATA_ABERTURA]
+      if (!dados[i][0]) continue;
+      const idRaw = dados[i][0];
+      const id = String(idRaw).endsWith(".0") ? String(idRaw).replace(/\.0$/, "") : String(idRaw);
       const ticket = {
-        id: dados[i][0],
-        tipo: dados[i][1],
-        assunto: dados[i][2],
-        descricao: dados[i][3],
-        prioridade: dados[i][4],
-        usuario: dados[i][5],
-        status: dados[i][6],
-        data: dados[i][7]
+        id: String(id),
+        codigo: String(dados[i][1] || ''),
+        tipo: String(dados[i][2] || ''),
+        assunto: String(dados[i][3] || ''),
+        descricao: String(dados[i][4] || ''),
+        prioridade: String(dados[i][5] || ''),
+        usuario: String(dados[i][6] || ''),
+        status: String(dados[i][7] || ''),
+        data: (dados[i][8] instanceof Date) ? dados[i][8].toISOString() : String(dados[i][8] || ''),
+        ultimoComentario: (ultimosComentarios[id] && ultimosComentarios[id].texto) ? ultimosComentarios[id].texto : ""
       };
       
       // Filtra por perfil - permite `usuario` ser login ou id (USER_...)
@@ -140,13 +176,16 @@ function listarTickets(usuario, isAdmin) {
       if (isAdmin) {
         allowed = true;
       } else if (usuario) {
-        // se cliente forneceu id, usa diretamente
+        // se cliente forneceu id, tenta resolver para nome
         if (typeof usuario === 'string' && usuario.indexOf('USER_') === 0) {
+          const u = buscarUsuario(usuario);
+          if (u && u.nome && ticket.usuario === u.nome) allowed = true;
           if (ticket.usuario === usuario) allowed = true;
         } else {
-          // usuario é login -> tentar converter para id
+          // usuario é login -> tentar converter para id/nome
           const u = buscarUsuario(usuario);
           if (u && u.id && ticket.usuario === u.id) allowed = true;
+          if (u && u.nome && ticket.usuario === u.nome) allowed = true;
           // também aceita se ticket.usuario ainda contém login (registros antigos)
           if (ticket.usuario === usuario) allowed = true;
         }
@@ -155,6 +194,7 @@ function listarTickets(usuario, isAdmin) {
       if (allowed) tickets.push(ticket);
     }
     
+    Logger.log('listarTickets - total=' + tickets.length);
     return tickets;
   } catch (error) {
     Logger.log('Erro ao listar tickets: ' + error);
@@ -192,8 +232,12 @@ function atualizarStatusTicket(id, novoStatus) {
     const dados = sheet.getDataRange().getValues();
     
     for (let i = 1; i < dados.length; i++) {
-      if (dados[i][0] === id) {
-        sheet.getRange(i + 1, 7).setValue(novoStatus);
+      const idRaw = dados[i][0];
+      const idLocal = String(idRaw).endsWith(".0") ? String(idRaw).replace(/\.0$/, "") : String(idRaw);
+      if (idLocal === String(id)) {
+        // STATUS agora está na coluna 8 (A=1)
+        sheet.getRange(i + 1, 8).setValue(novoStatus);
+        sheet.getRange(i + 1, 9).setValue(new Date());
         Logger.log('Status atualizado para ticket: ' + id);
         return { status: "ok", msg: "Status atualizado com sucesso!" };
       }
@@ -239,15 +283,29 @@ function adicionarComentarioTicket(ticketId, comentario) {
       sheet.appendRow(['ID', 'TICKET_ID', 'USUARIO', 'TEXTO', 'DATA']);
     }
     
-    const novoId = gerarIdUnico(SHEET_TICKET_COMENTARIOS, 'COMMENT_');
+    const novoId = gerarIdSequencial(SHEET_TICKET_COMENTARIOS);
+    const ticketIdNorm = String(ticketId).endsWith(".0") ? String(ticketId).replace(/\.0$/, "") : String(ticketId);
 
     sheet.appendRow([
       novoId,
-      ticketId,
+      ticketIdNorm,
       comentario.usuario,
       comentario.texto,
       new Date()
     ]);
+
+    // Atualiza DATA (última atualização) na tabela de tickets
+    const sheetTickets = getSheet(SHEET_TICKETS);
+    if (sheetTickets) {
+      const dadosTickets = sheetTickets.getDataRange().getValues();
+      for (let i = 1; i < dadosTickets.length; i++) {
+        const idRow = String(dadosTickets[i][0]).endsWith(".0") ? String(dadosTickets[i][0]).replace(/\.0$/, "") : String(dadosTickets[i][0]);
+        if (idRow === ticketIdNorm) {
+          sheetTickets.getRange(i + 1, 9).setValue(new Date());
+          break;
+        }
+      }
+    }
     
     Logger.log('Comentário adicionado ao ticket: ' + ticketId);
     return { status: "ok", msg: "Comentário adicionado com sucesso!" };
@@ -283,15 +341,17 @@ function listarComentariosTicket(ticketId) {
     
     const dados = sheet.getDataRange().getValues();
     const comentarios = [];
+    const ticketIdNorm = String(ticketId).endsWith(".0") ? String(ticketId).replace(/\.0$/, "") : String(ticketId);
     
     for (let i = 1; i < dados.length; i++) {
-      if (dados[i][1] === ticketId) {
+      const ticketIdRow = String(dados[i][1]).endsWith(".0") ? String(dados[i][1]).replace(/\.0$/, "") : String(dados[i][1]);
+      if (ticketIdRow === ticketIdNorm) {
         comentarios.push({
-          id: dados[i][0],
-          ticketId: dados[i][1],
-          usuario: dados[i][2],
-          texto: dados[i][3],
-          data: dados[i][4]
+          id: String(dados[i][0]).endsWith(".0") ? String(dados[i][0]).replace(/\.0$/, "") : String(dados[i][0]),
+          ticketId: ticketIdRow,
+          usuario: String(dados[i][2] || ''),
+          texto: String(dados[i][3] || ''),
+          data: (dados[i][4] instanceof Date) ? dados[i][4].toISOString() : String(dados[i][4] || '')
         });
       }
     }
@@ -334,8 +394,8 @@ function contarTicketsPendentes(usuario, isAdmin) {
     let count = 0;
     
     for (let i = 1; i < dados.length; i++) {
-      const ticketUsuario = dados[i][5];
-      const status = dados[i][6];
+      const ticketUsuario = dados[i][6];
+      const status = dados[i][7];
 
       if (isAdmin) {
         // Admin: conta abertos e em andamento
@@ -346,11 +406,14 @@ function contarTicketsPendentes(usuario, isAdmin) {
         // Usuário: aceita `usuario` como id (USER_) ou login
         let match = false;
         if (typeof usuario === 'string' && usuario.indexOf('USER_') === 0) {
+          const u = buscarUsuario(usuario);
+          if (u && u.nome && ticketUsuario === u.nome) match = true;
           if (ticketUsuario === usuario) match = true;
         } else {
-          // Converte login para id quando possível
+          // Converte login para id/nome quando possível
           const u = buscarUsuario(usuario);
           if (u && u.id && ticketUsuario === u.id) match = true;
+          if (u && u.nome && ticketUsuario === u.nome) match = true;
           // Também aceita registros antigos onde ticketUsuario armazena login
           if (ticketUsuario === usuario) match = true;
         }

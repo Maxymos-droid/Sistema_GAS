@@ -2,12 +2,12 @@
 <!-- ====================== CONFIGURA​ÇÕES - SISTEMA ====================== -->
 <section id="telaConfigSistema" class="tela-interna">
   <div class="page-header">
-    <h2><i class="material-icons">palette</i> Configurações do Sistema</h2>
+    <h2><i class="material-symbols-outlined">palette</i> Configurações do Sistema</h2>
   </div>
 
   <div class="config-container">
     <div class="config-card">
-      <h3><i class="material-icons">palette</i> Aparência</h3>
+      <h3><i class="material-symbols-outlined">palette</i> Aparência</h3>
       <div class="config-option">
         <label>Tema</label>
         <select class="form-select" id="configTema" onchange="alterarTema(this.value)">
@@ -19,7 +19,7 @@
     </div>
 
     <div class="config-card">
-      <h3><i class="material-icons">notifications</i> Notificações</h3>
+      <h3><i class="material-symbols-outlined">notifications</i> Notificações</h3>
       <div class="config-option">
         <label>
           <input type="checkbox" id="configNotifNovasEntregas" checked /> Ativar notificações de novas entregas
@@ -29,6 +29,27 @@
         <label>
           <input type="checkbox" id="configNotifAtrasos" checked /> Alertas de atraso na entrega
         </label>
+      </div>
+    </div>
+
+    <div class="config-card admin-only">
+      <h3><i class="material-symbols-outlined">campaign</i> Central de Notificações</h3>
+      <div class="config-option">
+        <label>Título</label>
+        <input type="text" id="notifTitulo" class="form-control" placeholder="Ex: Atualização do sistema" />
+      </div>
+      <div class="config-option">
+        <label>Mensagem</label>
+        <textarea id="notifMensagem" class="form-control" rows="3" placeholder="Detalhes da notificação"></textarea>
+      </div>
+      <div class="config-option">
+        <button class="btn-primary" onclick="enviarNotificacaoSistema()">
+          <i class="material-symbols-outlined">send</i> Enviar para todos
+        </button>
+      </div>
+      <div class="config-option">
+        <label>Notificações enviadas</label>
+        <div id="listaNotificacoesAdmin"></div>
       </div>
     </div>
   </div>

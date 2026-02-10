@@ -82,12 +82,18 @@ function carregarTabela() {
           return statusSelecionados.length === 0 || statusSelecionados.includes(status);
         });
         
-        Estado.dadosFiltrados = [cabecalho, ...linhasFiltradas];
-        renderizarTabelaPaginada();
-        atualizarContagemTabela();
-        mostrarToast(`${linhasFiltrados.length} registro(s) encontrado(s).`, "info");
-      }, 50);
-    })
+      Estado.dadosFiltrados = [cabecalho, ...linhasFiltradas];
+      renderizarTabelaPaginada();
+      atualizarContagemTabela();
+      mostrarToast(`${linhasFiltradas.length} registro(s) encontrado(s).`, "info");
+      if (typeof atualizarNotificacoesTickets === "function") {
+        atualizarNotificacoesTickets();
+      }
+      if (typeof touchSessao === "function") {
+        touchSessao();
+      }
+    }, 50);
+  })
     .withFailureHandler((err) => {
       Loading.hide();
       console.error(err);
@@ -137,6 +143,12 @@ function pesquisar() {
       renderizarTabelaPaginada();
       atualizarContagemTabela();
       mostrarToast(`${linhas.length} registro(s) encontrado(s).`, "info");
+      if (typeof atualizarNotificacoesTickets === "function") {
+        atualizarNotificacoesTickets();
+      }
+      if (typeof touchSessao === "function") {
+        touchSessao();
+      }
     })
     .withFailureHandler((err) => {
       Loading.hide();

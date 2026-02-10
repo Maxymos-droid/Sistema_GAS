@@ -35,6 +35,11 @@ const SHEET_TICKETS = 'TICKETS';
  */
 const SHEET_TICKET_COMENTARIOS = 'TICKET_COMENTARIOS';
 
+/**
+ * @type {string} Nome da aba de notificações do sistema
+ */
+const SHEET_NOTIFICACOES = 'NOTIFICACOES';
+
 // ==================== FUNÇÕES AUXILIARES ====================
 
 /**
@@ -342,6 +347,33 @@ function gerarIdSequencial(sheetName) {
     if (!Number.isNaN(n) && n > maxId) maxId = n;
   }
 
+  return String(maxId + 1);
+}
+
+/**
+ * Gera um ID numérico sequencial para uma coluna específica (ignorando cabeçalho).
+ * @function gerarSequencialColuna
+ * @param {string} sheetName - Nome da aba
+ * @param {number} colIndex - Índice da coluna (1-based)
+ * @returns {string} ID sequencial
+ */
+function gerarSequencialColuna(sheetName, colIndex) {
+  const ss = getSpreadsheet();
+  const sheet = ss.getSheetByName(sheetName);
+  if (!sheet) return "1";
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return "1";
+
+  const values = sheet.getRange(2, colIndex, lastRow - 1, 1).getValues().flat();
+  let maxId = 0;
+  for (let i = 0; i < values.length; i++) {
+    const raw = String(values[i] == null ? '' : values[i]);
+    const digits = raw.replace(/\D/g, '');
+    if (!digits) continue;
+    const n = Number(digits);
+    if (!Number.isNaN(n) && n > maxId) maxId = n;
+  }
   return String(maxId + 1);
 }
 

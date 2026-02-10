@@ -40,6 +40,9 @@ function carregarDashboard() {
       });
       
       Loading.hide();
+      if (typeof atualizarNotificacoesTickets === "function") {
+        atualizarNotificacoesTickets();
+      }
     })
     .withFailureHandler((err) => {
       Loading.hide();

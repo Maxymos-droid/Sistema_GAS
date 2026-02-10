@@ -52,6 +52,71 @@ function alternarNotificacoes() {
   mostrarToast(status === '1' ? "Notificações ativadas" : "Notificações desativadas", "info");
 }
 
+// ====================== CENTRAL DE NOTIFICAÇÕES (ADMIN) ======================
+function enviarNotificacaoSistema() {
+  if (!Estado.isAdmin) {
+    mostrarToast("Acesso negado.", "error");
+    return;
+  }
+  const titulo = (document.getElementById("notifTitulo")?.value || "").trim();
+  const mensagem = (document.getElementById("notifMensagem")?.value || "").trim();
+  if (!titulo || !mensagem) {
+    mostrarToast("Título e mensagem são obrigatórios.", "warning");
+    return;
+  }
+
+  Loading.show("Enviando notificação...");
+  google.script.run
+    .withSuccessHandler((res) => {
+      Loading.hide();
+      if (res.status === "ok") {
+        mostrarToast("Notificação enviada!", "success");
+        document.getElementById("notifTitulo").value = "";
+        document.getElementById("notifMensagem").value = "";
+        carregarNotificacoesSistemaAdmin();
+        if (typeof atualizarNotificacoesTickets === "function") {
+          atualizarNotificacoesTickets();
+        }
+      } else {
+        mostrarToast(res.msg || "Erro ao enviar notificação.", "error");
+      }
+    })
+    .withFailureHandler((err) => {
+      Loading.hide();
+      console.error(err);
+      mostrarToast("Erro ao enviar notificação.", "error");
+    })
+    .criarNotificacaoSistema(titulo, mensagem);
+}
+
+function carregarNotificacoesSistemaAdmin() {
+  if (!Estado.isAdmin) return;
+  const lista = document.getElementById("listaNotificacoesAdmin");
+  if (!lista) return;
+  lista.innerHTML = "Carregando...";
+
+  google.script.run
+    .withSuccessHandler((dados) => {
+      const arr = Array.isArray(dados) ? dados : [];
+      if (!arr.length) {
+        lista.innerHTML = "<p style='color:#6c757d;'>Nenhuma notificação enviada</p>";
+        return;
+      }
+      lista.innerHTML = arr.map(n => `
+        <div class="notif-item">
+          <div class="notif-title">#${String(n.id).padStart(4,'0')} • ${n.titulo}</div>
+          <div class="notif-sub">${formatarDataISO(n.data)}</div>
+          <div style="margin-top:6px;">${n.mensagem}</div>
+        </div>
+      `).join("");
+    })
+    .withFailureHandler((err) => {
+      console.error(err);
+      lista.innerHTML = "<p style='color:#dc3545;'>Erro ao carregar</p>";
+    })
+    .listarNotificacoesSistema();
+}
+
 
 </script>
 

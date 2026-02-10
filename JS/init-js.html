@@ -46,6 +46,11 @@ window.addEventListener("load", () => {
     // Silencioso
   }
   
+  // ===== Restaura sessão se válida =====
+  if (typeof restaurarSessao === "function" && restaurarSessao()) {
+    return;
+  }
+
   // ===== Inicia na tela de login =====
   alternarTelaDeNivelSuperior("telaLogin");
 });

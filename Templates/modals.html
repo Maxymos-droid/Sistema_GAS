@@ -5,7 +5,7 @@
 <div id="modalEditarRegistro" class="modal">
   <div class="modal-content modal-large">
     <div class="modal-header">
-      <h3><i class="material-icons">edit</i> <span id="tituloModalRegistro">Editar Registro</span></h3>
+      <h3><i class="material-symbols-outlined">edit</i> <span id="tituloModalRegistro">Editar Registro</span></h3>
       <span class="modal-close" onclick="fecharModalRegistro()">&times;</span>
     </div>
     <div class="modal-body" id="corpoModalRegistro">
@@ -14,7 +14,7 @@
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fecharModalRegistro()">Cancelar</button>
       <button class="btn-primary" onclick="salvarRegistro()">
-        <i class="material-icons">save</i> Salvar
+        <i class="material-symbols-outlined">save</i> Salvar
       </button>
     </div>
   </div>
@@ -24,7 +24,7 @@
 <div id="modalNovoUsuario" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="material-icons">person_add</i> <span id="tituloModalUsuario">Novo Usuário</span></h3>
+      <h3><i class="material-symbols-outlined">person_add</i> <span id="tituloModalUsuario">Novo Usuário</span></h3>
       <span class="modal-close" onclick="fecharModalUsuario()">&times;</span>
     </div>
     <div class="modal-body">
@@ -50,7 +50,7 @@
           <label>Senha *</label>
           <div class="input-with-icon">
             <input type="password" id="usuarioSenha" class="form-control" required />
-            <span class="material-icons toggle-senha" onclick="toggleSenha('usuarioSenha', this)">visibility</span>
+            <span class="material-symbols-outlined toggle-senha" onclick="toggleSenha('usuarioSenha', this)">visibility</span>
           </div>
         </div>
 
@@ -74,7 +74,7 @@
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fecharModalUsuario()">Cancelar</button>
       <button class="btn-primary" onclick="salvarUsuario()">
-        <i class="material-icons">save</i> Salvar
+        <i class="material-symbols-outlined">save</i> Salvar
       </button>
     </div>
   </div>
@@ -84,7 +84,7 @@
 <div id="modalNovoTicket" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="material-icons">add</i> Novo Ticket</h3>
+      <h3><i class="material-symbols-outlined">add</i> Novo Ticket</h3>
       <span class="modal-close" onclick="fecharModalTicket()">&times;</span>
     </div>
     <div class="modal-body">
@@ -120,7 +120,7 @@
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fecharModalTicket()">Cancelar</button>
       <button class="btn-primary" onclick="salvarTicket()">
-        <i class="material-icons">send</i> Enviar
+        <i class="material-symbols-outlined">send</i> Enviar
       </button>
     </div>
   </div>
@@ -130,7 +130,7 @@
 <div id="modalConfirmacao" class="modal">
   <div class="modal-content modal-small">
     <div class="modal-header">
-      <h3><i class="material-icons">help_outline</i> <span id="tituloModalConfirmacao">Confirmar</span></h3>
+      <h3><i class="material-symbols-outlined">help_outline</i> <span id="tituloModalConfirmacao">Confirmar</span></h3>
     </div>
     <div class="modal-body">
       <p id="textoModalConfirmacao" style="text-align: center; font-size: 16px; margin: 20px 0;"></p>
@@ -138,8 +138,24 @@
     <div class="modal-footer">
       <button class="btn-secondary" id="btnConfirmacaoNao">Não</button>
       <button class="btn-danger" id="btnConfirmacaoSim">
-        <i class="material-icons">check</i> Sim
+        <i class="material-symbols-outlined">check</i> Sim
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL NOTIFICAÇÕES ====================== -->
+<div id="modalNotificacoes" class="modal">
+  <div class="modal-content modal-small">
+    <div class="modal-header">
+      <h3><i class="material-symbols-outlined">notifications</i> Notificações</h3>
+      <span class="modal-close" onclick="fecharModalNotificacoes()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div id="listaNotificacoes"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModalNotificacoes()">Fechar</button>
     </div>
   </div>
 </div>

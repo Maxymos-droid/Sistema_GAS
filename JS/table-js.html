@@ -131,8 +131,8 @@ function renderizarTabela(dados) {
           <th style="width: ${larguras[c] || '120px'};">
             <div style="display: flex; align-items: center; gap: 8px;">
               ${c}
-              <i class="material-icons" style="font-size: 16px; color: #6c757d; cursor: pointer;" 
-                 onclick="filtrarColuna('${c}')" title="Filtrar">filter_list</i>
+              <i class="material-symbols-outlined filter-icon"
+                 onclick="filtrarColuna('${c}', event)" title="Filtrar">filter_alt</i>
             </div>
           </th>
         `).join("")}
@@ -151,11 +151,11 @@ function renderizarTabela(dados) {
     const rowHTML = `
       <tr ondblclick="abrirModalEdicao(${idxLinha})">
         <td style="text-align: center; width: 80px;">
-          <i class="material-icons btn-action" onclick="toggleDetalhes(${idxLinha}); event.stopPropagation();" 
+          <i class="material-symbols-outlined btn-action" onclick="toggleDetalhes(${idxLinha}); event.stopPropagation();" 
              id="btn${idxLinha}" 
              style="color:#28a745; cursor:pointer; font-size:20px;" 
              title="Expandir">add_circle</i>
-          <i class="material-icons btn-action" onclick="abrirModalEdicao(${idxLinha}); event.stopPropagation();" 
+          <i class="material-symbols-outlined btn-action" onclick="abrirModalEdicao(${idxLinha}); event.stopPropagation();" 
              style="color:#007bff; cursor:pointer; font-size:20px; margin-left:4px;" 
              title="Editar">edit</i>
         </td>
@@ -362,7 +362,7 @@ function renderizarControlesPaginacao(totalPaginas) {
   
   // Botão Anterior
   const liPrev = document.createElement("li");
-  liPrev.innerHTML = `<i class="material-icons">arrow_back</i>`;
+  liPrev.innerHTML = `<i class="material-symbols-outlined">arrow_back</i>`;
   if (Estado.paginaAtual === 1) {
     liPrev.setAttribute('disabled', 'true');
   }
@@ -396,7 +396,7 @@ function renderizarControlesPaginacao(totalPaginas) {
   
   // Botão Próximo
   const liNext = document.createElement("li");
-  liNext.innerHTML = `<i class="material-icons">arrow_forward</i>`;
+  liNext.innerHTML = `<i class="material-symbols-outlined">arrow_forward</i>`;
   if (Estado.paginaAtual === totalPaginas) {
     liNext.setAttribute('disabled', 'true');
   }
@@ -441,14 +441,522 @@ function exportarParaExcel() {
   mostrarToast("Arquivo exportado com sucesso!", "success");
 }
 
-// ========== FILTROS (PLACEHOLDER) ==========
-/**
- * Função placeholder para filtro por coluna
- * TODO: Implementar filtro específico por coluna
- * @param {string} nomeColuna - Nome da coluna
- */
-function filtrarColuna(nomeColuna) {
-  mostrarToast(`Filtro da coluna "${nomeColuna}" em desenvolvimento`, "info");
+// ========== FILTROS POR COLUNA ==========
+function filtrarColuna(nomeColuna, ev) {
+  if (!Estado.filtrosColuna) Estado.filtrosColuna = {};
+  const painelId = "painelFiltroColuna";
+  const antigo = document.getElementById(painelId);
+  if (antigo) antigo.remove();
+
+  const dadosBase = (Estado.dadosFiltrados && Estado.dadosFiltrados.length)
+    ? Estado.dadosFiltrados
+    : Estado.dadosOriginais;
+  const cabecalho = dadosBase[0] || [];
+  const idxCol = cabecalho.indexOf(nomeColuna);
+  if (idxCol < 0) {
+    mostrarToast(`Coluna "${nomeColuna}" não encontrada`, "error");
+    return;
+  }
+
+  const valores = dadosBase.slice(1).map(l => String(l[idxCol] ?? "").trim());
+  const unicos = Array.from(new Set(valores)).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const selecionados = new Set(Estado.filtrosColuna[nomeColuna] || unicos);
+
+  const painel = document.createElement("div");
+  painel.id = painelId;
+  painel.className = "filter-panel";
+  painel.style.position = "absolute";
+  painel.style.zIndex = "9999";
+  painel.style.background = "#fff";
+  painel.style.border = "1px solid #dee2e6";
+  painel.style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
+  painel.style.borderRadius = "10px";
+  painel.style.padding = "12px";
+  painel.style.minWidth = "220px";
+  painel.style.maxWidth = "320px";
+  painel.style.maxHeight = "360px";
+  painel.style.display = "flex";
+  painel.style.flexDirection = "column";
+
+  const rect = ev?.target?.getBoundingClientRect();
+  if (rect) {
+    painel.style.top = `${rect.bottom + window.scrollY + 6}px`;
+    painel.style.left = `${rect.left + window.scrollX - 20}px`;
+  } else {
+    painel.style.top = "120px";
+    painel.style.left = "120px";
+  }
+
+  const header = document.createElement("div");
+  header.style.display = "flex";
+  header.style.justifyContent = "space-between";
+  header.style.alignItems = "center";
+  header.style.marginBottom = "8px";
+  header.innerHTML = `<strong>${nomeColuna}</strong>`;
+  painel.appendChild(header);
+
+  const actions = document.createElement("div");
+  actions.className = "filter-actions";
+  actions.style.display = "flex";
+  actions.style.flexWrap = "wrap";
+  actions.style.gap = "8px";
+  actions.style.marginBottom = "8px";
+  actions.innerHTML = `
+    <a href="#" id="lnkAz" class="filter-link">A-Z</a>
+    <a href="#" id="lnkZa" class="filter-link">Z-A</a>
+    <a href="#" id="lnkNumAsc" class="filter-link">0-9</a>
+    <a href="#" id="lnkNumDesc" class="filter-link">9-0</a>
+  `;
+  painel.appendChild(actions);
+
+  const search = document.createElement("input");
+  search.type = "text";
+  search.placeholder = "Pesquisar...";
+  search.className = "form-control filter-search";
+  search.style.marginBottom = "8px";
+  painel.appendChild(search);
+
+  const selectAllWrap = document.createElement("label");
+  selectAllWrap.className = "filter-select-all";
+  selectAllWrap.style.display = "flex";
+  selectAllWrap.style.gap = "8px";
+  selectAllWrap.style.alignItems = "center";
+  selectAllWrap.style.marginBottom = "8px";
+  selectAllWrap.innerHTML = `
+    <input type="checkbox" id="chkAll" />
+    <span>Selecionar todos</span>
+  `;
+  painel.appendChild(selectAllWrap);
+
+  const lista = document.createElement("div");
+  lista.className = "filter-list";
+  lista.style.display = "flex";
+  lista.style.flexDirection = "column";
+  lista.style.gap = "6px";
+  lista.style.overflow = "auto";
+  lista.style.paddingBottom = "8px";
+  lista.style.maxHeight = "200px";
+
+  unicos.forEach((val, i) => {
+    const id = `chk_${i}_${nomeColuna}`;
+    const wrap = document.createElement("label");
+    wrap.style.display = "flex";
+    wrap.style.gap = "8px";
+    wrap.style.alignItems = "center";
+    wrap.innerHTML = `
+      <input type="checkbox" id="${id}" data-valor="${val}" />
+      <span>${val || "(vazio)"}</span>
+    `;
+    const chk = wrap.querySelector("input");
+    if (selecionados.has(val)) chk.checked = true;
+    lista.appendChild(wrap);
+  });
+
+  painel.appendChild(lista);
+
+  const footer = document.createElement("div");
+  footer.className = "filter-footer";
+  footer.style.display = "flex";
+  footer.style.gap = "8px";
+  footer.style.marginTop = "10px";
+  footer.innerHTML = `
+    <button class="btn-sm btn-primary" type="button" id="btnAplicar">Aplicar</button>
+    <button class="btn-sm btn-secondary" type="button" id="btnLimpar">Limpar</button>
+  `;
+  painel.appendChild(footer);
+
+  document.body.appendChild(painel);
+
+  const chkAll = painel.querySelector("#chkAll");
+  const chks = Array.from(painel.querySelectorAll('input[type="checkbox"][data-valor]'));
+  const atualizarChkAll = () => {
+    chkAll.checked = chks.every(c => c.checked);
+  };
+  atualizarChkAll();
+  chkAll.addEventListener("change", () => {
+    chks.forEach(c => { c.checked = chkAll.checked; });
+  });
+  chks.forEach(c => c.addEventListener("change", atualizarChkAll));
+
+  painel.querySelector("#lnkAz").onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    ordenarPorColuna(nomeColuna, "asc");
+  };
+  painel.querySelector("#lnkZa").onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    ordenarPorColuna(nomeColuna, "desc");
+  };
+  painel.querySelector("#lnkNumAsc").onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    ordenarPorColuna(nomeColuna, "num-asc");
+  };
+  painel.querySelector("#lnkNumDesc").onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    ordenarPorColuna(nomeColuna, "num-desc");
+  };
+  painel.querySelector("#btnAplicar").onclick = (e) => {
+    e.stopPropagation();
+    const selecionadosNovos = chks.filter(c => c.checked).map(c => c.dataset.valor);
+    if (selecionadosNovos.length === 0) {
+      Estado.filtrosColuna[nomeColuna] = [];
+    } else {
+      Estado.filtrosColuna[nomeColuna] = selecionadosNovos;
+    }
+    aplicarFiltrosColuna();
+    painel.remove();
+  };
+  painel.querySelector("#btnLimpar").onclick = (e) => {
+    e.stopPropagation();
+    delete Estado.filtrosColuna[nomeColuna];
+    aplicarFiltrosColuna();
+    painel.remove();
+  };
+
+  const onClickFora = (e) => {
+    if (!painel.contains(e.target)) {
+      painel.remove();
+      document.removeEventListener("click", onClickFora);
+    }
+  };
+  setTimeout(() => document.addEventListener("click", onClickFora), 0);
+
+  // Filtro de busca nos itens
+  search.addEventListener("input", () => {
+    const termoBusca = search.value.toLowerCase();
+    const labels = Array.from(lista.querySelectorAll("label"));
+    labels.forEach(l => {
+      const txt = l.textContent.toLowerCase();
+      l.style.display = txt.includes(termoBusca) ? "flex" : "none";
+    });
+  });
+}
+
+function aplicarFiltrosColuna() {
+  const orig = Estado.dadosOriginais || [];
+  const cabecalho = orig[0] || [];
+  let linhas = orig.slice(1);
+
+  const filtros = Estado.filtrosColuna || {};
+  Object.keys(filtros).forEach(col => {
+    const idx = cabecalho.indexOf(col);
+    if (idx < 0) return;
+    const valores = filtros[col];
+    if (!Array.isArray(valores) || valores.length === 0) return;
+    const set = new Set(valores.map(v => String(v)));
+    linhas = linhas.filter(l => set.has(String(l[idx] ?? "")));
+  });
+
+  Estado.dadosFiltrados = [cabecalho, ...linhas];
+  Estado.paginaAtual = 1;
+  renderizarTabelaPaginada();
+  if (typeof atualizarContagemTabela === "function") {
+    atualizarContagemTabela();
+  }
+}
+
+function ordenarPorColuna(nomeColuna, direcao = "asc") {
+  const dados = Estado.dadosFiltrados || Estado.dadosOriginais || [];
+  if (dados.length <= 1) return;
+  const cabecalho = dados[0];
+  const idx = cabecalho.indexOf(nomeColuna);
+  if (idx < 0) return;
+
+  const linhas = dados.slice(1);
+  linhas.sort((a, b) => {
+    const va = a[idx];
+    const vb = b[idx];
+    let cmp = 0;
+    if (direcao === "num-asc" || direcao === "num-desc") {
+      const na = Number(String(va).replace(/[^\d.-]/g, ""));
+      const nb = Number(String(vb).replace(/[^\d.-]/g, ""));
+      cmp = (isNaN(na) ? 0 : na) - (isNaN(nb) ? 0 : nb);
+      return direcao === "num-desc" ? -cmp : cmp;
+    }
+    const na = Number(va);
+    const nb = Number(vb);
+    if (!Number.isNaN(na) && !Number.isNaN(nb)) {
+      cmp = na - nb;
+    } else {
+      cmp = String(va ?? "").localeCompare(String(vb ?? ""), 'pt-BR');
+    }
+    return direcao === "desc" ? -cmp : cmp;
+  });
+
+  Estado.dadosFiltrados = [cabecalho, ...linhas];
+  Estado.paginaAtual = 1;
+  renderizarTabelaPaginada();
+  if (typeof atualizarContagemTabela === "function") {
+    atualizarContagemTabela();
+  }
+}
+
+// ======= FILTRO PARA LISTAS (TICKETS / USUÁRIOS) =======
+function filtrarColunaLista(contexto, nomeColuna, ev) {
+  if (!window._filtrosLista) window._filtrosLista = {};
+  const key = `${contexto}:${nomeColuna}`;
+  const painelId = "painelFiltroColunaLista";
+  const antigo = document.getElementById(painelId);
+  if (antigo) antigo.remove();
+
+  const dados = (contexto === "tickets") ? (window._ticketsLista || []) : (window._usuariosLista || []);
+  const mapItem = (item) => {
+    if (contexto === "tickets") {
+      const codigo = formatarCodigoTicket(item, 0);
+      return {
+        "ID": item.id ?? "",
+        "Ticket": codigo,
+        "Tipo": item.tipo ?? "",
+        "Assunto": item.assunto ?? "",
+        "Prioridade": item.prioridade ?? "",
+        "Usuário": item.usuario ?? "",
+        "Status": item.status ?? "",
+        "Data": formatarDataISO(item.data)
+      };
+    }
+    return {
+      "ID": item.id ?? "",
+      "Nome": item.nome ?? "",
+      "Login": item.login ?? "",
+      "Email": item.email ?? "",
+      "Perfil": item.perfil ?? "",
+      "Status": item.status ?? ""
+    };
+  };
+
+  const valores = dados.map(d => String(mapItem(d)[nomeColuna] ?? "").trim());
+  const unicos = Array.from(new Set(valores)).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const selecionados = new Set((window._filtrosLista[key] || unicos).map(v => String(v)));
+
+  const painel = document.createElement("div");
+  painel.id = painelId;
+  painel.className = "filter-panel";
+
+  const rect = ev?.target?.getBoundingClientRect();
+  if (rect) {
+    painel.style.top = `${rect.bottom + window.scrollY + 6}px`;
+    painel.style.left = `${rect.left + window.scrollX - 20}px`;
+  } else {
+    painel.style.top = "120px";
+    painel.style.left = "120px";
+  }
+
+  const header = document.createElement("div");
+  header.style.display = "flex";
+  header.style.justifyContent = "space-between";
+  header.style.alignItems = "center";
+  header.style.marginBottom = "8px";
+  header.innerHTML = `<strong>${nomeColuna}</strong>`;
+  painel.appendChild(header);
+
+  const actions = document.createElement("div");
+  actions.className = "filter-actions";
+  actions.innerHTML = `
+    <a href="#" id="lnkAz" class="filter-link">A-Z</a>
+    <a href="#" id="lnkZa" class="filter-link">Z-A</a>
+    <a href="#" id="lnkNumAsc" class="filter-link">0-9</a>
+    <a href="#" id="lnkNumDesc" class="filter-link">9-0</a>
+  `;
+  painel.appendChild(actions);
+
+  const search = document.createElement("input");
+  search.type = "text";
+  search.placeholder = "Pesquisar...";
+  search.className = "form-control filter-search";
+  painel.appendChild(search);
+
+  const selectAllWrap = document.createElement("label");
+  selectAllWrap.className = "filter-select-all";
+  selectAllWrap.innerHTML = `
+    <input type="checkbox" id="chkAll" />
+    <span>Selecionar todos</span>
+  `;
+  painel.appendChild(selectAllWrap);
+
+  const lista = document.createElement("div");
+  lista.className = "filter-list";
+
+  unicos.forEach((val, i) => {
+    const id = `chk_${i}_${nomeColuna}`;
+    const wrap = document.createElement("label");
+    wrap.innerHTML = `
+      <input type="checkbox" id="${id}" data-valor="${val}" />
+      <span>${val || "(vazio)"}</span>
+    `;
+    const chk = wrap.querySelector("input");
+    if (selecionados.has(val)) chk.checked = true;
+    lista.appendChild(wrap);
+  });
+  painel.appendChild(lista);
+
+  const footer = document.createElement("div");
+  footer.className = "filter-footer";
+  footer.innerHTML = `
+    <button class="btn-sm btn-primary" type="button" id="btnAplicar">Aplicar</button>
+    <button class="btn-sm btn-secondary" type="button" id="btnLimpar">Limpar</button>
+  `;
+  painel.appendChild(footer);
+
+  document.body.appendChild(painel);
+
+  const chkAll = painel.querySelector("#chkAll");
+  const chks = Array.from(painel.querySelectorAll('input[type="checkbox"][data-valor]'));
+  const atualizarChkAll = () => { chkAll.checked = chks.every(c => c.checked); };
+  atualizarChkAll();
+  chkAll.addEventListener("change", () => { chks.forEach(c => { c.checked = chkAll.checked; }); });
+  chks.forEach(c => c.addEventListener("change", atualizarChkAll));
+
+  painel.querySelector("#lnkAz").onclick = (e) => { e.preventDefault(); ordenarLista(contexto, nomeColuna, "asc"); };
+  painel.querySelector("#lnkZa").onclick = (e) => { e.preventDefault(); ordenarLista(contexto, nomeColuna, "desc"); };
+  painel.querySelector("#lnkNumAsc").onclick = (e) => { e.preventDefault(); ordenarLista(contexto, nomeColuna, "num-asc"); };
+  painel.querySelector("#lnkNumDesc").onclick = (e) => { e.preventDefault(); ordenarLista(contexto, nomeColuna, "num-desc"); };
+  painel.querySelector("#btnAplicar").onclick = (e) => {
+    e.stopPropagation();
+    const selecionadosNovos = chks.filter(c => c.checked).map(c => c.dataset.valor);
+    window._filtrosLista[key] = selecionadosNovos;
+    aplicarFiltrosLista(contexto);
+    painel.remove();
+  };
+  painel.querySelector("#btnLimpar").onclick = (e) => {
+    e.stopPropagation();
+    delete window._filtrosLista[key];
+    aplicarFiltrosLista(contexto);
+    painel.remove();
+  };
+
+  const onClickFora = (e) => {
+    if (!painel.contains(e.target)) {
+      painel.remove();
+      document.removeEventListener("click", onClickFora);
+    }
+  };
+  setTimeout(() => document.addEventListener("click", onClickFora), 0);
+
+  search.addEventListener("input", () => {
+    const termoBusca = search.value.toLowerCase();
+    const labels = Array.from(lista.querySelectorAll("label"));
+    labels.forEach(l => {
+      const txt = l.textContent.toLowerCase();
+      l.style.display = txt.includes(termoBusca) ? "flex" : "none";
+    });
+  });
+}
+
+function aplicarFiltrosLista(contexto) {
+  const dadosOrig = (contexto === "tickets") ? (window._ticketsLista || []) : (window._usuariosLista || []);
+  const filtros = window._filtrosLista || {};
+  let lista = dadosOrig.slice();
+
+  const mapItem = (item) => {
+    if (contexto === "tickets") {
+      return {
+        "ID": item.id ?? "",
+        "Ticket": formatarCodigoTicket(item, 0),
+        "Tipo": item.tipo ?? "",
+        "Assunto": item.assunto ?? "",
+        "Prioridade": item.prioridade ?? "",
+        "Usuário": item.usuario ?? "",
+        "Status": item.status ?? "",
+        "Data": formatarDataISO(item.data)
+      };
+    }
+    return {
+      "ID": item.id ?? "",
+      "Nome": item.nome ?? "",
+      "Login": item.login ?? "",
+      "Email": item.email ?? "",
+      "Perfil": item.perfil ?? "",
+      "Status": item.status ?? ""
+    };
+  };
+
+  Object.keys(filtros).forEach(k => {
+    const [ctx, col] = k.split(":");
+    if (ctx !== contexto) return;
+    const valores = filtros[k] || [];
+    if (!valores.length) return;
+    const set = new Set(valores.map(v => String(v)));
+    lista = lista.filter(item => set.has(String(mapItem(item)[col] ?? "")));
+  });
+
+  if (contexto === "tickets") {
+    renderizarTickets(lista, 'todos', '');
+  } else {
+    renderizarUsuarios(lista);
+  }
+}
+
+function ordenarLista(contexto, nomeColuna, direcao) {
+  const dadosOrig = (contexto === "tickets") ? (window._ticketsLista || []) : (window._usuariosLista || []);
+  const mapItem = (item) => {
+    if (contexto === "tickets") {
+      return {
+        "ID": item.id ?? "",
+        "Ticket": formatarCodigoTicket(item, 0),
+        "Tipo": item.tipo ?? "",
+        "Assunto": item.assunto ?? "",
+        "Prioridade": item.prioridade ?? "",
+        "Usuário": item.usuario ?? "",
+        "Status": item.status ?? "",
+        "Data": formatarDataISO(item.data)
+      };
+    }
+    return {
+      "ID": item.id ?? "",
+      "Nome": item.nome ?? "",
+      "Login": item.login ?? "",
+      "Email": item.email ?? "",
+      "Perfil": item.perfil ?? "",
+      "Status": item.status ?? ""
+    };
+  };
+  const lista = dadosOrig.slice();
+  lista.sort((a, b) => {
+    const va = mapItem(a)[nomeColuna];
+    const vb = mapItem(b)[nomeColuna];
+    if (direcao === "num-asc" || direcao === "num-desc") {
+      const na = Number(String(va).replace(/[^\d.-]/g, ""));
+      const nb = Number(String(vb).replace(/[^\d.-]/g, ""));
+      const cmp = (isNaN(na) ? 0 : na) - (isNaN(nb) ? 0 : nb);
+      return direcao === "num-desc" ? -cmp : cmp;
+    }
+    const cmp = String(va ?? "").localeCompare(String(vb ?? ""), 'pt-BR');
+    return direcao === "desc" ? -cmp : cmp;
+  });
+
+  if (contexto === "tickets") {
+    renderizarTickets(lista, 'todos', '');
+  } else {
+    renderizarUsuarios(lista);
+  }
+}
+
+// ======= INJEÇÃO AUTOMÁTICA DE ÍCONES =======
+function aplicarIconesFiltroTabela(contexto, tableId, colunas) {
+  const tabela = document.getElementById(tableId);
+  if (!tabela) return;
+  const ths = tabela.querySelectorAll("thead th");
+  ths.forEach(th => {
+    const label = th.textContent.trim();
+    if (!colunas.includes(label)) return;
+    if (th.querySelector(".filter-icon")) return;
+    th.innerHTML = "";
+    const wrap = document.createElement("span");
+    wrap.className = "th-filter";
+    const span = document.createElement("span");
+    span.textContent = label;
+    const icon = document.createElement("i");
+    icon.className = "material-symbols-outlined filter-icon";
+    icon.textContent = "filter_alt";
+    icon.title = "Filtrar";
+    icon.onclick = (e) => filtrarColunaLista(contexto, label, e);
+    wrap.appendChild(span);
+    wrap.appendChild(icon);
+    th.appendChild(wrap);
+  });
 }
 
 
